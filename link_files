@@ -86,6 +86,9 @@ find . -type f -print0 | while read -d '' file; do
     src="${file/#.\//}"
 
     case "$src" in
+        *DS_Store|*.swp)
+            continue
+            ;;
         $platform/*)    # Platform-specific file for the current platform
             dst="${src/#$platform\//}"
             ;;
@@ -104,6 +107,7 @@ find . -type f -print0 | while read -d '' file; do
             ;;
     esac
 
+    [ -z "$dst" ] && continue
     dst="${HOME}/$dst"
 
     if [ -e "${dst}_local" -a -e "$dst" ]; then
