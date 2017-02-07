@@ -1,0 +1,49 @@
+#!/bin/sh
+# A wrapper for running tmux. Takes on (optional) main session name as
+# argument, creates it if it doesn't exist. Then (in either case),
+# a new slave session is created and attached to the main session.
+# The slave session is configured to be destroyed automatically when
+# detached, but the main session stays active. This arrangement allows
+# each slave session to have independent control over active windows/panes.
+#
+# (Make sure ~/.tmux.conf does not interfere by having something like
+#  `new-session` or `attach-session` in it.)
+#
+# By Kimmo Kulovesi <http://arkku.com/> 2017-02-03.
+# Distribute freely, use at your own risk only.
+
+tmux=tmux
+[ -n "`which tmux-next`" ] && tmux=tmux-next
+
+[ "$1" = "ls" ] && exec $tmux ls
+
+if [ -n "$TMUX" ]; then
+    echo 'Error: Already in tmux!' >&2
+    exit 1
+fi
+
+if [ -z "$1" ]; then
+    main_session=0
+else
+    main_session="$1"
+fi
+
+if ! $tmux ls 2>/dev/null | grep -q "^$main_session:"; then
+    echo "New session: $main_session" >&2
+    $tmux new-session -d -s "$main_session" || exit 1
+fi
+
+if [ -z "$2" ]; then
+    slave_session="${main_session}_$$"
+else
+    slave_session="${main_session}_$2"
+    if $tmux ls 2>/dev/null | grep -q "^$slave_session:"; then
+        slave_session="${slave_session}_$$"
+    fi
+fi
+
+echo "Attaching to $main_session as $slave_session" >&2
+exec $tmux  new-session -d -t "$main_session" -s "$slave_session" \; \
+            set-option destroy-unattached \; \
+            attach-session -t "$slave_session"
+

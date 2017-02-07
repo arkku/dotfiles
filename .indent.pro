@@ -1,0 +1,2 @@
+-bad -bap -nfc1 -ncdb -nfca -br -nbc -ce -cdw -ss -npcs -ncs -nbc -brs -brf -lp
+-nbbo -npsl -hnl -nut -di4 -i4 -ci4 -ip4 -il-4 -ts8 -cli0 -l0 -lc0 -d0

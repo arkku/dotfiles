@@ -1,0 +1,93 @@
+# ~/.inputrc
+# See readline(3readline) and `info rluserman' for more information.
+
+set meta-flag on
+set input-meta on
+set output-meta on
+set convert-meta off
+set show-all-if-ambiguous on
+set visible-stats on
+set mark-symlinked-directories on
+set completion-ignore-case off
+set bind-tty-special-chars on
+
+set enable-keypad on
+set bell-style none 
+
+# home/end
+"\e[1~": beginning-of-line
+"\e[4~": end-of-line
+"\eOH": beginning-of-line
+"\eOF": end-of-line
+"\e0H": beginning-of-line
+"\e0F": end-of-line
+"\e[H": beginning-of-line
+"\e[F": end-of-line
+
+# page up/down
+"\e[5~": history-search-backward
+"\e[6~": history-search-forward
+
+# delete
+"\e[3~": delete-char
+
+# ctrl delete
+"\e[3;5~": kill-word
+
+# insert
+"\e[2~": quoted-insert
+
+# backspace
+"\C-?": backward-delete-char
+"\C-H": backward-delete-char
+
+# ctrl-backspace
+"\C-W": backward-kill-word
+
+# cmd/alt-backspace
+"\e\C-W": backward-kill-line
+"\e\C-H": backward-kill-line
+
+# arrows
+"\eOA": previous-history
+"\eOB": next-history
+"\e[A": previous-history
+"\e[B": next-history
+"\eOC": forward-char
+"\eOD": backward-char
+"\e[C": forward-char
+"\e[D": backward-char
+
+#  ctrl arrows
+"\e[5A": history-search-backward
+"\e[5B": history-search-forward
+"\e[1;5A": history-search-backward
+"\e[1;5B": history-search-forward
+"\eO5A": history-search-backward
+"\eO5B": history-search-forward
+"\e0a": history-search-backward
+"\e0b": history-search-forward
+"\e[5C": forward-word
+"\e[5D": backward-word
+"\e[1;5C": forward-word
+"\e[1;5D": backward-word
+"\eO5C": forward-word
+"\eO5D": backward-word
+"\e0c": forward-word
+"\e0d": backward-word
+
+# cmd arrows
+"\e\e[A": history-search-backward
+"\e\e[B": history-search-forward
+"\e\e[C": end-of-line
+"\e\e[D": beginning-of-line
+
+# alt arrows
+"\e[[A": previous-history
+"\e[[B": next-history
+"\e0A": previous-history
+"\e0B": next-history
+"\e[[C": shell-forward-word
+"\e[[D": shell-backward-word
+"\e0C": shell-forward-word
+"\e0D": shell-backward-word

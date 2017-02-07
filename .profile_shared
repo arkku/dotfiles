@@ -1,0 +1,47 @@
+unset HISTFILE
+export HISTFILE
+
+EDITOR=vi
+export EDITOR
+VISUAL=vi
+export VISUAL
+EXINIT='set autoindent'
+export EXINIT
+PAGER=less
+export PAGER
+PAPERSIZE=a4
+export PAPERSIZE
+CVS_RSH=ssh
+export CVS_RSH
+RSYNC_RSH=ssh
+export RSYNC_RSH
+
+# set PATH so it includes user's private bin if it exists
+if [ -d "${HOME}/bin" -a -z "`echo $PATH | grep ${HOME}/bin:`" ] ; then
+    PATH="${HOME}/bin:${PATH}"
+    export PATH
+fi
+
+MANPATH="/usr/local/man:/usr/local/share/man:/usr/man:/usr/share/man"
+export MANPATH
+
+# do the same with MANPATH
+if [ -d "${HOME}/man" -a -z "`echo $MANPATH | grep ${HOME}/man:`" ] ; then
+    MANPATH="${HOME}/man:${MANPATH}"
+    export MANPATH
+fi
+
+if [ -z "$TMPDIR" -a -n "$TMP" ]; then
+    TMPDIR="$TMP"
+    export TMPDIR TMP
+fi
+
+if [ -z "$ENVONLY" ]; then
+    if [ -t 0 ]; then
+        # Set the interrupt character to Ctrl-c and do clean backspacing.
+        stty intr '^C' echoe 
+        # Disable ^S ^Q flow control
+        stty -ixon -ixoff stop '' start ''
+    fi
+fi
+

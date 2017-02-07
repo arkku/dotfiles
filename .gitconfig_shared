@@ -1,0 +1,18 @@
+[core]
+	editor = vim
+[color]
+	ui = auto
+[alias]
+	unstage = reset HEAD --
+	last = log -1 -p HEAD
+        ll = log --abbrev-commit --pretty=\"format:%h - %an, %ar:\t%s\"
+[push]
+	default = simple
+[filter "media"]
+	clean = git-media-clean %f
+	smudge = git-media-smudge %f
+[filter "lfs"]
+	clean = git lfs clean %f
+	smudge = git lfs smudge %f
+	required = true
+

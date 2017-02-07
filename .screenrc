@@ -1,0 +1,18 @@
+autodetach on
+startup_message off
+bell_msg '%n: Pling!'
+caption always
+caption string '%{wb}%c %{cb}| %{wb}%-w%{Yb}%n %t%{wb}%+w'
+shelltitle '$ |shell'
+vbell off
+multiuser off
+defscrollback 1000
+defutf8 on
+defnonblock on
+termcapinfo xterm ti@:te@
+zmodem catch
+bind 'y' resize +3
+bind 'Y' resize -3
+hardstatus ignore "%?%h %?[%t]"
+shell -bash
+

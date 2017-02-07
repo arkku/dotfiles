@@ -1,0 +1,127 @@
+#!/bin/bash
+# link_files: Dotfiles linker.
+#
+# This is a script for linking configuration files (or "dotfiles") from
+# a directory tree to another.
+#
+# The intended use is to have a directory tree with configuration files
+# that are intended to be hard-linked into the user's home directory, e.g.,
+# one can have ".dotfiles/.bashrc" which is shared across many systems,
+# then running this script in `.dotfiles` will link it to "~/.bashrc".
+# 
+# There can be platform-specific files placed in a directory with the
+# platform's name (e.g., "mac", "linux"). If one exists for the current
+# platform (as determined by "uname -s"), it will be used instead of
+# any generic one.
+#
+# If you need to locally customize some files that are otherwise part of
+# the shared dotfiles, create a local file with "_local" appended to its
+# name, e.g., ".bashrc_local" prevents ".bashrc" from being linked.
+#
+# By Kimmo Kulovesi <http://arkku.com/>
+# Distribute freely, use at your own risk only!
+
+set -e
+
+src_dir="$(dirname "$0")"
+cmd_prefix=''
+verbose=''
+force=''
+
+while [ -n "$1" ]; do
+    case "$1" in
+        --source=*)
+            src_dir="$1"
+            src_dir="${src_dir/#--source=/}"
+            ;;
+        -s)
+            shift
+            src_dir="$1"
+            ;;
+        --dry-run|-n)
+            cmd_prefix='echo'
+            ;;
+        --verbose|-v)
+            verbose='-v'
+            ;;
+        --force|-f)
+            force='-f'
+            ;;
+        --help|--usage|-h|-?)
+            cat <<EOF
+Usage: $(basename "$0") [OPTIONS]
+
+Options:
+    -n
+    --dry-run       Print the commands, but don't actually link anything.
+    -v
+    --verbose       Increase verbosity.
+    -f
+    --force         Overwrite any existing files. Recommended!
+    -s PATH
+    --source=PATH   Use the directory at PATH as the source for files.
+
+    Options cannot be combined, i.e., use "-v -f" instead of "-vf".
+
+Example:
+    $(basename "$0") -v -f
+
+Description:
+
+$(awk -F'#' 'NR>3 && /^#/ { print $2 }' "$0")
+EOF
+            exit 0
+            ;;
+    esac
+    shift
+done
+
+cd "$src_dir"
+
+platform="$(uname -s | tr '[A-Z]' '[a-z]')"
+[ "$platform" = "darwin" ] && platform=mac
+
+find . -type f -print0 | while read -d '' file; do
+    src="${file/#.\//}"
+
+    case "$src" in
+        $platform/*)    # Platform-specific file for the current platform
+            dst="${src/#$platform\//}"
+            ;;
+        .git/*|.gitignore|.gitmodules)             # Ignore git directory
+            continue
+            ;;
+        .*|bin/*|share/*|man/*)          # Dotfiles and whitelisted paths
+
+            # Ignore generic version if a platform-specific one exists
+            [ -e "$platform/$file" ] && continue
+
+            dst="$src"
+            ;;
+        *)                                       # Ignore everything else
+            continue
+            ;;
+    esac
+
+    dst="${HOME}/$dst"
+
+    if [ -e "${dst}_local" -a -e "$dst" ]; then
+        [ -n "$verbose" ] && echo "$dst: A local override exists." >&2
+        continue
+    fi
+
+    if [ -e "$dst" ]; then
+        if [ "$src" -ef "$dst" ]; then
+            [ -n "$verbose" ] && echo "$dst: Already linked." >&2
+            continue
+        fi
+
+        if [ -z "$force" ]; then
+            echo "$dst: Already exists!" >&2
+            continue
+        fi
+    fi
+
+    $cmd_prefix ln $verbose $force -n "$src" "$dst"
+done
+
