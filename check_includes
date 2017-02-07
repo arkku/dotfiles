@@ -23,9 +23,7 @@ if [ -e "$sshpath/$sshconfig" ]; then
         cat <<EOFSSH
 # .ssh/$sshconfig
 
-sed -i '' '1 i\\
-Include $sshconfig
-' "$sshpath/config"
+ex -sc '1i|Include $sshconfig' -cx ~/.ssh/config
 
 EOFSSH
     fi
