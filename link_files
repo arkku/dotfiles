@@ -123,7 +123,7 @@ find . -type f -print0 | while read -d '' file; do
         fi
     else
         dstdir="$(dirname "$dst")"
-        [ ! -e "$dstdir" ] && mkdir -v "$dstdir"
+        [ ! -e "$dstdir" ] && mkdir $verbose "$dstdir"
     fi
 
     $cmd_prefix ln $verbose $force -n "$src" "$dst"
