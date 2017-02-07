@@ -87,7 +87,7 @@ set bell-style none
 "\e[[B": next-history
 "\e0A": previous-history
 "\e0B": next-history
-"\e[[C": shell-forward-word
-"\e[[D": shell-backward-word
-"\e0C": shell-forward-word
-"\e0D": shell-backward-word
+"\e[[C": end-of-line
+"\e[[D": beginning-of-line
+"\e0C": end-of-line
+"\e0D": beginning-of-line
