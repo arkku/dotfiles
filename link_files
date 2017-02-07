@@ -126,9 +126,9 @@ find . -type f -print0 | while read -d '' file; do
     else
         dstdir="$(dirname "$dst")"
         [ ! -e "$dstdir" ] && mkdir -p $verbose "$dstdir"
-
-        [ -z "$verbose" ] && echo "$dst"
     fi
+
+    [ -z "$verbose" ] && echo "$dst"
 
     $cmd_prefix ln $verbose $force -n "$src" "$dst"
 done
