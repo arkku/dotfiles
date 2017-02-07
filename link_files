@@ -120,10 +120,14 @@ find . -type f -print0 | while read -d '' file; do
         if [ -z "$force" ]; then
             echo "$dst: Already exists!" >&2
             continue
+        elif [ -z "$verbose" ]; then
+            echo "$dst: Forcing overwrite." >&2
         fi
     else
         dstdir="$(dirname "$dst")"
         [ ! -e "$dstdir" ] && mkdir -p $verbose "$dstdir"
+
+        [ -z "$verbose" ] && echo "$dst"
     fi
 
     $cmd_prefix ln $verbose $force -n "$src" "$dst"
