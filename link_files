@@ -76,6 +76,7 @@ EOF
     shift
 done
 
+[ -n "$verbose" ] && echo "Linking from: $src_dir" >&2
 cd "$src_dir"
 
 platform="$(uname -s | tr '[A-Z]' '[a-z]')"
@@ -120,6 +121,9 @@ find . -type f -print0 | while read -d '' file; do
             echo "$dst: Already exists!" >&2
             continue
         fi
+    else
+        dstdir="$(dirname "$dst")"
+        [ ! -e "$dstdir" ] && mkdir -v "$dstdir"
     fi
 
     $cmd_prefix ln $verbose $force -n "$src" "$dst"
