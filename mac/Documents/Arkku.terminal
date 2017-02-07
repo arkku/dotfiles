@@ -168,7 +168,7 @@
 	<key>Linewrap</key>
 	<true/>
 	<key>ProfileCurrentVersion</key>
-	<real>2.02</real>
+	<real>2.0499999999999998</real>
 	<key>ReverseLinewrap</key>
 	<true/>
 	<key>ScrollbackLines</key>
@@ -184,12 +184,22 @@
 	</data>
 	<key>ShouldLimitScrollback</key>
 	<integer>0</integer>
+	<key>ShowActiveProcessArgumentsInTabTitle</key>
+	<false/>
+	<key>ShowActiveProcessArgumentsInTitle</key>
+	<false/>
 	<key>ShowActiveProcessInTitle</key>
 	<true/>
 	<key>ShowCommandKeyInTitle</key>
 	<true/>
+	<key>ShowComponentsWhenTabHasCustomTitle</key>
+	<true/>
 	<key>ShowDimensionsInTitle</key>
 	<false/>
+	<key>ShowRepresentedURLInTabTitle</key>
+	<false/>
+	<key>ShowRepresentedURLPathInTitle</key>
+	<true/>
 	<key>ShowShellCommandInTitle</key>
 	<false/>
 	<key>ShowTTYNameInTitle</key>
@@ -216,10 +226,10 @@
 	dF8QD05TS2V5ZWRBcmNoaXZlctEXGFRyb290gAEIERojLTI3O0FITltiaWttcn2GjpGa
 	rK+0AAAAAAAAAQEAAAAAAAAAGQAAAAAAAAAAAAAAAAAAALY=
 	</data>
-	<key>VisualBell</key>
+	<key>VisualBellOnlyWhenMuted</key>
 	<false/>
 	<key>WindowTitle</key>
-	<string>nine</string>
+	<string>Terminal</string>
 	<key>columnCount</key>
 	<integer>88</integer>
 	<key>deleteSendsBackspace</key>
@@ -242,10 +252,6 @@
 		<string>[33~</string>
 		<key>$F70F</key>
 		<string>[34~</string>
-		<key>$F729</key>
-		<string>[H</string>
-		<key>$F72B</key>
-		<string>[F</string>
 		<key>$F72C</key>
 		<string>scrollPageUp:</string>
 		<key>$F72D</key>
@@ -293,21 +299,29 @@
 		<key>F728</key>
 		<string>[3~</string>
 		<key>F729</key>
-		<string>scrollToBeginningOfDocument:</string>
+		<string>[1~</string>
 		<key>F72B</key>
-		<string>scrollToEndOfDocument:</string>
+		<string>[4~</string>
 		<key>F72C</key>
 		<string>[5~</string>
 		<key>F72D</key>
 		<string>[6~</string>
+		<key>^F700</key>
+		<string>[5A</string>
+		<key>^F701</key>
+		<string>[5B</string>
 		<key>^F702</key>
 		<string>[5D</string>
 		<key>^F703</key>
 		<string>[5C</string>
+		<key>~F700</key>
+		<string>[[A</string>
+		<key>~F701</key>
+		<string>[[B</string>
 		<key>~F702</key>
-		<string>b</string>
+		<string>[[D</string>
 		<key>~F703</key>
-		<string>f</string>
+		<string>[[C</string>
 		<key>~F704</key>
 		<string>[17~</string>
 		<key>~F705</key>
@@ -342,7 +356,7 @@
 	<key>name</key>
 	<string>Arkku</string>
 	<key>rowCount</key>
-	<integer>60</integer>
+	<integer>55</integer>
 	<key>shellExitAction</key>
 	<integer>1</integer>
 	<key>type</key>
