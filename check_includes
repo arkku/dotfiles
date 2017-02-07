@@ -1,0 +1,45 @@
+#!/bin/bash
+# This scripts checks whether certain configuration files are reading
+# globally shared configuration files. Run `link_files` first. The
+# output is just shell commands to modify the files, nothing is done
+# automatically.
+
+gitconfig=".gitconfig_shared"
+if [ -e "$HOME/$gitconfig" ]; then
+    if ! grep -F "path = $gitconfig" -q "$HOME/.gitconfig"; then
+        cat <<EOFGIT
+# $gitconfig
+
+git config --global --add include.path $gitconfig
+
+EOFGIT
+    fi
+fi
+
+sshconfig="config_shared"
+sshpath="$HOME/.ssh"
+if [ -e "$sshpath/$sshconfig" ]; then
+    if ! grep -F "Include $sshconfig" -q "$sshpath/config"; then
+        cat <<EOFSSH
+# .ssh/$sshconfig
+
+sed -i '' '1 i\\
+Include $sshconfig
+' "$sshpath/config"
+
+EOFSSH
+    fi
+fi
+
+profile=".profile_shared"
+if [ -e "$HOME/$profile" ]; then
+    if ! grep -F '. "$HOME/'"$profile"'"' -q "$HOME/.profile"; then
+        cat <<EOFPROFILE
+# $profile
+
+echo '. "\$HOME/$profile"' >>~/.profile
+
+EOFPROFILE
+    fi
+fi
+
