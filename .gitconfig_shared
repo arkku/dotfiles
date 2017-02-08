@@ -7,6 +7,7 @@
 	unstage = reset HEAD --
 	last = log -1 -p HEAD
         ll = log --abbrev-commit --pretty=\"format:%h - %an, %ar:\t%s\"
+        l = log --abbrev-commit --pretty=\"format:%C(yellow)%h %C(white)%G?%Creset %an %C(white)(%ar)%Creset\t%s\"
 [push]
 	default = simple
 [filter "media"]
