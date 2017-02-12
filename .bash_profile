@@ -12,5 +12,5 @@ if [ -f ~/.bashrc ]; then
 fi
 
 # disallow messages
-mesg n
+mesg n 2>/dev/null || true
 
