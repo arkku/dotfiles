@@ -17,11 +17,18 @@ tmux=tmux
 
 [ "$1" = "ls" ] && exec $tmux ls
 
-[ "$1" = "prefix" -a -n "$2" ] && exec $tmux set-option prefix "$2"
-
 if [ -n "$TMUX" ]; then
+    [ "$1" = "prefix" -a -n "$2" ] && exec $tmux set-option prefix "$2"
     echo 'Error: Already in tmux!' >&2
     exit 1
+fi
+
+more_args=''
+
+if [ "$1" = "prefix" -a -n "$2" ]; then
+    more_args="${more_args}; set-option prefix $2"
+    shift
+    shift
 fi
 
 if [ -z "$1" ]; then
@@ -47,5 +54,5 @@ fi
 echo "Attaching to $main_session as $slave_session" >&2
 exec $tmux  new-session -d -t "$main_session" -s "$slave_session" \; \
             set-option destroy-unattached \; \
-            attach-session -t "$slave_session"
+            attach-session -t "$slave_session" $more_args
 
