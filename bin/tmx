@@ -17,6 +17,8 @@ tmux=tmux
 
 [ "$1" = "ls" ] && exec $tmux ls
 
+[ "$1" = "prefix" -a -n "$2" ] && exec $tmux set-option prefix "$2"
+
 if [ -n "$TMUX" ]; then
     echo 'Error: Already in tmux!' >&2
     exit 1
