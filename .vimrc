@@ -28,6 +28,8 @@ set ruler		" show the cursor position all the time
 " Make p in Visual mode replace the selected text with the "" register.
 vnoremap p <Esc>:let current_reg = @"<CR>gvdi<C-R>=current_reg<CR><Esc>
 
+set secure              " Secure external vimrcs
+
 set showcmd		" Show (partial) command in status line.
 set showmatch		" Show matching brackets.
 set ignorecase		" Do case insensitive matching
@@ -91,8 +93,8 @@ if has("autocmd")
     autocmd Filetype python set omnifunc=pythoncomplete#Complete
     au BufNewFile,BufRead *.pde set filetype=cpp
     au BufNewFile,BufRead *.rb set filetype=ruby
-    au BufNewFile,BufRead *.m set filetype=objc
     au BufNewFile,BufRead *.c set filetype=c
+    au BufNewFile,BufRead *.m set filetype=objc
 endif " has ("autocmd")
 
 " Only insert the longest common substring when autocompleting
