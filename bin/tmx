@@ -29,6 +29,9 @@ if [ "$1" = "prefix" -a -n "$2" ]; then
     more_args="${more_args}; set-option prefix $2"
     shift
     shift
+elif [ "$1" = "b" ]; then
+    more_args="${more_args}; set-option prefix ^b"
+    shift
 fi
 
 if [ -z "$1" ]; then
