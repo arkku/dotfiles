@@ -24,6 +24,7 @@
 set -e
 
 src_dir="$(dirname "$0")"
+dst_dir="$HOME"
 cmd_prefix=''
 verbose=''
 force=''
@@ -37,6 +38,14 @@ while [ -n "$1" ]; do
         -s)
             shift
             src_dir="$1"
+            ;;
+        --destination=*)
+            dst_dir="$1"
+            dst_dir="${dst_dir/#--destination=/}"
+            ;;
+        -d)
+            shift
+            dst_dir="$1"
             ;;
         --dry-run|-n)
             cmd_prefix='echo'
@@ -60,6 +69,8 @@ Options:
     --force         Overwrite any existing files. Recommended!
     -s PATH
     --source=PATH   Use the directory at PATH as the source for files.
+    -d D
+    --destination=D Use the directory D as the destination (default "\$HOME")
 
     Options cannot be combined, i.e., use "-v -f" instead of "-vf".
 
@@ -108,7 +119,7 @@ find . -type f -print0 | while read -d '' file; do
     esac
 
     [ -z "$dst" ] && continue
-    dst="${HOME}/$dst"
+    dst="${dst_dir}/$dst"
 
     if [ -e "${dst}_local" -a -e "$dst" ]; then
         [ -n "$verbose" ] && echo "$dst: A local override exists." >&2
