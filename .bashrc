@@ -76,16 +76,6 @@ if [ "$PS1" ]; then
     set mark-directories off
     set completion-ignore-case on
 
-    # enable color support of ls and also add handy alias
-    if [ -n "$COLORTERM" ]; then
-        alias ls='ls -F --color=auto'
-	if [ -x "`which dircolors`" -a -r "$HOME/.dir_colors" ]; then
-	    eval `dircolors -b "$HOME/.dir_colors"`
-	fi
-    else
-        alias ls='ls -F'
-    fi
-
     # more aliases
     alias ll='ls -kl'
     if [ "`uname`" == "IRIX" ]; then
@@ -137,6 +127,20 @@ if [ "$PS1" ]; then
         TITLE_SET_TAIL=''
         ;;
     esac
+
+    # enable color support of ls and also add handy alias
+    if [ "$CLICOLOR" == 1 ]; then
+        export LSCOLORS='Axfxcxdxbxegedabagacad'
+        alias ls='ls -F -G'
+    elif [ -n "$COLORTERM" ]; then
+        alias ls='ls -F --color=auto'
+	if [ -x "`which dircolors`" -a -r "$HOME/.dir_colors" ]; then
+	    eval `dircolors -b "$HOME/.dir_colors"`
+	fi
+    else
+        alias ls='ls -F'
+    fi
+
 
     export PROMPT_COMMAND TITLE_SET_HEAD TITLE_SET_TAIL SHORT_HOSTNAME SHOW_USERNAME
 else

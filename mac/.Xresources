@@ -1,8 +1,8 @@
 *customization: color
 *font: fixed
 
-*faceName: Monaco
-*faceSize: 9
+!*faceName: Monaco
+!*faceSize: 9
 xterm*loginShell: true
 UXTerm*termName: xterm-new
 
