@@ -49,13 +49,13 @@ if [ -z "$2" ]; then
     slave_session="${main_session}_$$"
 else
     slave_session="${main_session}_$2"
-    if $tmux ls 2>/dev/null | grep -q "^$slave_session:"; then
-        slave_session="${slave_session}_$$"
-    fi
+    #if $tmux ls 2>/dev/null | grep -q "^$slave_session:"; then
+    #    slave_session="${slave_session}_$$"
+    #fi
 fi
 
 echo "Attaching to $main_session as $slave_session" >&2
-exec $tmux  new-session -d -t "$main_session" -s "$slave_session" \; \
+exec $tmux  new-session -A -D -d -t "$main_session" -s "$slave_session" \; \
             set-option destroy-unattached \; \
             attach-session -t "$slave_session" $more_args
 
