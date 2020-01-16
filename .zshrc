@@ -76,18 +76,27 @@ if [[ -o interactive ]]; then
     precmd_functions+=( precmd_vcs_info )
     zstyle ':vcs_info:*' enable git
     zstyle ':vcs_info:*' use-prompt-escapes true
-    zstyle ':vcs_info:*:*' formats '%F{red}%m%F{cyan}%r/%b%F{green}%c%F{yellow}%u%F{reset}' ' %r/%b%c%u'
-    zstyle ':vcs_info:*:*' actionformats '%F{cyan}%a %F{green}%c%F{yellow}%u%F{reset}' ' %a'
+    zstyle ':vcs_info:*:*' formats '%F{cyan}%r/%b%F{green}%c%F{yellow}%u%F{reset}' ' %r/%b%c%u'
+    zstyle ':vcs_info:*:*' actionformats '%F{cyan}%b%F{red}|%a%F{green}%c%F{yellow}%u%F{reset}' ' %b|%a%c%u'
+    zstyle ':vcs_info:*' get-revision false
     zstyle ':vcs_info:*' stagedstr '+'
     zstyle ':vcs_info:*' unstagedstr '~'
 
     # A function to easily enable/disable checking for changes in git repo
     zsh-check-changes() {
-        if [ -n "$1" ]; then
-            zstyle ':vcs_info:git*' check-for-changes "$1"
-        else
-            print 'Usage: $0 <true|false>'
-        fi
+        case "$1" in
+            true|false|staged)
+                zstyle ':vcs_info:git*' check-for-staged-changes true
+                zstyle ':vcs_info:git*' check-for-changes "$1"
+            ;;
+            none)
+                zstyle ':vcs_info:git*' check-for-changes false
+                zstyle ':vcs_info:git*' check-for-staged-changes false
+            ;;
+            *)
+                print 'Usage: $0 <true|false|staged|none>'
+            ;;
+        esac
     }
     zsh-check-changes true
     
