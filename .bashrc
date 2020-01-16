@@ -1,7 +1,3 @@
-# ~/.bashrc: executed by bash(1) for non-login shells.
-# see /usr/share/doc/bash/examples/startup-files (in the package bash-doc)
-# for examples
-
 unset HISTFILE
 export HISTFILE
 
@@ -64,10 +60,7 @@ if [ "$PS1" ]; then
         fi
     }
 
-    # check the window size after each command and, if necessary,
-    # update the values of LINES and COLUMNS.
     shopt -s checkwinsize
-
     shopt -s no_empty_cmd_completion
     shopt -s cmdhist
 
@@ -78,7 +71,7 @@ if [ "$PS1" ]; then
 
     # more aliases
     alias ll='ls -kl'
-    if [ "`uname`" == "IRIX" ]; then
+    if [ "`uname`" = "IRIX" ]; then
         alias psg='ps -efa | grep'
     else
         alias psg='ps axww | grep'
@@ -96,13 +89,14 @@ if [ "$PS1" ]; then
     fi
 
     if [ "$TERM_PROGRAM" = "Apple_Terminal" ]; then
+        printf '\e]7;\a'
         update_terminal_cwd() {
             local encoded=${PWD//%/%25}
             local PWD_URL="file://$HOSTNAME${encoded// /%20}"
             [ "$TERM" = 'screen' ] && echo -ne '\033P'
             printf '\e]7;%s\a' "$PWD_URL"
         }
-        PROMPT_COMMAND="update_terminal_cwd; $PROMPT_COMMAND"
+        #PROMPT_COMMAND="update_terminal_cwd; $PROMPT_COMMAND"
         TITLE_EXCLUDE_PWD=1
     fi
 
@@ -129,8 +123,8 @@ if [ "$PS1" ]; then
     esac
 
     # enable color support of ls and also add handy alias
-    if [ "$CLICOLOR" == 1 ]; then
-        export LSCOLORS='Axfxcxdxbxegedabagacad'
+    if [ "$CLICOLOR" = 1 ]; then
+        export LSCOLORS='AxfxcxdxbxegehBDBDAhaD'
         alias ls='ls -F -G'
     elif [ -n "$COLORTERM" ]; then
         alias ls='ls -F --color=auto'

@@ -47,7 +47,7 @@ if [[ -o interactive ]]; then
     fi
 
     if [ "$CLICOLOR" = 1 ]; then
-        export LSCOLORS='Axfxcxdxbxegedabagacad'
+        export LSCOLORS='AxfxcxdxbxegehBDBDAhaD'
         alias ls='ls -F -G'
     elif [ -n "$COLORTERM" ]; then
         alias ls='ls -F --color=auto'
@@ -75,12 +75,21 @@ if [[ -o interactive ]]; then
     }
     precmd_functions+=( precmd_vcs_info )
     zstyle ':vcs_info:*' enable git
-    zstyle ':vcs_info:*:*' formats '%F{cyan}%b%c%u%F{reset}'
-    zstyle ':vcs_info:*:*' actionformats '%F{cyan}%a %c%u%F{reset}'
-    zstyle ':vcs_info:git*' check-for-changes true
-    zstyle ':vcs_info:git*' use-prompt-escapes true
-    zstyle ':vcs_info:*' stagedstr '%F{green}+%F{reset}'
-    zstyle ':vcs_info:*' unstagedstr '%F{yellow}+%F{reset}'
+    zstyle ':vcs_info:*' use-prompt-escapes true
+    zstyle ':vcs_info:*:*' formats '%F{red}%m%F{cyan}%r/%b%F{green}%c%F{yellow}%u%F{reset}' ' %r/%b%c%u'
+    zstyle ':vcs_info:*:*' actionformats '%F{cyan}%a %F{green}%c%F{yellow}%u%F{reset}' ' %a'
+    zstyle ':vcs_info:*' stagedstr '+'
+    zstyle ':vcs_info:*' unstagedstr '~'
+
+    # A function to easily enable/disable checking for changes in git repo
+    zsh-check-changes() {
+        if [ -n "$1" ]; then
+            zstyle ':vcs_info:git*' check-for-changes "$1"
+        else
+            print 'Usage: $0 <true|false>'
+        fi
+    }
+    zsh-check-changes true
     
     # Key bindings
     bindkey '^[[5C' forward-word
@@ -97,7 +106,7 @@ if [[ -o interactive ]]; then
     zle -N edit-command-line
     bindkey '^ ' edit-command-line
 
-    # Terminal title
+    # Terminal title (or screen/tmux hardstatus)
     case $TERM in
         screen*)
             export TITLE_SET_HEAD=`echo -ne '\033_'`
@@ -115,16 +124,21 @@ if [[ -o interactive ]]; then
 
     if [ -n "$TITLE_SET_HEAD" ]; then
         set_title_exec() {
-            local cmd="${2%% *}"
-            local line="${2:0:20}"
+            local line="${2/#(exec|nice|nohup|time|sudo) /}"
+            local cmd="${line%% *}"
+            line="${line:0:30}"
             local title="$line"
-            [[ ${#cmd} -gt ${#line} ]] && title="$cmd"
-            print -n "${TITLE_SET_HEAD}$cmd${TITLE_SET_TAIL}"
+            if [[ ${#cmd} -gt ${#line} ]]; then
+                title="$cmd" # If the command is longer than the truncated line, show it anyway
+            elif [[ ${#2} -lt 26 ]]; then
+                title="$2" # If the untruncated line is short enough, show it all
+            fi
+            print -Pn "${TITLE_SET_HEAD}%28>…>$title%>>${TITLE_SET_TAIL}"
         }
         preexec_functions+=( set_title_exec )
 
         set_title_prompt() {
-            print -Pn "${TITLE_SET_HEAD}%n@%m${TITLE_SET_TAIL}"
+            print -Pn "${TITLE_SET_HEAD}%n@%m$vcs_info_msg_1_${TITLE_SET_TAIL}"
         }
         precmd_functions+=( set_title_prompt )
     fi
@@ -133,7 +147,7 @@ if [[ -o interactive ]]; then
         set_terminal_dir() {
             local percent='%'
             local pwd_url=''
-            local i ch len LC_CTYPE=C LC_ALL=;
+            local i ch len LC_CTYPE=C LC_ALL=
             len="${#PWD}"
             # Escape special characters
             for ((i = 0; i < $len; ++i)); do
@@ -154,7 +168,7 @@ if [[ -o interactive ]]; then
 
     # Prompt
     export PROMPT='
-%(?..%F{red}?$? )%F{cyan}%2~%F{reset}%# '
+%(?..%F{red}?$? )%F{cyan}%-65<…<%~%<<%F{reset}%# '
     export RPROMPT='    %F{cyan}%(1j.%j&.)$vcs_info_msg_0_%F{reset}'
 else
     echo "$PATH" | grep -qE '(^|:)/usr/local/bin(:|$)' || export PATH="/usr/local/bin:$PATH"
