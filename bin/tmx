@@ -54,6 +54,11 @@ else
     #fi
 fi
 
+if [ "$TERM_PROGRAM" = "Apple_Terminal" ]; then
+    # Clear the directory from terminal title bar
+    printf '\eP\e]7;\a'
+fi
+
 echo "Attaching to $main_session as $slave_session" >&2
 exec $tmux  new-session -A -D -d -t "$main_session" -s "$slave_session" \; \
             set-option destroy-unattached \; \
