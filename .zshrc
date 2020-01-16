@@ -176,8 +176,8 @@ if [[ -o interactive ]]; then
     fi
 
     # Prompt
-    export PROMPT='
-%(?..%F{red}?$? )%F{cyan}%-65<…<%~%<<%F{reset}%# '
+    export PROMPT='%(?..%F{red}?$?%F{reset} )
+%F{cyan}%-65<…<%~%<<%F{reset}%# '
     export RPROMPT='    %F{cyan}%(1j.%j&.)$vcs_info_msg_0_%F{reset}'
 else
     echo "$PATH" | grep -qE '(^|:)/usr/local/bin(:|$)' || export PATH="/usr/local/bin:$PATH"
