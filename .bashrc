@@ -8,7 +8,6 @@ fi
 
 # If running interactively, then:
 if [ "$PS1" ]; then
-
     preexec_interactive_mode=''
     function preexec_install () {
         if [ -z "$DISABLE_PREEXEC" ]; then
@@ -122,19 +121,19 @@ if [ "$PS1" ]; then
         ;;
     esac
 
-    # enable color support of ls and also add handy alias
-    if [ "$CLICOLOR" = 1 ]; then
+    [ -n "$COLORTERM" -a -z "$CLICOLOR" ] && export CLICOLOR=1
+
+    if [ -x "`which dircolors`" -a -r "$HOME/.dir_colors" ]; then
+        eval `dircolors -b "$HOME/.dir_colors"`
+    fi
+    if ls --version 2>/dev/null | grep -q GNU; then
+        alias ls='ls -F --color=auto --group-directories-first'
+    elif [ "$CLICOLOR" = 1 ]; then
         export LSCOLORS='AxfxHehecxegehBDBDAhaD'
         alias ls='ls -F -G'
-    elif [ -n "$COLORTERM" ]; then
-        alias ls='ls -F --color=auto'
-	if [ -x "`which dircolors`" -a -r "$HOME/.dir_colors" ]; then
-	    eval `dircolors -b "$HOME/.dir_colors"`
-	fi
     else
         alias ls='ls -F'
     fi
-
 
     export PROMPT_COMMAND TITLE_SET_HEAD TITLE_SET_TAIL SHORT_HOSTNAME SHOW_USERNAME
 else

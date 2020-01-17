@@ -46,15 +46,16 @@ if [[ -o interactive ]]; then
         alias psg='ps axww | grep'
     fi
 
-    if [ "$CLICOLOR" = 1 ]; then
+    [ -n "$COLORTERM" -a -z "$CLICOLOR" ] && export CLICOLOR=1
+
+    if [ -x "`which dircolors`" -a -r "$HOME/.dir_colors" ]; then
+        eval `dircolors -b "$HOME/.dir_colors"`
+    fi
+    if ls --version 2>/dev/null | grep -q GNU; then
+        alias ls='ls -F --color=auto --group-directories-first'
+    elif [ "$CLICOLOR" = 1 ]; then
         export LSCOLORS='AxfxHehecxegehBDBDAhaD'
         alias ls='ls -F -G'
-    elif [ -n "$COLORTERM" ]; then
-        alias ls='ls -F --color=auto'
-	if [ -x "`which dircolors`" -a -r "$HOME/.dir_colors" ]; then
-	    eval `dircolors -b "$HOME/.dir_colors"`
-        fi
-        export CLICOLOR=1
     else
         alias ls='ls -F'
     fi
