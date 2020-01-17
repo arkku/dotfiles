@@ -106,20 +106,56 @@ if [[ -o interactive ]]; then
     export KEYTIMEOUT=1
 
     # Key bindings
-    bindkey '^[[5C' forward-word
-    bindkey '^[[5D' backward-word
-    bindkey '^[[1;5C' forward-word
-    bindkey '^[[1;5D' backward-word
-    bindkey '^[[3~' delete-char
-    bindkey '^[[5~' history-search-backward
-    bindkey '^[[6~' history-search-forward
-    bindkey '^[[1~' beginning-of-line
-    bindkey '^[[4~' end-of-line
-    bindkey '^H' backward-delete-char
-    bindkey '^W' backward-kill-word
     bindkey '^P' up-history
     bindkey '^N' down-history
+    bindkey '^[[5~' history-search-backward
+    bindkey '^[[6~' history-search-forward
     bindkey '^R' history-incremental-search-backward
+    bindkey -M vicmd '^R' redo
+    bindkey '^W' backward-kill-word
+    bindkey '^K' kill-word
+    bindkey '^U' kill-whole-line
+    bindkey '^Y' yank
+    bindkey '^Q' push-line-or-edit
+    bindkey '^D' delete-char
+    bindkey '^_' undo
+    bindkey '^L' clear-screen
+    for mode in '-M vicmd' '-M viins' ''; do
+        # Make navigation the same for vi mode
+        bindkey ${=mode} '^[[C' forward-char
+        bindkey ${=mode} '^[[D' backward-char
+        bindkey ${=mode} '^[OC' forward-char
+        bindkey ${=mode} '^[OD' backward-char
+        bindkey ${=mode} '^[[1~' beginning-of-line
+        bindkey ${=mode} '^[[4~' end-of-line
+        bindkey ${=mode} '^[[5C' forward-word
+        bindkey ${=mode} '^[[5D' backward-word
+        bindkey ${=mode} '^[[1;5C' forward-word
+        bindkey ${=mode} '^[[1;5D' backward-word
+        bindkey ${=mode} '^[[3~' delete-char
+        bindkey ${=mode} '^E' end-of-line
+        if [[ "$mode" = '-M vicmd' ]]; then
+            bindkey ${=mode} '^?' backward-char
+            bindkey ${=mode} '^H' backward-char
+            bindkey ${=mode} "^[OA" up-line
+            bindkey ${=mode} "^[OB" down-line
+            bindkey ${=mode} "^[[A" up-line
+            bindkey ${=mode} "^[[B" down-line
+        else
+            bindkey ${=mode} '^A' beginning-of-line
+            bindkey ${=mode} '^E' end-of-line
+            bindkey ${=mode} '^H' backward-delete-char
+            bindkey ${=mode} '^?' backward-delete-char
+            bindkey ${=mode} '^H' backward-delete-char
+            bindkey ${=mode} "^[OA" up-line-or-history
+            bindkey ${=mode} "^[OB" down-line-or-history
+            bindkey ${=mode} "^[[A" up-line-or-history
+            bindkey ${=mode} "^[[B" down-line-or-history
+        fi
+    done
+    unset mode
+    bindkey -M vicmd '?' history-incremental-search-backward
+    bindkey -M vicmd '/' history-incremental-search-forward
 
     autoload -U edit-command-line
     zle -N edit-command-line
@@ -185,10 +221,28 @@ if [[ -o interactive ]]; then
         set_terminal_dir # Set the initial directory
     fi
 
+    # Change cursor to indicate vi mode
+    function zle-line-init zle-keymap-select {
+        case "$KEYMAP" in
+            vicmd)
+                print -n '\033[4 q'
+                export ZSHVIMODE="%F{yellow}(vi)%F{reset} "
+                ;;
+            *)
+                print -n '\033[1 q'
+                export ZSHVIMODE=''
+                ;;
+        esac
+        zle reset-prompt
+    }
+
+    zle -N zle-line-init
+    zle -N zle-keymap-select
+
     # Prompt
     export PROMPT='%(?..%F{red}?$?%F{reset} )
 %F{cyan}%-65<…<%~%<<%F{reset}%# '
-    export RPROMPT='    %F{cyan}%(1j.%j&.)$vcs_info_msg_0_%F{reset}'
+    export RPROMPT='    $ZSHVIMODE%F{cyan}%(1j.%j&.)$vcs_info_msg_0_%F{reset}'
 else
     echo "$PATH" | grep -qE '(^|:)/usr/local/bin(:|$)' || export PATH="/usr/local/bin:$PATH"
 fi

@@ -14,6 +14,14 @@ set bind-tty-special-chars on
 set enable-keypad on
 set bell-style none 
 
+# Basic editing
+"^W": backward-kill-word
+"^K": kill-word
+"^U": kill-whole-line
+"^Y": yank
+"^D": delete-char
+"^_": undo
+
 # home/end
 "\e[1~": beginning-of-line
 "\e[4~": end-of-line
