@@ -64,7 +64,7 @@ if [[ -o interactive ]]; then
     case `uname`; in
         Darwin)
             alias clc='fc -ln -1 | pbcopy'
-            alias CL='| pbcopy'
+            alias -g CL='| pbcopy'
             ;;
         IRIX)
             alias psg='ps -efa | grep'
