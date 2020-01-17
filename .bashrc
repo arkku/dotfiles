@@ -124,7 +124,7 @@ if [ "$PS1" ]; then
 
     # enable color support of ls and also add handy alias
     if [ "$CLICOLOR" = 1 ]; then
-        export LSCOLORS='AxfxcxdxbxegehBDBDAhaD'
+        export LSCOLORS='AxfxHehecxegehBDBDAhaD'
         alias ls='ls -F -G'
     elif [ -n "$COLORTERM" ]; then
         alias ls='ls -F --color=auto'

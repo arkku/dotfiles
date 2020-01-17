@@ -47,7 +47,7 @@ if [[ -o interactive ]]; then
     fi
 
     if [ "$CLICOLOR" = 1 ]; then
-        export LSCOLORS='AxfxcxdxbxegehBDBDAhaD'
+        export LSCOLORS='AxfxHehecxegehBDBDAhaD'
         alias ls='ls -F -G'
     elif [ -n "$COLORTERM" ]; then
         alias ls='ls -F --color=auto'
@@ -100,6 +100,10 @@ if [[ -o interactive ]]; then
     }
     zsh-check-changes true
     
+    # Vi-mode
+    bindkey -v
+    export KEYTIMEOUT=1
+
     # Key bindings
     bindkey '^[[5C' forward-word
     bindkey '^[[5D' backward-word
@@ -110,6 +114,11 @@ if [[ -o interactive ]]; then
     bindkey '^[[6~' history-search-forward
     bindkey '^[[1~' beginning-of-line
     bindkey '^[[4~' end-of-line
+    bindkey '^H' backward-delete-char
+    bindkey '^W' backward-kill-word
+    bindkey '^P' up-history
+    bindkey '^N' down-history
+    bindkey '^R' history-incremental-search-backward
 
     autoload -U edit-command-line
     zle -N edit-command-line
