@@ -11,6 +11,8 @@ export HOSTNAME=`hostname`
 setopt combiningchars
 
 if [[ -o interactive ]]; then
+    autoload -Uz colors && colors
+
     # Options
 
     # Allow comments on interactive prompt
@@ -19,13 +21,13 @@ if [[ -o interactive ]]; then
     # Shell substitutions in prompt
     setopt prompt_subst
 
-    # Implicit `cd ` when executing a directory
+    # Plain `dir` works as `cd dir`
     setopt auto_cd
 
-    # pushd on cd
+    # Automatic `pushd` on change directory
     setopt auto_pushd
 
-    # Use cd -n instead of cd +n (similar to git history)
+    # Use `cd -n` instead of `cd +n` (similar to git history)
     setopt pushdminus
 
     # Completion menu on tab
@@ -38,19 +40,48 @@ if [[ -o interactive ]]; then
     # Allow completion in the middle of a word
     setopt complete_in_word
 
-    # Aliases for ls
+    # Don't beep
+    setopt no_beep
+
+    setopt extended_glob
+    setopt transient_rprompt
+
+    # Aliases
+    alias gr='grep --color=auto --exclude-dir={.git,.hg,.svn,.bzr}'
+    alias please='sudo $(fc -ln -1)'
+
+    # Grep `ps` (more brute force than pgrep)
+    alias psg='ps axww | grep'
+
+    # Copy last command
+    alias clc='fc -ln -1 | xclip -selection c'
+
+    # Pipe shortcuts
+    alias -g L='| less'
+    alias -g CL='| xclip -selection c'
+
+    # System-specific variations
+    case `uname`; in
+        Darwin)
+            alias clc='fc -ln -1 | pbcopy'
+            alias CL='| pbcopy'
+            ;;
+        IRIX)
+            alias psg='ps -efa | grep'
+            ;;
+        *)
+            ;;
+    esac
+
+    # ls
     alias ll='ls -kl'
-    if [ "`uname`" = 'IRIX' ]; then
-        alias psg='ps -efa | grep'
-    else
-        alias psg='ps axww | grep'
-    fi
 
     [ -n "$COLORTERM" -a -z "$CLICOLOR" ] && export CLICOLOR=1
 
     if [ -x "`which dircolors`" -a -r "$HOME/.dir_colors" ]; then
         eval `dircolors -b "$HOME/.dir_colors"`
     fi
+
     if ls --version 2>/dev/null | grep -q GNU; then
         alias ls='ls -F --color=auto --group-directories-first'
     elif [ "$CLICOLOR" = 1 ]; then
@@ -61,15 +92,31 @@ if [[ -o interactive ]]; then
     fi
 
     # Completion
-    
+    autoload -Uz compinit && compinit
+
+    zstyle ':completion:*' verbose yes
+
     # Show completion options in a menu
     zstyle ':completion:*:*:*:*:*' menu select
 
     # Make completion case-, hyphen-, and underscore-insensitive
     zstyle ':completion:*' matcher-list 'm:{a-zA-Z-_}={A-Za-z_-}' 'r:|=*' 'l:|=* r:|=*'
 
+    # Use the same colors as GNU ls
+    zstyle ':completion:*' list-colors "${(@s.:.)LS_COLORS}"
+
+    # Show description for options
+    zstyle ':completion:*:options' description 'yes'
+
+    # Theme
+    #zstyle ':completion:*:messages' format '%F{white}# %d'$DEFAULT
+    zstyle ':completion:*:warnings' format '%F{white}# No matches for: %d'$DEFAULT
+    #zstyle ':completion:*:descriptions' format '%F{white}# %B%d%b%f'$DEFAULT
+
+    # Prediction (rather intrusive, disabled)
+    #autoload -Uz predict-on && zstyle ':predict' verbose true && predict-on
+
     # Git
-    autoload -Uz compinit && compinit
     autoload -Uz vcs_info
     precmd_vcs_info() {
         vcs_info
@@ -77,8 +124,9 @@ if [[ -o interactive ]]; then
     precmd_functions+=( precmd_vcs_info )
     zstyle ':vcs_info:*' enable git
     zstyle ':vcs_info:*' use-prompt-escapes true
-    zstyle ':vcs_info:*:*' formats '%F{cyan}%r/%b%F{green}%c%F{yellow}%u%F{reset}' ' %r/%b%c%u'
-    zstyle ':vcs_info:*:*' actionformats '%F{cyan}%b%F{red}|%a%F{green}%c%F{yellow}%u%F{reset}' ' %b|%a%c%u'
+    zstyle ':vcs_info:*:*' max-exports 3
+    zstyle ':vcs_info:*:*' formats '%F{cyan}%r%F{white}/%F{cyan}%b%F{green}%c%F{yellow}%u%F{reset}' ' %r/%b%c%u' ' '
+    zstyle ':vcs_info:*:*' actionformats '%F{cyan}%r%F{white}/%F{cyan}%b%F{white}|%F{red}%a%F{green}%c%F{yellow}%u%F{reset}' '%r/%b %a%c%u' '%F{white}# %s %a: %m%F{reset} '
     zstyle ':vcs_info:*' get-revision false
     zstyle ':vcs_info:*' stagedstr '+'
     zstyle ':vcs_info:*' unstagedstr '~'
@@ -161,6 +209,25 @@ if [[ -o interactive ]]; then
     zle -N edit-command-line
     bindkey '^ ' edit-command-line
 
+    # Vim-like surround
+   autoload -Uz surround
+   zle -N delete-surround surround
+   zle -N add-surround surround
+   zle -N change-surround surround
+   bindkey -a cs change-surround
+   bindkey -a ds delete-surround
+   bindkey -a ys add-surround
+   bindkey -M visual S add-surround
+
+   # In vi-mode, type vi" to select quoted text
+    autoload -U select-quoted
+    zle -N select-quoted
+    for m in visual viopp; do
+        for c in {a,i}{\',\",\`}; do
+            bindkey -M $m $c select-quoted
+        done
+    done
+
     # Terminal title (or screen/tmux hardstatus)
     case $TERM in
         screen*)
@@ -188,12 +255,17 @@ if [[ -o interactive ]]; then
             elif [[ ${#2} -lt 26 ]]; then
                 title="$2" # If the untruncated line is short enough, show it all
             fi
-            print -Pn "${TITLE_SET_HEAD}%28>…>$title%>>${TITLE_SET_TAIL}"
+            if [[ ${#title} -gt 25 ]]; then
+                title="${title:0:25}…"
+            fi
+            print -n "$TITLE_SET_HEAD$title$TITLE_SET_TAIL"
         }
         preexec_functions+=( set_title_exec )
 
         set_title_prompt() {
-            print -Pn "${TITLE_SET_HEAD}%n@%m$vcs_info_msg_1_${TITLE_SET_TAIL}"
+            print -n "$TITLE_SET_HEAD"
+            print -Pn '%n@%m$vcs_info_msg_1_'
+            print -n "$TITLE_SET_TAIL"
         }
         precmd_functions+=( set_title_prompt )
     fi
@@ -240,9 +312,9 @@ if [[ -o interactive ]]; then
     zle -N zle-keymap-select
 
     # Prompt
-    export PROMPT='%(?..%F{red}?$?%F{reset} )
+    export PROMPT='%(?..%F{red}?$?%F{reset} )$ZSHVIMODE$vcs_info_msg_2_
 %F{cyan}%-65<…<%~%<<%F{reset}%# '
-    export RPROMPT='    $ZSHVIMODE%F{cyan}%(1j.%j&.)$vcs_info_msg_0_%F{reset}'
+    export RPROMPT='    %F{cyan}%(1j.%j&.)$vcs_info_msg_0_%F{reset}'
 else
     echo "$PATH" | grep -qE '(^|:)/usr/local/bin(:|$)' || export PATH="/usr/local/bin:$PATH"
 fi
