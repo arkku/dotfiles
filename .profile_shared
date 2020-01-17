@@ -17,16 +17,17 @@ RSYNC_RSH=ssh
 export RSYNC_RSH
 
 # set PATH so it includes user's private bin if it exists
-if [ -d "${HOME}/bin" -a -z "`echo $PATH | grep ${HOME}/bin:`" ] ; then
+if [ -d "${HOME}/bin" ]; then
     PATH="${HOME}/bin:${PATH}"
     export PATH
 fi
 
-MANPATH="/usr/local/man:/usr/local/share/man:/usr/man:/usr/share/man"
-export MANPATH
+if [ -z "$MANPATH" ]; then
+    MANPATH="/usr/local/man:/usr/local/share/man:/usr/man:/usr/share/man"
+    export MANPATH
+fi
 
-# do the same with MANPATH
-if [ -d "${HOME}/man" -a -z "`echo $MANPATH | grep ${HOME}/man:`" ] ; then
+if [ -d "${HOME}/man" ] ; then
     MANPATH="${HOME}/man:${MANPATH}"
     export MANPATH
 fi
