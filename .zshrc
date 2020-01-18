@@ -5,10 +5,11 @@ export HISTFILE
 [ "$TERM" = "screen" ] && unset DISPLAY
 export DISPLAY
 
-export HOSTNAME=`hostname`
-
 # UTF-8 combining characters
 setopt combiningchars
+
+# Add custom functions directory to fpath
+[ -e "$HOME/.zsh/functions" ] && fpath=( "$HOME/.zsh/functions" "${fpath[@]}" )
 
 if [[ -o interactive ]]; then
     autoload -Uz colors && colors
@@ -52,7 +53,10 @@ if [[ -o interactive ]]; then
     alias please='sudo $(fc -ln -1)'
 
     # Grep `ps` (more brute force than pgrep)
-    alias psg='ps axww | grep'
+    alias psg='ps axww | grep -i --color=auto'
+
+    # Grep `history`
+    alias hgrep='history | grep -i --color=auto'
 
     # Copy last command
     alias clc='fc -ln -1 | xclip -selection c'
@@ -114,8 +118,9 @@ if [[ -o interactive ]]; then
     zstyle ':completion:*:warnings' format '%F{white}# No matches for: %d'$DEFAULT
     #zstyle ':completion:*:descriptions' format '%F{white}# %B%d%b%f'$DEFAULT
 
-    # Prediction (rather intrusive, disabled)
-    #autoload -Uz predict-on && zstyle ':predict' verbose true && predict-on
+    # History (not used at the moment)
+    #zstyle ':completion:*:historyevent' command 'fc -lr'
+    #zstyle ':completion:*:historyevent' sort no
 
     # Git
     autoload -Uz vcs_info
@@ -154,21 +159,24 @@ if [[ -o interactive ]]; then
     bindkey -v
     export KEYTIMEOUT=1
 
+    local mode
     # Key bindings
     bindkey '^P' up-history
     bindkey '^N' down-history
     bindkey '^[[5~' history-search-backward
     bindkey '^[[6~' history-search-forward
-    bindkey '^R' history-incremental-search-backward
-    bindkey -M vicmd '^R' redo
     bindkey '^W' backward-kill-word
     bindkey '^K' kill-word
     bindkey '^U' kill-whole-line
     bindkey '^Y' yank
     bindkey '^Q' push-line-or-edit
     bindkey '^D' delete-char
-    bindkey '^_' undo
+    bindkey '^_' history-incremental-pattern-search-backward
     bindkey '^L' clear-screen
+    for mode in vicmd viins; do
+        bindkey -M "$mode" '^R' redo
+        bindkey -M "$mode" '^Z' undo
+    done
     for mode in '-M vicmd' '-M viins' ''; do
         # Make navigation the same for vi mode
         bindkey ${=mode} '^[[C' forward-char
@@ -341,7 +349,9 @@ if [[ -o interactive ]]; then
     }
     precmd_functions+=( format_pwd )
 
-    export PROMPT='%(?..%F{red}?$?%F{reset} )$prompt_vi_mode$vcs_info_msg_2_
+    zle_highlight=( 'default:bold' 'isearch:underline' 'special:fg=cyan' 'paste:bold,fg=red' 'suffix:fg=white' 'region:standout' )
+
+    export PROMPT='%(?..%F{red}?$?%F{reset} )%F{white}!%! $prompt_vi_mode$vcs_info_msg_4_
 %F{cyan}%-65<…<${pwd_prompt:-%~}%<<%F{reset}%# '
     export RPROMPT='    %F{cyan}%(1j.%j&.)$vcs_info_msg_0_%F{reset}'
 else
