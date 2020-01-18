@@ -397,7 +397,7 @@ if [[ -o interactive ]]; then
         for style in single-hyphen-option double-hyphen-option unknown-token path; do
             ZSH_HIGHLIGHT_STYLES[$style]='none'
         done
-        for style in redirection named-fd assign precommand commandseparator; do
+        for style in redirection named-fd commandseparator; do
             ZSH_HIGHLIGHT_STYLES[$style]='fg=green'
         done
         for style in comment; do
@@ -412,6 +412,8 @@ if [[ -o interactive ]]; then
         for style in alias function history-expansion; do
             ZSH_HIGHLIGHT_STYLES[$style]='fg=magenta,bold'
         done
+        ZSH_HIGHLIGHT_STYLES[assign]='fg=blue'
+        ZSH_HIGHLIGHT_STYLES[precommand]='fg=blue,bold'
         ZSH_HIGHLIGHT_STYLES[path_prefix]='underline'
         ZSH_HIGHLIGHT_STYLES[globbing]='fg=yellow,bold'
         ZSH_HIGHLIGHT_STYLES[suffix-alias]='fg=magenta,bold,underline'
