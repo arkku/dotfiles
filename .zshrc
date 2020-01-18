@@ -1,6 +1,4 @@
 disable log
-unset HISTFILE
-export HISTFILE
 
 [ "$TERM" = "screen" ] && unset DISPLAY
 export DISPLAY
@@ -48,6 +46,14 @@ if [[ -o interactive ]]; then
     #setopt extended_glob
     setopt transient_rprompt
 
+    # History
+    export HISTSIZE=1000
+    setopt hist_expire_dups_first
+    setopt hist_find_no_dups
+    setopt hist_ignore_dups
+    setopt hist_no_store
+    setopt hist_reduce_blanks
+
     # Aliases
     alias gr='grep --color=auto --exclude-dir={.git,.hg,.svn,.bzr}'
     alias please='sudo $(fc -ln -1)'
@@ -56,7 +62,7 @@ if [[ -o interactive ]]; then
     alias psg='ps axww | grep --color=auto'
 
     # Grep `history`
-    alias hgrep='history | grep --color=auto'
+    alias hgrep='history 1 | grep --color=auto'
 
     # Copy last command
     alias clc='fc -ln -1 | xclip -selection c'
@@ -334,21 +340,39 @@ if [[ -o interactive ]]; then
         setopt localoptions extendedglob
         if [ -n "$vcs_info_msg_3_" ]; then
             # Inside a git repository: start display from the repository base
-            pwd_prompt="…/${vcs_info_msg_3_/%\/./}"
+            local repo="${vcs_info_msg_3_/%\/./}"
+            if [ "$PWD" = "$HOME/$repo" ]; then
+                pwd_prompt="~/$repo"
+            elif [ ${#PWD} -le $(( ${#repo} + 5 )) ]; then
+                # Don't abbreviate if it saves fewer than 5 chars
+                pwd_prompt="${PWD/#$HOME/~}"
+            else
+                pwd_prompt="…/$repo"
+            fi
+            unset repo
         else
             # Use ~ to represent the home directory
             pwd_prompt="${PWD/#$HOME/~}"
+
             # Substitute the iCloud documents path
             pwd_prompt="${pwd_prompt/#\~\/Library\/Mobile Documents\/com\~apple\~CloudDocs/…iCloud}"
             # If we are inside a macOS .app directory, preserve the app name
             pwd_prompt="${pwd_prompt/#*\/(#b)([^\/]##.app)\/Contents\//…/$match[1]/…/}"
         fi
+
+        local trimmed
+
         # Keep the first and last two directories only
-        pwd_prompt="${pwd_prompt:/#%(#b)((…[[:alpha:]]#|\~|)\/[^\/]##\/[^\/]##\/)(#b)([^\/]##\/)##(#b)([^\/]##\/[^\/]##)/$match[1]…/$match[4]}"
+        trimmed="${pwd_prompt:/#%(#b)((…[[:alpha:]]#|\~|)\/[^\/]##\/[^\/]##\/)(#b)([^\/]##\/)##(#b)([^\/]##\/[^\/]##)/$match[1]…/$match[4]}"
+        [[ ${#trimmed} -lt ${#pwd_prompt} ]] && pwd_prompt="$trimmed"
+
         # Clean up multiple ellipses
         pwd_prompt="${pwd_prompt//(…\/)##/…/}"
+
         # Escape any percents to avoid prompt expansion
         pwd_prompt="${pwd_prompt//\%/%%}"
+
+        unset trimmed
     }
     precmd_functions+=( format_pwd )
 
