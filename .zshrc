@@ -53,10 +53,10 @@ if [[ -o interactive ]]; then
     alias please='sudo $(fc -ln -1)'
 
     # Grep `ps` (more brute force than pgrep)
-    alias psg='ps axww | grep -i --color=auto'
+    alias psg='ps axww | grep --color=auto'
 
     # Grep `history`
-    alias hgrep='history | grep -i --color=auto'
+    alias hgrep='history | grep --color=auto'
 
     # Copy last command
     alias clc='fc -ln -1 | xclip -selection c'
@@ -64,6 +64,8 @@ if [[ -o interactive ]]; then
     # Pipe shortcuts
     alias -g L='| less'
     alias -g CL='| xclip -selection c'
+    alias -g GR='| grep --color=auto'
+    alias -g FGR='| grep -F --color=auto'
 
     # System-specific variations
     case `uname`; in
@@ -172,6 +174,9 @@ if [[ -o interactive ]]; then
     bindkey '^Q' push-line-or-edit
     bindkey '^D' delete-char
     bindkey '^_' history-incremental-pattern-search-backward
+    bindkey '^\\' history-incremental-pattern-search-forward
+    bindkey -M vicmd '/' history-incremental-pattern-search-backward
+    bindkey -M vicmd '?' history-incremental-pattern-search-forward
     bindkey '^L' clear-screen
     for mode in vicmd viins; do
         bindkey -M "$mode" '^R' redo
@@ -211,8 +216,6 @@ if [[ -o interactive ]]; then
         fi
     done
     unset mode
-    bindkey -M vicmd '?' history-incremental-search-backward
-    bindkey -M vicmd '/' history-incremental-search-forward
 
     autoload -U edit-command-line
     zle -N edit-command-line
@@ -349,11 +352,61 @@ if [[ -o interactive ]]; then
     }
     precmd_functions+=( format_pwd )
 
-    zle_highlight=( 'default:bold' 'isearch:underline' 'special:fg=cyan' 'paste:bold,fg=red' 'suffix:fg=white' 'region:standout' )
+    zle_highlight=( 'isearch:underline' 'special:fg=cyan' 'paste:bold,fg=red' 'suffix:fg=white' 'region:standout' )
 
     export PROMPT='%(?..%F{red}?$?%F{reset} )%F{white}!%! $prompt_vi_mode$vcs_info_msg_4_
 %F{cyan}%-65<…<${pwd_prompt:-%~}%<<%F{reset}%# '
     export RPROMPT='    %F{cyan}%(1j.%j&.)$vcs_info_msg_0_%F{reset}'
+
+    # Syntax highlighting
+    local hlpath
+    for hlpath in "$HOME/.zsh" '/usr/local/share' '/usr/share'; do
+        [ -r "$hlpath/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ] || continue
+        export ZSH_HIGHLIGHT_HIGHLIGHTERS_DIR="$hlpath/zsh-syntax-highlighting/highlighters"
+        typeset -A ZSH_HIGHLIGHT_STYLES
+        ZSH_HIGHLIGHT_STYLES[default]='none'
+
+        local style
+        for style in arg0 command builtin reserved-word hashed-command command-substitution process-substitution; do
+            ZSH_HIGHLIGHT_STYLES[$style]='bold'
+        done
+        for style in single-hyphen-option double-hyphen-option unknown-token path; do
+            ZSH_HIGHLIGHT_STYLES[$style]='none'
+        done
+        for style in redirection named-fd assign precommand commandseparator; do
+            ZSH_HIGHLIGHT_STYLES[$style]='fg=green'
+        done
+        for style in comment; do
+            ZSH_HIGHLIGHT_STYLES[$style]='fg=white'
+        done
+        for style in single-quoted-argument double-quoted-argument; do
+            ZSH_HIGHLIGHT_STYLES[$style]='fg=yellow'
+        done
+        for style in back-quoted-argument dollar-quoted-argument dollar-double-quoted-argument command-substitution process-substitution; do
+            ZSH_HIGHLIGHT_STYLES[$style]='fg=cyan'
+        done
+        for style in alias function history-expansion; do
+            ZSH_HIGHLIGHT_STYLES[$style]='fg=magenta,bold'
+        done
+        ZSH_HIGHLIGHT_STYLES[path_prefix]='underline'
+        ZSH_HIGHLIGHT_STYLES[globbing]='fg=yellow,bold'
+        ZSH_HIGHLIGHT_STYLES[suffix-alias]='fg=magenta,bold,underline'
+
+        ZSH_HIGHLIGHT_STYLES[bracket-error]='fg=red,bold'
+        for style in 1 2 3 4 5; do
+            ZSH_HIGHLIGHT_STYLES[bracket-level-$style]='fg=green'
+        done
+
+        source "$hlpath/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+        ZSH_HIGHLIGHT_HIGHLIGHTERS=( main brackets cursor )
+
+        unset style
+        break
+    done
+    unset hlpath
+
+    # If there is no syntax highlighting installed, make the prompt input bold
+    [ -z "$ZSH_HIGHLIGHT_HIGHLIGHTERS" ] && zle_highlight+=( 'default:bold' )
 else
     echo "$PATH" | grep -qE '(^|:)/usr/local/bin(:|$)' || export PATH="/usr/local/bin:$PATH"
 fi
