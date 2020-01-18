@@ -12,6 +12,7 @@ setopt combiningchars
 
 if [[ -o interactive ]]; then
     autoload -Uz colors && colors
+    autoload -Uz zmv
 
     # Options
 
@@ -43,7 +44,7 @@ if [[ -o interactive ]]; then
     # Don't beep
     setopt no_beep
 
-    setopt extended_glob
+    #setopt extended_glob
     setopt transient_rprompt
 
     # Aliases
@@ -124,9 +125,9 @@ if [[ -o interactive ]]; then
     precmd_functions+=( precmd_vcs_info )
     zstyle ':vcs_info:*' enable git
     zstyle ':vcs_info:*' use-prompt-escapes true
-    zstyle ':vcs_info:*:*' max-exports 3
-    zstyle ':vcs_info:*:*' formats '%F{cyan}%r%F{white}/%F{cyan}%b%F{green}%c%F{yellow}%u%F{reset}' ' %r/%b%c%u' ' '
-    zstyle ':vcs_info:*:*' actionformats '%F{cyan}%r%F{white}/%F{cyan}%b%F{white}|%F{red}%a%F{green}%c%F{yellow}%u%F{reset}' '%r/%b %a%c%u' '%F{white}# %s %a: %m%F{reset} '
+    zstyle ':vcs_info:*:*' max-exports 4
+    zstyle ':vcs_info:*:*' formats '%F{cyan}%r%F{white}/%F{cyan}%b%F{green}%c%F{yellow}%u%F{reset}' ' %r/%b%c%u' ' ' '%r/%S'
+    zstyle ':vcs_info:*:*' actionformats '%F{cyan}%r%F{white}/%F{cyan}%b%F{white}|%F{red}%a%F{green}%c%F{yellow}%u%F{reset}' '%r/%b %a%c%u' '%F{white}# %s %a: %m%F{reset} ' '%r/%S'
     zstyle ':vcs_info:*' get-revision false
     zstyle ':vcs_info:*' stagedstr '+'
     zstyle ':vcs_info:*' unstagedstr '~'
@@ -258,7 +259,9 @@ if [[ -o interactive ]]; then
             if [[ ${#title} -gt 25 ]]; then
                 title="${title:0:25}…"
             fi
-            print -n "$TITLE_SET_HEAD$title$TITLE_SET_TAIL"
+            print -n "$TITLE_SET_HEAD"
+            [ -n "$SSH_CONNECTION" ] && print -Pn '%m: '
+            print -n "$title$TITLE_SET_TAIL"
         }
         preexec_functions+=( set_title_exec )
 
@@ -298,11 +301,11 @@ if [[ -o interactive ]]; then
         case "$KEYMAP" in
             vicmd)
                 print -n '\033[4 q'
-                export ZSHVIMODE="%F{yellow}(vi)%F{reset} "
+                prompt_vi_mode="%F{yellow}(vi)%F{reset} "
                 ;;
             *)
                 print -n '\033[1 q'
-                export ZSHVIMODE=''
+                prompt_vi_mode=''
                 ;;
         esac
         zle reset-prompt
@@ -312,8 +315,31 @@ if [[ -o interactive ]]; then
     zle -N zle-keymap-select
 
     # Prompt
-    export PROMPT='%(?..%F{red}?$?%F{reset} )$ZSHVIMODE$vcs_info_msg_2_
-%F{cyan}%-65<…<%~%<<%F{reset}%# '
+
+    format_pwd() {
+        setopt localoptions extendedglob
+        if [ -n "$vcs_info_msg_3_" ]; then
+            # Inside a git repository: start display from the repository base
+            pwd_prompt="…/${vcs_info_msg_3_/%\/./}"
+        else
+            # Use ~ to represent the home directory
+            pwd_prompt="${PWD/#$HOME/~}"
+            # Substitute the iCloud documents path
+            pwd_prompt="${pwd_prompt/#\~\/Library\/Mobile Documents\/com\~apple\~CloudDocs/…iCloud}"
+            # If we are inside a macOS .app directory, preserve the app name
+            pwd_prompt="${pwd_prompt/#*\/(#b)([^\/]##.app)\/Contents\//…/$match[1]/…/}"
+        fi
+        # Keep the first and last two directories only
+        pwd_prompt="${pwd_prompt:/#%(#b)((…[[:alpha:]]#|\~|)\/[^\/]##\/[^\/]##\/)(#b)([^\/]##\/)##(#b)([^\/]##\/[^\/]##)/$match[1]…/$match[4]}"
+        # Clean up multiple ellipses
+        pwd_prompt="${pwd_prompt//(…\/)##/…/}"
+        # Escape any percents to avoid prompt expansion
+        pwd_prompt="${pwd_prompt//\%/%%}"
+    }
+    precmd_functions+=( format_pwd )
+
+    export PROMPT='%(?..%F{red}?$?%F{reset} )$prompt_vi_mode$vcs_info_msg_2_
+%F{cyan}%-65<…<${pwd_prompt:-%~}%<<%F{reset}%# '
     export RPROMPT='    %F{cyan}%(1j.%j&.)$vcs_info_msg_0_%F{reset}'
 else
     echo "$PATH" | grep -qE '(^|:)/usr/local/bin(:|$)' || export PATH="/usr/local/bin:$PATH"
