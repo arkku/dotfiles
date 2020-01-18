@@ -93,7 +93,7 @@ if [[ -o interactive ]]; then
     fi
 
     # Completion
-    autoload -Uz compinit && compinit
+    autoload -Uz compinit && compinit -i
 
     zstyle ':completion:*' verbose yes
 
@@ -260,7 +260,10 @@ if [[ -o interactive ]]; then
                 title="${title:0:25}…"
             fi
             print -n "$TITLE_SET_HEAD"
-            [ -n "$SSH_CONNECTION" ] && print -Pn '%m: '
+            if [ -n "$SSH_CONNECTION" -o -n "$SUDO_USER" ]; then
+                # Show the username under sudo and host under ssh
+                print -Pn "${SUDO_USER:+%n@}%m: "
+            fi
             print -n "$title$TITLE_SET_TAIL"
         }
         preexec_functions+=( set_title_exec )
