@@ -1,20 +1,10 @@
-" Configuration file for vim
+" Configuration file for neovim
 
-" Prevent modelines in files from being evaluated (avoids a potential
-" security problem wherein a malicious user could write a hazardous
-" modeline into a file) (override default value of 5)
+set background=light
+set termguicolors
+
 set modelines=0
 
-" We know xterm-debian is a color terminal
-if &term =~ "xterm-debian" || &term =~ "xterm-xfree86" || &term =~ "xterm-utf8"
-    set t_Co=16
-    set t_Sf=ESC[3%dm
-    set t_Sb=ESC[4%dm
-endif
-
-"set encoding=utf-8
-
-set nocompatible	" Use Vim defaults of 100% vi compatibility
 set backspace=indent,eol,start	" more powerful backspacing
 set nostartofline       " Try to stay in the same column
 set confirm             " Ask to save changes rather than fail
@@ -33,13 +23,14 @@ set secure              " Secure external vimrcs
 set showcmd		" Show (partial) command in status line.
 set showmatch		" Show matching brackets.
 set ignorecase		" Do case insensitive matching
+
 set incsearch		" Incremental search
-set nohls               " Don't hilight search terms
+" Double esc to clear highlight of previous search
 nmap <esc><esc> :silent! noh<cr>:<backspace>
+
 set autowrite		" Automatically save before commands like :next and :make
 
 set mouse=a		" Use mouse in all modes
-set ttymouse=xterm2
 set number		" Show line numbers
 set shiftwidth=4	" Use indent depth of 4
 set softtabstop=4	
@@ -69,16 +60,20 @@ set cino+=J1            " Indent JavaScript object declarations
 
 "set ttyfast
 
-" Disable beeping
 set belloff=all
-set visualbell
-set t_vb=
 
 set wildmenu
 set wildmode=longest:full,longest
 set wildignore+=*.o,*~
+set wildoptions=pum
 
 set nrformats-=octal
+
+" surround.vim:
+let g:surround_65 = "<a href=\"\">\r</a>"   " yssA to wrap sentence as link
+let g:surround_66 = "{\n\t\r\n}"            " VSB to wrap selection into a block
+let g:surround_68 = "do\n\t\r\nend"         " cs{D to change {} into do/end
+
 
 if has("autocmd")
     filetype plugin indent on
@@ -96,40 +91,17 @@ if has("autocmd")
     au BufNewFile,BufRead *.rb set filetype=ruby
     au BufNewFile,BufRead *.c set filetype=c
     au BufNewFile,BufRead *.m set filetype=objc
+
+    au VimLeave * set guicursor=a:block-blinkon0
 endif " has ("autocmd")
 
 set completeopt+=menuone,noinsert,noselect,preview
-
-set ttimeout
-set ttimeoutlen=100
 
 let g:rubycomplete_classes_in_global = 1
 let g:rubycomplete_buffer_loading = 1
 let g:rubycomplete_rails = 0
 let g:ruby_minlines = 100
-"let g:ruby_fold = 1
-"let g:ruby_no_comment_fold = 1
 
-runtime macros/matchit.vim
-
-" Color scheme:
-syntax on
-colorscheme arkku
-
-" taglist.vim:
-let Tlist_Close_On_Select = 1
-let Tlist_GainFocus_On_ToggleOpen = 1
-let Tlist_Exit_OnlyWindow = 1
-let Tlist_Use_Right_Window = 1
-let Tlist_File_Fold_Auto_Close = 0
-let Tlist_Enable_Fold_Column = 0
-let Tlist_Compact_Format = 1
-
-" surround.vim:
-
-let g:surround_65 = "<a href=\"\">\r</a>"   " yssA to wrap sentence as link
-let g:surround_66 = "{\n\t\r\n}"            " VSB to wrap selection into a block
-let g:surround_68 = "do\n\t\r\nend"         " cs{D to change {} into do/end
 
 if has("autocmd")
     " VSB to wrap selection in a block ({}, begin/end) for the current language:
@@ -163,83 +135,91 @@ if has("autocmd")
     au FileType sh,bash let g:surround_70 = "if false; then\n\t\r\nfi"
 end
 
-" Allow Esc to cancel pop-up menus for completion
-inoremap <expr> <Esc>   pumvisible() ? "\<C-e>" : "\<Esc>"
-
 " statusline:
-
 set statusline=%n\ %<%t         " buffer number + filename (can be truncated)
 set statusline+=%h%m%r%w        " flags
-"set statusline+=\ %y           " FileType
 set statusline+=%=              " left/right separator
 set statusline+=\ %{&fenc}      " file encoding
 set statusline+=%15(%c,%l/%L%)  " cursor position
 set statusline+=\ %6(0x%02B%)   " hex value of character under cursor
-set laststatus=2                " always show status line
-
-" Fix some keys for various terminals
-map <Esc>OA <Up>
-map <Esc>OB <Down>
-map <Esc>OC <Right>
-map <Esc>OD <Left>
-map <Esc>[5A <C-Up>
-map <Esc>[5B <C-Down>
-map <Esc>[5C <C-Right>
-map <Esc>[5D <C-Left>
-map <Esc>O5A <C-Up>
-map <Esc>O5B <C-Down>
-map <Esc>O5C <C-Right>
-map <Esc>O5D <C-Left>
-map <Esc>0a <C-Up>
-map <Esc>0b <C-Down>
-map <Esc>0c <C-Right>
-map <Esc>0d <C-Left>
-map <Esc>[3;5~ <C-Del>
-map <Esc><Esc>[A <M-Up>
-map <Esc><Esc>[B <M-Down>
-map <Esc><Esc>[C <M-Right>
-map <Esc><Esc>[D <M-Left>
-map <Esc>[[A <M-Up>
-map <Esc>[[B <M-Down>
-map <Esc>[[C <M-Right>
-map <Esc>[[D <M-Left>
-map! <Esc>OA <Up>
-map! <Esc>OB <Down>
-map! <Esc>OC <Right>
-map! <Esc>OD <Left>
-map! <Esc>[5A <C-Up>
-map! <Esc>[5B <C-Down>
-map! <Esc>[5C <C-Right>
-map! <Esc>[5D <C-Left>
-map! <Esc>O5A <C-Up>
-map! <Esc>O5B <C-Down>
-map! <Esc>O5C <C-Right>
-map! <Esc>O5D <C-Left>
-map! <Esc>0a <C-Up>
-map! <Esc>0b <C-Down>
-map! <Esc>0c <C-Right>
-map! <Esc>0d <C-Left>
-map! <Esc>[3;5~ <C-Del>
-map! <Esc><Esc>[A <M-Up>
-map! <Esc><Esc>[B <M-Down>
-map! <Esc><Esc>[C <M-Right>
-map! <Esc><Esc>[D <M-Left>
-map! <Esc>[[A <M-Up>
-map! <Esc>[[B <M-Down>
-map! <Esc>[[C <M-Right>
-map! <Esc>[[D <M-Left>
-
-" Map some keys to be more like other programs
-map! <M-Left> <Home>    " beginning of line
-map! <M-Right> <End>    " end of line
-map <M-Left> <Home>
-map <M-Right> <End>
-map! <C-BS> <C-W>       " delete word before cursor
-imap <C-Del> <C-O>dw    " delete word at cursor
-imap <Esc>] <C-T>       " indent
-imap <Esc>[ <C-D>       " de-indent
 
 set sessionoptions-=options
 set viewoptions-=options
-set listchars=tab:>\ ,trail:-,extends:>,precedes:<,nbsp:+
-set tabpagemax=50
+
+" Color scheme
+syntax on
+colorscheme arkkulight
+
+
+if exists('g:vscode')
+    " Visual Studio Code neovim integration
+else
+    set laststatus=2            " always show status line
+    set listchars=tab:>\ ,trail:-,extends:>,precedes:<,nbsp:+
+    set tabpagemax=50
+
+    " Allow Esc to cancel pop-up menus for completion
+    inoremap <expr> <Esc>   pumvisible() ? "\<C-e>" : "\<Esc>"
+
+    " Fix some keys for various terminals
+    map <Esc>OA <Up>
+    map <Esc>OB <Down>
+    map <Esc>OC <Right>
+    map <Esc>OD <Left>
+    map <Esc>[5A <C-Up>
+    map <Esc>[5B <C-Down>
+    map <Esc>[5C <C-Right>
+    map <Esc>[5D <C-Left>
+    map <Esc>O5A <C-Up>
+    map <Esc>O5B <C-Down>
+    map <Esc>O5C <C-Right>
+    map <Esc>O5D <C-Left>
+    map <Esc>0a <C-Up>
+    map <Esc>0b <C-Down>
+    map <Esc>0c <C-Right>
+    map <Esc>0d <C-Left>
+    map <Esc>[3;5~ <C-Del>
+    map <Esc><Esc>[A <M-Up>
+    map <Esc><Esc>[B <M-Down>
+    map <Esc><Esc>[C <M-Right>
+    map <Esc><Esc>[D <M-Left>
+    map <Esc>[[A <M-Up>
+    map <Esc>[[B <M-Down>
+    map <Esc>[[C <M-Right>
+    map <Esc>[[D <M-Left>
+    map! <Esc>OA <Up>
+    map! <Esc>OB <Down>
+    map! <Esc>OC <Right>
+    map! <Esc>OD <Left>
+    map! <Esc>[5A <C-Up>
+    map! <Esc>[5B <C-Down>
+    map! <Esc>[5C <C-Right>
+    map! <Esc>[5D <C-Left>
+    map! <Esc>O5A <C-Up>
+    map! <Esc>O5B <C-Down>
+    map! <Esc>O5C <C-Right>
+    map! <Esc>O5D <C-Left>
+    map! <Esc>0a <C-Up>
+    map! <Esc>0b <C-Down>
+    map! <Esc>0c <C-Right>
+    map! <Esc>0d <C-Left>
+    map! <Esc>[3;5~ <C-Del>
+    map! <Esc><Esc>[A <M-Up>
+    map! <Esc><Esc>[B <M-Down>
+    map! <Esc><Esc>[C <M-Right>
+    map! <Esc><Esc>[D <M-Left>
+    map! <Esc>[[A <M-Up>
+    map! <Esc>[[B <M-Down>
+    map! <Esc>[[C <M-Right>
+    map! <Esc>[[D <M-Left>
+
+    " Map some keys to be more like other programs
+    map! <M-Left> <Home>    " beginning of line
+    map! <M-Right> <End>    " end of line
+    map <M-Left> <Home>
+    map <M-Right> <End>
+    map! <C-BS> <C-W>       " delete word before cursor
+    imap <C-Del> <C-O>dw    " delete word at cursor
+    imap <Esc>] <C-T>       " indent
+    imap <Esc>[ <C-D>       " de-indent
+endif

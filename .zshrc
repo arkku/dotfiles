@@ -88,6 +88,13 @@ if [[ -o interactive ]]; then
 
     # Copy last command
     alias clc='fc -ln -1 | xclip -selection c'
+    which -s xsel >/dev/null 2>&1 && alias clc='fc -ln -1 | xsel -i --clipboard'
+
+    # Neovim
+    if which -s nvim >/dev/null 2>&1; then
+        alias vi='nvim'
+        alias nvimdiff='nvim -d'
+    fi
 
     # Pipe shortcuts
     alias -g CL='| xclip -selection c'
@@ -132,8 +139,8 @@ if [[ -o interactive ]]; then
 
     [ -n "$COLORTERM" -a -z "$CLICOLOR" ] && export CLICOLOR=1
 
-    if [ -x "`which dircolors`" -a -r "$HOME/.dir_colors" ]; then
-        eval `dircolors -b "$HOME/.dir_colors"`
+    if [ -r "$HOME/.dir_colors" ]; then
+        which -s dircolors >/dev/null 2>&1 && eval `dircolors -b "$HOME/.dir_colors"`
     fi
 
     if ls --version 2>/dev/null | grep -q GNU; then
