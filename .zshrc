@@ -10,8 +10,24 @@ setopt combiningchars
 [ -e "$HOME/.zsh/functions" ] && fpath=( "$HOME/.zsh/functions" "${fpath[@]}" )
 
 if [[ -o interactive ]]; then
+    local is_root=`print -nP '%(!_1_)'`
+    local is_sudo="${is_root:-$SUDO_USER}"
+
     autoload -Uz colors && colors
+
+    # A better move/rename command
     autoload -Uz zmv
+
+    # Test for UTF-8
+    if locale 2>/dev/null | grep -qiF -e 'UTF-8' -e 'utf8'; then
+        [ -z "$UTF8" ] && export UTF8=1
+        [ -z "$ELLIPSIS" ] && export ELLIPSIS='…'
+        [ -z "$PROMPTCHAR" ] && export PROMPTCHAR='%F{blue}❯%F{reset}'
+    else
+        unset UTF8
+        [ -z "$ELLIPSIS" ] && export ELLIPSIS='...'
+        [ -z "$PROMPTCHAR" ] && export PROMPTCHAR='>'
+    fi
 
     # Options
 
@@ -56,6 +72,12 @@ if [[ -o interactive ]]; then
 
     # Aliases
     alias gr='grep --color=auto --exclude-dir={.git,.hg,.svn,.bzr}'
+    alias md='mkdir -pv'
+
+    # Make sudo apply to aliases as well
+    alias sudo='sudo '
+
+    # Redo last command with sudo
     alias please='sudo $(fc -ln -1)'
 
     # Grep `ps` (more brute force than pgrep)
@@ -68,10 +90,27 @@ if [[ -o interactive ]]; then
     alias clc='fc -ln -1 | xclip -selection c'
 
     # Pipe shortcuts
-    alias -g L='| less'
     alias -g CL='| xclip -selection c'
+    alias -g L='| less'
+    alias -g LL='|& less'
     alias -g GR='| grep --color=auto'
     alias -g FGR='| grep -F --color=auto'
+    alias -g EGR='| egrep --color=auto'
+    alias -g GRE='|& grep --color=auto'
+    alias -g FGRE='|& grep -F --color=auto'
+    alias -g H='| head'
+    alias -g T='| tail'
+    alias -g T1='| tail -1'
+    alias -g H1='| tail -1'
+    alias -g HL='|& head -n $(( LINES / 2 + 1 ))'
+    alias -g TL='|& tail -n $(( LINES / 2 + 1 ))'
+    alias -g S='| sort'
+    alias -g NS='| sort -n'
+    alias -g US='| sort -u'
+    alias -g X0='| xargs -0'
+    alias -g NUL='>/dev/null'
+    alias -g NULL='>/dev/null 2>&1'
+    alias -g WCL='| wc -l'
 
     # System-specific variations
     case `uname`; in
@@ -88,6 +127,8 @@ if [[ -o interactive ]]; then
 
     # ls
     alias ll='ls -kl'
+    alias la='ls -kla'
+    alias l.='ls -d .*'
 
     [ -n "$COLORTERM" -a -z "$CLICOLOR" ] && export CLICOLOR=1
 
@@ -105,9 +146,24 @@ if [[ -o interactive ]]; then
     fi
 
     # Completion
-    autoload -Uz compinit && compinit -i
+    autoload -Uz compinit && compinit ${=is_sudo:+-i}
 
     zstyle ':completion:*' verbose yes
+
+    # Use cache if the directory exists
+    if [ -e "$HOME/.zsh/cache" ]; then
+        zstyle ':completion:*' use-cache on
+        zstyle ':completion:*' cache-path ~/.zsh/cache
+    fi
+
+    # Ignore functions for commands we don't have
+    zstyle ':completion:*:functions' ignored-patterns '_*'
+
+    # Remove the trailing slash from directory completion
+    zstyle ':completion:*' squeeze-slashes true
+
+    # Don't complete the parent directory itself in `../<TAB>`
+    zstyle ':completion:*:cd:*' ignore-parents parent pwd
 
     # Show completion options in a menu
     zstyle ':completion:*:*:*:*:*' menu select
@@ -274,7 +330,7 @@ if [[ -o interactive ]]; then
                 title="$2" # If the untruncated line is short enough, show it all
             fi
             if [[ ${#title} -gt 25 ]]; then
-                title="${title:0:25}…"
+                title="${title:0:25}$ELLIPSIS"
             fi
             print -n "$TITLE_SET_HEAD"
             if [ -n "$SSH_CONNECTION" -o -n "$SUDO_USER" ]; then
@@ -369,6 +425,9 @@ if [[ -o interactive ]]; then
         # Clean up multiple ellipses
         pwd_prompt="${pwd_prompt//(…\/)##/…/}"
 
+        # Convert the UTF-8 ellipsis if necessary
+        [[ "$ELLIPSIS" != '…' ]] && pwd_prompt="${pwd_prompt//…/${ELLIPSIS:-...}}"
+
         # Escape any percents to avoid prompt expansion
         pwd_prompt="${pwd_prompt//\%/%%}"
 
@@ -378,14 +437,22 @@ if [[ -o interactive ]]; then
 
     zle_highlight=( 'isearch:underline' 'special:fg=cyan' 'paste:bold,fg=red' 'suffix:fg=white' 'region:standout' )
 
-    export PROMPT='%(?..%F{red}?$?%F{reset} )%F{white}!%! $prompt_vi_mode$vcs_info_msg_4_
-%F{cyan}%-65<…<${pwd_prompt:-%~}%<<%F{reset}%# '
+    # Left prompt:
+    # Line 1: [$? on error] $! (vi mode) [user on sudo to non-root] [git misc]
+    # Line 2: [shortened path][$PROMPTCHAR if non-root, # if root]
+    #
+    # Right prompt:
+    # [git repo/branch] [markers if there are local changes]
+
+    export PROMPT='%(?..%F{red}?$?%F{reset} )%F{white}!%! %(!__${SUDO_USER:+%n })${prompt_vi_mode}$vcs_info_msg_4_
+%F{cyan}%-65<$ELLIPSIS<${pwd_prompt:-%~}%<<%F{reset}%(!_#_${PROMPTCHAR:-%#}) '
     export RPROMPT='    %F{cyan}%(1j.%j&.)$vcs_info_msg_0_%F{reset}'
 
     # Syntax highlighting
     local hlpath
     for hlpath in "$HOME/.zsh" '/usr/local/share' '/usr/share'; do
         [ -r "$hlpath/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ] || continue
+        [ -n "$ZSH_NO_SYNTAX_HIGHLIGHT" ] && continue
         export ZSH_HIGHLIGHT_HIGHLIGHTERS_DIR="$hlpath/zsh-syntax-highlighting/highlighters"
         typeset -A ZSH_HIGHLIGHT_STYLES
         ZSH_HIGHLIGHT_STYLES[default]='none'
@@ -394,10 +461,10 @@ if [[ -o interactive ]]; then
         for style in arg0 command builtin reserved-word hashed-command command-substitution process-substitution; do
             ZSH_HIGHLIGHT_STYLES[$style]='bold'
         done
-        for style in single-hyphen-option double-hyphen-option unknown-token path; do
+        for style in unknown-token path; do
             ZSH_HIGHLIGHT_STYLES[$style]='none'
         done
-        for style in redirection named-fd commandseparator; do
+        for style in redirection named-fd commandseparator single-hyphen-option double-hyphen-option; do
             ZSH_HIGHLIGHT_STYLES[$style]='fg=green'
         done
         for style in comment; do
@@ -433,6 +500,9 @@ if [[ -o interactive ]]; then
 
     # If there is no syntax highlighting installed, make the prompt input bold
     [ -z "$ZSH_HIGHLIGHT_HIGHLIGHTERS" ] && zle_highlight+=( 'default:bold' )
+
+    unset is_root
+    unset is_sudo
 else
     echo "$PATH" | grep -qE '(^|:)/usr/local/bin(:|$)' || export PATH="/usr/local/bin:$PATH"
 fi
