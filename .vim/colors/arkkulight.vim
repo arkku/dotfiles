@@ -1,4 +1,4 @@
-" A color scheme for Neovim by Kimmo Kulovesi <https://arkku.dev/>.
+" A color scheme for Vim by Kimmo Kulovesi <https://arkku.dev/>.
 
 hi clear
 if exists("syntax_on")
