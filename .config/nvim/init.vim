@@ -4,10 +4,6 @@ set modelines=0
 
 set encoding=utf-8
 
-set background=light
-set termguicolors
-
-
 set backspace=indent,eol,start
 set nostartofline       " Try to stay in the same column
 set confirm             " Ask to save changes rather than fail
@@ -29,6 +25,11 @@ set incsearch		" Incremental search
 nmap <esc><esc> :silent! noh<cr>:<backspace>
 
 set autowrite		" Automatically save before commands like :next and :make
+
+set background=light
+if $TERM == "screen-256color"
+    set termguicolors
+endif
 
 set mouse=a		" Use mouse in all modes
 set number		" Show line numbers
