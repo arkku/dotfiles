@@ -2,6 +2,7 @@
 # see /usr/share/doc/bash/examples/startup-files for examples.
 # the files are located in the bash-doc package.
 
+# include .profile if it exists
 if [ -f ~/.profile ]; then
     source ~/.profile
 fi
@@ -14,3 +15,4 @@ fi
 # disallow messages
 mesg n 2>/dev/null || true
 
+#[ -x ~/bin/tmx -a -z "$TMUX" -a -n "$PS1" ] && ~/bin/tmx

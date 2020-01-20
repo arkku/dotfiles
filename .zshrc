@@ -387,11 +387,11 @@ if [[ -o interactive ]]; then
     function zle-line-init zle-keymap-select {
         case "$KEYMAP" in
             vicmd)
-                print -n '\033[4 q'
+                print -n '\033[1 q'
                 prompt_vi_mode="%F{yellow}(vi)%F{reset} "
                 ;;
             *)
-                print -n '\033[1 q'
+                print -n '\033[ 0q\033[5 q'
                 prompt_vi_mode=''
                 ;;
         esac
