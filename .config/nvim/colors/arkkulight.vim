@@ -11,7 +11,7 @@ hi Normal term=none cterm=none gui=none guifg=#222222 guibg=#ffffff
 hi NormalNC term=none cterm=none gui=none guifg=#333333
 hi Terminal term=none cterm=none gui=none guifg=#000000 guibg=#ffffff
 
-hi SpecialKey term=reverse cterm=standout ctermfg=cyan gui=bold guifg=#0066cc guibg=#f0f0ff
+hi SpecialKey term=reverse cterm=bold ctermfg=cyan gui=bold guifg=#0066cc guibg=#f0f0ff
 hi WhiteSpace term=standout cterm=none ctermfg=lightcyan gui=none guifg=#d0f0f0
 hi Conceal term=underline cterm=none ctermfg=gray gui=none guifg=#cccccc
 
@@ -79,8 +79,8 @@ hi VisualNOS term=reverse cterm=reverse gui=reverse
 hi MatchParen term=reverse ctermbg=cyan guibg=#d9f1ff
 
 " UI
-hi StatusLine term=bold,reverse cterm=reverse gui=none guibg=#0281ff guifg=#ffffff
-hi StatusLineNC term=bold,reverse cterm=reverse gui=none guibg=#0281ff guifg=#ccccff
+hi StatusLine term=bold,reverse cterm=reverse gui=reverse guifg=#0281ff guibg=#ffffff
+hi StatusLineNC term=bold,reverse cterm=reverse gui=reverse guifg=#0281ff guibg=#ccccff
 hi TabLine term=reverse cterm=reverse gui=none guibg=#cccccc guifg=#403f53
 hi TabLineSel term=bold,reverse cterm=underline,reverse,bold gui=underline guibg=#fafafa guifg=#000000
 hi TabLineFill term=reverse cterm=reverse gui=none guibg=#222222 guifg=#666666
@@ -94,15 +94,18 @@ hi MoreMsg term=bold cterm=bold ctermfg=lightblue gui=bold guifg=#009966
 hi Question term=bold cterm=bold ctermfg=lightblue gui=bold guifg=#009966
 hi Title term=bold cterm=bold ctermfg=yellow gui=bold guifg=#ff9933
 
-hi LineNr term=reverse cterm=reverse ctermfg=black ctermbg=gray gui=reverse guifg=#222222 guibg=#888888
-hi CursorLineNr term=reverse cterm=reverse ctermfg=black ctermbg=white gui=reverse guifg=#000000 guibg=#bbbbbb
+hi LineNr term=reverse cterm=none ctermbg=black ctermfg=gray gui=none guibg=#222222 guifg=#888888
+hi CursorLineNr term=reverse cterm=none ctermbg=black ctermfg=white gui=none guibg=#000000 guifg=#bbbbbb
 hi CursorLine guibg=#f5f5f5
 hi CursorColumn guibg=#fefefe
 hi NonText term=bold cterm=none ctermfg=gray gui=none guifg=#666666 guibg=#f0f0f0
 
 hi Folded term=reverse cterm=none ctermfg=blue ctermbg=gray gui=none guifg=#0099cc guibg=#f0f0f0
-hi FoldColumn term=reverse cterm=reverse ctermfg=black ctermbg=cyan guibg=#222222 guifg=#cccccc
-hi SignColumn term=reverse cterm=reverse ctermfg=black ctermbg=cyan guibg=#222222 guifg=#99eeff
+hi FoldColumn term=reverse cterm=none ctermbg=black ctermfg=cyan gui=none guibg=#222222 guifg=#cccccc
+
+hi clear SignColumn
+hi link SignColumn LineNr
+"hi SignColumn term=reverse cterm=none ctermbg=black ctermfg=cyan gui=none guibg=#222222 guifg=#99eeff
 
 " Menu
 hi clear Directory
@@ -137,3 +140,9 @@ let g:terminal_color_12 = '#0066cc'
 let g:terminal_color_13 = '#9966cc'
 let g:terminal_color_14 = '#0099ff'
 let g:terminal_color_15 = '#ffffff'
+
+let g:gitgutter_override_sign_column_highlight = 0
+hi GitGutterAdd term=standout ctermfg=lightgreen ctermbg=black guibg=#222222 guifg=#00cc33
+hi GitGutterChange term=standout ctermfg=cyan ctermbg=black guibg=#222222 guifg=#0099ff
+hi GitGutterDelete term=standout ctermfg=lightred ctermbg=black guibg=#222222 guifg=#ff3300
+hi GitGutterChangeDelete term=standout ctermfg=magenta ctermbg=black guibg=#222222 guifg=#ff0066

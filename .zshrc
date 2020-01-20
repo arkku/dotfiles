@@ -72,7 +72,11 @@ if [[ -o interactive ]]; then
 
     # Aliases
     alias gr='grep --color=auto --exclude-dir={.git,.hg,.svn,.bzr}'
-    alias md='mkdir -pv'
+    alias gs='git status --show-stash'
+    alias cdr='[ -n "$REPO" ] && cd "$REPO"'
+
+    # Make a directory (including parent diretory) and cd to it
+    alias md='(){ mkdir -pv "$1" && cd "$1" }'
 
     # Make sudo apply to aliases as well
     alias sudo='sudo '
@@ -98,20 +102,20 @@ if [[ -o interactive ]]; then
 
     # Pipe shortcuts
     alias -g CL='| xclip -selection c'
-    alias -g L='| less'
+    alias -g LESS='| less'
     alias -g LL='|& less'
     alias -g GR='| grep --color=auto'
     alias -g FGR='| grep -F --color=auto'
     alias -g EGR='| egrep --color=auto'
     alias -g GRE='|& grep --color=auto'
     alias -g FGRE='|& grep -F --color=auto'
-    alias -g H='| head'
-    alias -g T='| tail'
+    alias -g HE='| head'
+    alias -g TA='| tail'
     alias -g T1='| tail -1'
     alias -g H1='| tail -1'
     alias -g HL='|& head -n $(( LINES / 2 + 1 ))'
     alias -g TL='|& tail -n $(( LINES / 2 + 1 ))'
-    alias -g S='| sort'
+    alias -g SO='| sort'
     alias -g NS='| sort -n'
     alias -g US='| sort -u'
     alias -g X0='| xargs -0'
@@ -201,9 +205,9 @@ if [[ -o interactive ]]; then
     precmd_functions+=( precmd_vcs_info )
     zstyle ':vcs_info:*' enable git
     zstyle ':vcs_info:*' use-prompt-escapes true
-    zstyle ':vcs_info:*:*' max-exports 4
-    zstyle ':vcs_info:*:*' formats '%F{cyan}%r%F{white}/%F{cyan}%b%F{green}%c%F{yellow}%u%F{reset}' ' %r/%b%c%u' ' ' '%r/%S'
-    zstyle ':vcs_info:*:*' actionformats '%F{cyan}%r%F{white}/%F{cyan}%b%F{white}|%F{red}%a%F{green}%c%F{yellow}%u%F{reset}' '%r/%b %a%c%u' '%F{white}# %s %a: %m%F{reset} ' '%r/%S'
+    zstyle ':vcs_info:*:*' max-exports 5
+    zstyle ':vcs_info:*:*' formats '%F{cyan}%r%F{white}/%F{cyan}%b%F{green}%c%F{yellow}%u%F{reset}' ' %r/%b%c%u' ' ' '%r/%S' '%R'
+    zstyle ':vcs_info:*:*' actionformats '%F{cyan}%r%F{white}/%F{cyan}%b%F{white}|%F{red}%a%F{green}%c%F{yellow}%u%F{reset}' '%r/%b %a%c%u' '%F{white}# %s %a: %m%F{reset} ' '%r/%S' '%R'
     zstyle ':vcs_info:*' get-revision false
     zstyle ':vcs_info:*' stagedstr '+'
     zstyle ':vcs_info:*' unstagedstr '~'
@@ -295,10 +299,10 @@ if [[ -o interactive ]]; then
    zle -N delete-surround surround
    zle -N add-surround surround
    zle -N change-surround surround
-   bindkey -a cs change-surround
-   bindkey -a ds delete-surround
-   bindkey -a ys add-surround
-   bindkey -M visual S add-surround
+   bindkey -a 'cs' change-surround
+   bindkey -a 'ds' delete-surround
+   bindkey -a 'ys' add-surround
+   bindkey -M visual 'S' add-surround
 
    # In vi-mode, type vi" to select quoted text
     autoload -U select-quoted
@@ -413,6 +417,8 @@ if [[ -o interactive ]]; then
                 pwd_prompt="…/$repo"
             fi
             unset repo
+
+            export REPO="$vcs_info_msg_4_"
         else
             # Use ~ to represent the home directory
             pwd_prompt="${PWD/#$HOME/~}"
@@ -421,6 +427,9 @@ if [[ -o interactive ]]; then
             pwd_prompt="${pwd_prompt/#\~\/Library\/Mobile Documents\/com\~apple\~CloudDocs/…iCloud}"
             # If we are inside a macOS .app directory, preserve the app name
             pwd_prompt="${pwd_prompt/#*\/(#b)([^\/]##.app)\/Contents\//…/$match[1]/…/}"
+
+            unset REPO
+            export REPO
         fi
 
         local trimmed
@@ -451,7 +460,7 @@ if [[ -o interactive ]]; then
     # Right prompt:
     # [git repo/branch] [markers if there are local changes]
 
-    export PROMPT='%(?..%F{red}?$?%F{reset} )%F{white}!%! %(!__${SUDO_USER:+%n })${prompt_vi_mode}$vcs_info_msg_4_
+    export PROMPT='%(?..%F{red}?$?%F{reset} )%F{white}!%! %(!__${SUDO_USER:+%n })${prompt_vi_mode}$vcs_info_msg_2_
 %F{cyan}%-65<$ELLIPSIS<${pwd_prompt:-%~}%<<%F{reset}%(!_#_${PROMPTCHAR:-%#}) '
     export RPROMPT='    %F{cyan}%(1j.%j&.)$vcs_info_msg_0_%F{reset}'
 

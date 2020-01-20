@@ -1,5 +1,7 @@
 " Configuration file for neovim
 
+set encoding=utf-8
+
 set background=light
 set termguicolors
 
@@ -71,7 +73,7 @@ set nrformats-=octal
 
 " surround.vim:
 let g:surround_65 = "<a href=\"\">\r</a>"   " yssA to wrap sentence as link
-let g:surround_66 = "{\n\t\r\n}"            " VSB to wrap selection into a block
+let g:surround_66 = "{\n\t\r\n}"            " SB in V mode to wrap as a block
 let g:surround_68 = "do\n\t\r\nend"         " cs{D to change {} into do/end
 
 
@@ -105,34 +107,37 @@ let g:ruby_minlines = 100
 
 if has("autocmd")
     " VSB to wrap selection in a block ({}, begin/end) for the current language:
-    au FileType ruby,eruby let g:surround_66 = "begin\n\t\r\nend"
-    au FileType c,java,objc,cpp,javascript,go,cs,sh,bash let g:surround_66 = "{\n\t\r\n}"
-    au FileType swift let g:surround_66 = "do {\n\t\r\n}"
-    au FileType lua let g:surround_66 = "do\n\t\r\nend"
-    au FileType html let g:surround_66 = "<div>\n\t\r\n</div>"
+    au FileType ruby,eruby let surround_66 = "begin\n\t\r\nend"
+    au FileType c,java,objc,cpp,javascript,go,cs,sh,bash let surround_66 = "{\n\t\r\n}"
+    au FileType swift let surround_66 = "do {\n\t\r\n}"
+    au FileType lua let surround_66 = "do\n\t\r\nend"
+    au FileType html let surround_66 = "<div>\n\t\r\n</div>"
 
     " VSE to wrap selection in exception handling for the current language:
-    au FileType ruby,eruby let g:surround_69 = "begin\n\t\r\nrescue Exception => e\nend"
-    au FileType eiffel let g:surround_69 = "do\n\t\r\nrescue\nend"
-    au FileType ada let g:surround_69 = "begin\n\t\r\nexception\nend;"
-    au FileType java let g:surround_69 = "try {\n\t\r\n} catch (Exception e) {\n}"
-    au FileType objc let g:surround_69 = "@try {\n\t\r\n} @catch (NSException *e) {\n}"
-    au FileType cs let g:surround_69 = "try {\n\t\r\n} catch (System.Exception e) {\n}"
-    au FileType javascript let g:surround_69 = "try {\n\t\r\n} catch (err) {\n}"
-    au FileType cpp let g:surround_69 = "try {\n\t\r\n} catch (const std::exception& e) {\n}"
-    au FileType swift let g:surround_69 = "do {\n\t\r\n} catch {\n}"
-    au FileType python let g:surround_69 = "try:\n\t\r\nexcept Exception as e:\n"
-    au FileType erlang let g:surround_69 = "try\n\t\r\ncatch\nend"
+    au FileType ruby,eruby let surround_69 = "begin\n\t\r\nrescue Exception => e\nend"
+    au FileType eiffel let surround_69 = "do\n\t\r\nrescue\nend"
+    au FileType ada let surround_69 = "begin\n\t\r\nexception\nend;"
+    au FileType java let surround_69 = "try {\n\t\r\n} catch (Exception e) {\n}"
+    au FileType objc let surround_69 = "@try {\n\t\r\n} @catch (NSException *e) {\n}"
+    au FileType cs let surround_69 = "try {\n\t\r\n} catch (System.Exception e) {\n}"
+    au FileType javascript let surround_69 = "try {\n\t\r\n} catch (err) {\n}"
+    au FileType cpp let surround_69 = "try {\n\t\r\n} catch (const std::exception& e) {\n}"
+    au FileType swift let surround_69 = "do {\n\t\r\n} catch {\n}"
+    au FileType python let surround_69 = "try:\n\t\r\nexcept Exception as e:\n"
+    au FileType erlang let surround_69 = "try\n\t\r\ncatch\nend"
 
     " VSF to wrap selection in the equivalent of 'if false then ... endif':
-    au FileType c,objc,cpp let g:surround_70 = "#if 0\n\r\n#endif"
-    au FileType swift let g:surround_70 = "#if false\n\r\n#endif"
-    au FileType ruby,eruby let g:surround_70 = "=begin\n\t\r\n=end"
-    au FileType java,javascript,go,cs let g:surround_70 = "if (false) {\n\t\r\n}"
-    au FileType python let g:surround_70 = "if False:\n\t\r\n"
-    au FileType eiffel let g:surround_70 = "if False then\n\t\r\nend"
-    au FileType lua let g:surround_70 = "if false then\n\t\r\nend"
-    au FileType sh,bash let g:surround_70 = "if false; then\n\t\r\nfi"
+    au FileType c,objc,cpp let surround_70 = "#if 0\n\r\n#endif"
+    au FileType swift let surround_70 = "#if false\n\r\n#endif"
+    au FileType ruby,eruby let surround_70 = "=begin\n\t\r\n=end"
+    au FileType java,javascript,go,cs let surround_70 = "if (false) {\n\t\r\n}"
+    au FileType python let surround_70 = "if False:\n\t\r\n"
+    au FileType eiffel let surround_70 = "if False then\n\t\r\nend"
+    au FileType lua let surround_70 = "if false then\n\t\r\nend"
+    au FileType sh,bash let surround_70 = "if false; then\n\t\r\nfi"
+
+    " Prefer new-style comments in C-like languages
+    au FileType c,objc,cpp,swift setlocal commentstring=//%s
 end
 
 " statusline:
@@ -142,6 +147,7 @@ set statusline+=%=              " left/right separator
 set statusline+=\ %{&fenc}      " file encoding
 set statusline+=%15(%c,%l/%L%)  " cursor position
 set statusline+=\ %6(0x%02B%)   " hex value of character under cursor
+set laststatus=2                " always show status line
 
 set sessionoptions-=options
 set viewoptions-=options
@@ -150,13 +156,15 @@ set viewoptions-=options
 syntax on
 colorscheme arkkulight
 
-
 if exists('g:vscode')
     " Visual Studio Code neovim integration
 else
-    set laststatus=2            " always show status line
     set listchars=tab:>\ ,trail:-,extends:>,precedes:<,nbsp:+
     set tabpagemax=50
+
+    set guioptions-=e
+
+    map <C-n> :NERDTreeToggle<CR>
 
     " Allow Esc to cancel pop-up menus for completion
     inoremap <expr> <Esc>   pumvisible() ? "\<C-e>" : "\<Esc>"
@@ -214,12 +222,16 @@ else
     map! <Esc>[[D <M-Left>
 
     " Map some keys to be more like other programs
-    map! <M-Left> <Home>    " beginning of line
-    map! <M-Right> <End>    " end of line
+    map! <M-Left> <Home>
+    map! <M-Right> <End>
     map <M-Left> <Home>
     map <M-Right> <End>
-    map! <C-BS> <C-W>       " delete word before cursor
-    imap <C-Del> <C-O>dw    " delete word at cursor
-    imap <Esc>] <C-T>       " indent
-    imap <Esc>[ <C-D>       " de-indent
+    map! <C-BS> <C-W>
+    imap <C-Del> <C-O>dw
+    imap <C-A> <Home>
+    imap <C-E> <End>
+
+    " Local leader
+    nnoremap <Space> <Nop>
+    let maplocalleader=" "
 endif
