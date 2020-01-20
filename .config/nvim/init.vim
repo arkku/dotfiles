@@ -67,7 +67,7 @@ set belloff=all
 set wildmenu
 set wildmode=longest:full,longest
 set wildignore+=*.o,*~
-set wildoptions=pum
+"set wildoptions=pum
 
 set nrformats-=octal
 
