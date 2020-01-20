@@ -134,6 +134,13 @@ else
     set timeoutlen=400
     set guioptions-=e
 
+    " Remap C-A and C-E to be like other programs (line beginning/end)
+    inoremap <C-A> <Home>
+    inoremap <C-E> <End>
+
+    " Map the unused C-Q to the old C-A
+    inoremap <C-Q> <C-A>
+
     " Esc to exit terminal (with some delay), Esc Esc to send Esc
     tnoremap <Esc> <C-\><C-N>
     tnoremap <Esc><Esc> <Esc>

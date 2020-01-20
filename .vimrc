@@ -147,6 +147,69 @@ set viewoptions-=options
 set tabpagemax=50
 set listchars=tab:>\ ,trail:-,extends:>,precedes:<,nbsp:+
 
+" Map some keys to be more like other programs
+noremap <C-BS> <C-W>
+inoremap <C-Del> <C-O>dw
+noremap <M-Left> <Home>
+noremap <M-Right> <End>
+inoremap <C-A> <Home>
+inoremap <C-E> <End>
+
+" Map the unused C-Q to the old C-A
+inoremap <C-Q> <C-A>
+
+" Fix some keys for various terminals
+map <Esc>OA <Up>
+map <Esc>OB <Down>
+map <Esc>OC <Right>
+map <Esc>OD <Left>
+map <Esc>[5A <C-Up>
+map <Esc>[5B <C-Down>
+map <Esc>[5C <C-Right>
+map <Esc>[5D <C-Left>
+map <Esc>O5A <C-Up>
+map <Esc>O5B <C-Down>
+map <Esc>O5C <C-Right>
+map <Esc>O5D <C-Left>
+map <Esc>0a <C-Up>
+map <Esc>0b <C-Down>
+map <Esc>0c <C-Right>
+map <Esc>0d <C-Left>
+map <Esc>[3;5~ <C-Del>
+map <Esc><Esc>[A <M-Up>
+map <Esc><Esc>[B <M-Down>
+map <Esc><Esc>[C <M-Right>
+map <Esc><Esc>[D <M-Left>
+map <Esc>[[A <M-Up>
+map <Esc>[[B <M-Down>
+map <Esc>[[C <M-Right>
+map <Esc>[[D <M-Left>
+map <Esc>OA <Up>
+map <Esc>OB <Down>
+map <Esc>OC <Right>
+map <Esc>OD <Left>
+map <Esc>[5A <C-Up>
+map <Esc>[5B <C-Down>
+map <Esc>[5C <C-Right>
+map <Esc>[5D <C-Left>
+map <Esc>O5A <C-Up>
+map <Esc>O5B <C-Down>
+map <Esc>O5C <C-Right>
+map <Esc>O5D <C-Left>
+map <Esc>0a <C-Up>
+map <Esc>0b <C-Down>
+map <Esc>0c <C-Right>
+map <Esc>0d <C-Left>
+map <Esc>[3;5~ <C-Del>
+map <Esc><Esc>[A <M-Up>
+map <Esc><Esc>[B <M-Down>
+map <Esc><Esc>[C <M-Right>
+map <Esc><Esc>[D <M-Left>
+map <Esc>[[A <M-Up>
+map <Esc>[[B <M-Down>
+map <Esc>[[C <M-Right>
+map <Esc>[[D <M-Left>
+
 " Local leader
 nnoremap <Space> <Nop>
 let maplocalleader=" "
