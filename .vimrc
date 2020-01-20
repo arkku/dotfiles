@@ -158,58 +158,6 @@ inoremap <C-E> <End>
 " Map the unused C-Q to the old C-A
 inoremap <C-Q> <C-A>
 
-" Fix some keys for various terminals
-map <Esc>OA <Up>
-map <Esc>OB <Down>
-map <Esc>OC <Right>
-map <Esc>OD <Left>
-map <Esc>[5A <C-Up>
-map <Esc>[5B <C-Down>
-map <Esc>[5C <C-Right>
-map <Esc>[5D <C-Left>
-map <Esc>O5A <C-Up>
-map <Esc>O5B <C-Down>
-map <Esc>O5C <C-Right>
-map <Esc>O5D <C-Left>
-map <Esc>0a <C-Up>
-map <Esc>0b <C-Down>
-map <Esc>0c <C-Right>
-map <Esc>0d <C-Left>
-map <Esc>[3;5~ <C-Del>
-map <Esc><Esc>[A <M-Up>
-map <Esc><Esc>[B <M-Down>
-map <Esc><Esc>[C <M-Right>
-map <Esc><Esc>[D <M-Left>
-map <Esc>[[A <M-Up>
-map <Esc>[[B <M-Down>
-map <Esc>[[C <M-Right>
-map <Esc>[[D <M-Left>
-map <Esc>OA <Up>
-map <Esc>OB <Down>
-map <Esc>OC <Right>
-map <Esc>OD <Left>
-map <Esc>[5A <C-Up>
-map <Esc>[5B <C-Down>
-map <Esc>[5C <C-Right>
-map <Esc>[5D <C-Left>
-map <Esc>O5A <C-Up>
-map <Esc>O5B <C-Down>
-map <Esc>O5C <C-Right>
-map <Esc>O5D <C-Left>
-map <Esc>0a <C-Up>
-map <Esc>0b <C-Down>
-map <Esc>0c <C-Right>
-map <Esc>0d <C-Left>
-map <Esc>[3;5~ <C-Del>
-map <Esc><Esc>[A <M-Up>
-map <Esc><Esc>[B <M-Down>
-map <Esc><Esc>[C <M-Right>
-map <Esc><Esc>[D <M-Left>
-map <Esc>[[A <M-Up>
-map <Esc>[[B <M-Down>
-map <Esc>[[C <M-Right>
-map <Esc>[[D <M-Left>
-
 " Local leader
 nnoremap <Space> <Nop>
 let maplocalleader=" "
@@ -220,9 +168,47 @@ if empty(mapcheck('<C-B>', 'i'))
     inoremap <C-B> <F10><C-R>+<F10>
 endif
 
+" \1 to \10 switch buffers (vim-buffet)
+nmap <Leader>1 <Plug>BuffetSwitch(1)
+nmap <Leader>2 <Plug>BuffetSwitch(2)
+nmap <Leader>3 <Plug>BuffetSwitch(3)
+nmap <Leader>4 <Plug>BuffetSwitch(4)
+nmap <Leader>5 <Plug>BuffetSwitch(5)
+nmap <Leader>6 <Plug>BuffetSwitch(6)
+nmap <Leader>7 <Plug>BuffetSwitch(7)
+nmap <Leader>8 <Plug>BuffetSwitch(8)
+nmap <Leader>9 <Plug>BuffetSwitch(9)
+nmap <Leader>10 <Plug>BuffetSwitch(10)
+
+" Space tab to open a new tab
+nmap <Leader><Tab> <Esc>:tabnew<CR>
+nmap <Leader><S-Tab> <Esc>:tabclose<CR>
+
+" Space 1 to 10 switch tabs
+nmap <LocalLeader>1 1gt
+nmap <LocalLeader>2 2gt
+nmap <LocalLeader>3 3gt
+nmap <LocalLeader>4 4gt
+nmap <LocalLeader>5 5gt
+nmap <LocalLeader>6 6gt
+nmap <LocalLeader>7 7gt
+nmap <LocalLeader>8 8gt
+nmap <LocalLeader>9 9gt
+nmap <LocalLeader>10 10gt
+nmap <LocalLeader><Tab> gt
+nmap <LocalLeader><S-Tab> gT
+
 " Esc to exit terminal (with some delay), Esc Esc to send Esc
 tnoremap <Esc> <C-\><C-N>
 tnoremap <Esc><Esc> <Esc>
 
 " I use ^T as the tmux prefix, so let's appropriate ^B for the terminal
 tnoremap <C-B> <C-T>
+
+" Tab to cycle buffers (with a hack to get rid of NERDTree)
+nmap <Tab> <Esc>:silent! NERDTreeClose<CR><Esc>:silent! bn<CR><Esc>
+nmap <S-Tab> <Esc>:silent! NERDTreeClose<CR><Esc>:silent! bp<CR><Esc>
+
+let g:buffet_show_index = 1
+let g:buffet_always_show_tabline = 0
+let g:NERDTreeQuitOnOpen = 1

@@ -147,4 +147,44 @@ else
 
     " I use ^T as the tmux prefix, so let's appropriate ^B for the terminal
     tnoremap <C-B> <C-T>
+
+    " vim-buffet
+    let g:buffet_show_index = 1
+
+    " \1 to \10 switch buffers (vim-buffet)
+    nmap <Leader>1 <Plug>BuffetSwitch(1)
+    nmap <Leader>2 <Plug>BuffetSwitch(2)
+    nmap <Leader>3 <Plug>BuffetSwitch(3)
+    nmap <Leader>4 <Plug>BuffetSwitch(4)
+    nmap <Leader>5 <Plug>BuffetSwitch(5)
+    nmap <Leader>6 <Plug>BuffetSwitch(6)
+    nmap <Leader>7 <Plug>BuffetSwitch(7)
+    nmap <Leader>8 <Plug>BuffetSwitch(8)
+    nmap <Leader>9 <Plug>BuffetSwitch(9)
+    nmap <Leader>10 <Plug>BuffetSwitch(10)
+
+    " Space tab to open a new tab
+    nmap <Leader><Tab> <Esc>:tabnew<CR>
+    nmap <Leader><S-Tab> <Esc>:tabclose<CR>
+
+    " Space 1 to 10 switch tabs
+    nmap <LocalLeader>1 1gt
+    nmap <LocalLeader>2 2gt
+    nmap <LocalLeader>3 3gt
+    nmap <LocalLeader>4 4gt
+    nmap <LocalLeader>5 5gt
+    nmap <LocalLeader>6 6gt
+    nmap <LocalLeader>7 7gt
+    nmap <LocalLeader>8 8gt
+    nmap <LocalLeader>9 9gt
+    nmap <LocalLeader>10 10gt
+    nmap <LocalLeader><Tab> gt
+    nmap <LocalLeader><S-Tab> gT
+
+    " Tab to cycle buffers (with a hack to get rid of NERDTree)
+    nmap <Tab> <Esc>:silent! NERDTreeClose<CR><Esc>:silent! bn<CR><Esc>
+    nmap <S-Tab> <Esc>:silent! NERDTreeClose<CR><Esc>:silent! bp<CR><Esc>
+
+    let g:buffet_always_show_tabline = 0
+    let g:NERDTreeQuitOnOpen = 1
 endif

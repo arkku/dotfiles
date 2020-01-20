@@ -81,10 +81,10 @@ hi MatchParen term=reverse ctermbg=cyan guibg=#d9f1ff
 " UI
 hi StatusLine term=bold,reverse cterm=reverse gui=reverse guifg=#0281ff guibg=#ffffff
 hi StatusLineNC term=bold,reverse cterm=reverse gui=reverse guifg=#0281ff guibg=#ccccff
-hi TabLine term=reverse cterm=reverse gui=none guibg=#cccccc guifg=#403f53
-hi TabLineSel term=bold,reverse cterm=underline,reverse,bold gui=underline guibg=#fafafa guifg=#000000
-hi TabLineFill term=reverse cterm=reverse gui=none guibg=#222222 guifg=#666666
-hi VertSplit term=reverse cterm=reverse gui=none guibg=#222222 guifg=#666666
+hi TabLine term=reverse cterm=none ctermfg=gray ctermbg=blue gui=none guibg=#cccccc guifg=#403f53
+hi TabLineSel term=bold,reverse cterm=underline,bold ctermfg=white ctermbg=blue gui=underline guibg=#fafafa guifg=#000000
+hi TabLineFill term=reverse cterm=none ctermfg=gray ctermbg=blue gui=none guibg=#222222 guifg=#666666
+hi VertSplit term=reverse cterm=none ctermfg=gray ctermbg=blue gui=none guibg=#222222 guifg=#666666
 
 hi WarningMsg term=standout cterm=bold ctermfg=darkred gui=bold guifg=#cc9900
 hi ErrorMsg term=standout cterm=none ctermfg=white ctermbg=darkred gui=none guifg=#ffffff guibg=#990000
@@ -146,3 +146,16 @@ hi GitGutterAdd term=standout ctermfg=lightgreen ctermbg=black guibg=#222222 gui
 hi GitGutterChange term=standout ctermfg=cyan ctermbg=black guibg=#222222 guifg=#0099ff
 hi GitGutterDelete term=standout ctermfg=lightred ctermbg=black guibg=#222222 guifg=#ff3300
 hi GitGutterChangeDelete term=standout ctermfg=magenta ctermbg=black guibg=#222222 guifg=#ff0066
+
+" vim-buffet
+function! g:BuffetSetCustomColors()
+    hi! BuffetCurrentBuffer term=bold,reverse cterm=bold ctermfg=white ctermbg=blue  gui=underline guibg=#fafafa guifg=#000000
+    hi! BuffetBuffer term=reverse cterm=none ctermfg=gray ctermbg=blue gui=none guibg=#cccccc guifg=#403f53
+    hi! BuffetActiveBuffer term=reverse cterm=none ctermfg=gray ctermbg=blue gui=none guibg=#cccccc guifg=#403f53
+    hi! BuffetTrunc term=reverse cterm=none ctermfg=gray ctermbg=blue gui=none guibg=#222222 guifg=#666666
+    hi! BuffetTab term=reverse cterm=none ctermfg=red ctermbg=blue gui=none guibg=#cccccc guifg=#666666
+    hi! BuffetModCurrentBuffer term=bold,reverse cterm=bold ctermfg=white ctermbg=blue  gui=underline guibg=#fafafa guifg=#000000
+    hi! BuffetModBuffer term=reverse cterm=none ctermfg=gray ctermbg=blue gui=none guibg=#cccccc guifg=#403f53
+    hi! BuffetModActiveBuffer term=reverse cterm=none ctermfg=lightblue ctermbg=blue gui=none guibg=#cccccc guifg=#403f53
+endfunction
+
