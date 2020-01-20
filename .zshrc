@@ -92,7 +92,15 @@ if [[ -o interactive ]]; then
 
     # Copy last command
     alias clc='fc -ln -1 | xclip -selection c'
-    which -s xsel >/dev/null 2>&1 && alias clc='fc -ln -1 | xsel -i --clipboard'
+
+    # Copy current directory
+    alias cpwd='echo -n "$PWD" | xclip -selection c'
+
+    # Use xsel if it is installed
+    if which -s xsel >/dev/null 2>&1; then
+        alias clc='fc -ln -1 | xsel -i --clipboard'
+        alias cpwd='echo -n "$PWD" | xsel -i --clipboard'
+    fi
 
     # Neovim
     if which -s nvim >/dev/null 2>&1; then
@@ -127,6 +135,7 @@ if [[ -o interactive ]]; then
     case `uname`; in
         Darwin)
             alias clc='fc -ln -1 | pbcopy'
+            alias cpwd='echo -n "$PWD" | pbcopy'
             alias -g CL='| pbcopy'
             ;;
         IRIX)
