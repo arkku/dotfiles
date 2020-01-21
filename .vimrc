@@ -62,6 +62,7 @@ set textwidth=79        " Wordwrap at this column
 set formatoptions=tcl1  " Wrap, but not long lines, and not 1-letter words
 set formatoptions+=q    " Allow formatting of comments
 set formatoptions+=n    " Recognize numbered lists
+set formatoptions+=j    " Join comment lines
 set splitbelow          " Split new windows below current
 set noerrorbells
 set scrolloff=4         " Scroll before reaching screen edge
@@ -136,10 +137,12 @@ let Tlist_Compact_Format = 1
 " statusline:
 set statusline=%n\ %<%t         " buffer number + filename (can be truncated)
 set statusline+=%h%m%r%w        " flags
+"set statusline+=\ %<%y
 set statusline+=%=              " left/right separator
-set statusline+=\ %{&fenc}      " file encoding
+set statusline+=\ %<%{exists('g:loaded_fugitive')?FugitiveStatusline():''}
+set statusline+=\ %<%y\ [%{&fenc}] " file encoding
 set statusline+=%15(%c,%l/%L%)  " cursor position
-set statusline+=\ %6(0x%02B%)   " hex value of character under cursor
+set statusline+=\ %<%6(0x%02B%) " hex value of character under cursor
 set laststatus=2                " always show status line
 
 set sessionoptions-=options

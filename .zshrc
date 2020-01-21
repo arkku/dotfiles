@@ -243,13 +243,20 @@ if [[ -o interactive ]]; then
     bindkey -v
     export KEYTIMEOUT=1
 
+    # Smarter kill word
+    smart-backward-kill-word() {
+        local WORDCHARS='-_'
+        zle backward-kill-word
+    }
+    zle -N smart-backward-kill-word
+
     local mode
     # Key bindings
     bindkey '^P' up-history
     bindkey '^N' down-history
     bindkey '^[[5~' history-search-backward
     bindkey '^[[6~' history-search-forward
-    bindkey '^W' backward-kill-word
+    bindkey '^W' smart-backward-kill-word
     bindkey '^K' kill-word
     bindkey '^U' kill-whole-line
     bindkey '^Y' yank

@@ -80,7 +80,7 @@ hi MatchParen term=reverse ctermbg=cyan guibg=#d9f1ff
 
 " UI
 hi StatusLine term=bold,reverse cterm=reverse gui=reverse guifg=#0281ff guibg=#ffffff
-hi StatusLineNC term=bold,reverse cterm=reverse gui=reverse guifg=#0281ff guibg=#ccccff
+hi StatusLineNC term=bold,reverse cterm=reverse gui=reverse guifg=#0281ff guibg=#99ccff
 hi TabLine term=reverse cterm=none ctermfg=gray ctermbg=blue gui=none guibg=#cccccc guifg=#403f53
 hi TabLineSel term=bold,reverse cterm=underline,bold ctermfg=white ctermbg=blue gui=underline guibg=#fafafa guifg=#000000
 hi TabLineFill term=reverse cterm=none ctermfg=gray ctermbg=blue gui=none guibg=#222222 guifg=#666666
@@ -106,6 +106,8 @@ hi FoldColumn term=reverse cterm=none ctermbg=black ctermfg=cyan gui=none guibg=
 hi clear SignColumn
 hi link SignColumn LineNr
 "hi SignColumn term=reverse cterm=none ctermbg=black ctermfg=cyan gui=none guibg=#222222 guifg=#99eeff
+
+hi ColorColumn term=reverse cterm=none ctermbg=lightgray gui=none guibg=#ffffe0
 
 " Menu
 hi clear Directory
