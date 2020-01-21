@@ -21,13 +21,12 @@ set showmatch		" Show matching brackets.
 set ignorecase		" Do case insensitive matching
 
 set incsearch		" Incremental search
-" Double esc to clear highlight of previous search
-nmap <esc><esc> :silent! noh<cr>:<backspace>
+set inccommand=nosplit  " Incremental substitute
 
 set autowrite		" Automatically save before commands like :next and :make
 
 set background=light
-if $TERM == "screen-256color"
+if $TERM =~ '.*-256color.*' && !($TERM_PROGRAM == "Apple_Terminal" && empty($TMUX))
     set termguicolors
     set colorcolumn=+1
 endif
@@ -48,7 +47,7 @@ set textwidth=79        " Wordwrap at this column
 set formatoptions=tcl1  " Wrap, but not long lines, and not 1-letter words
 set formatoptions+=q    " Allow formatting of comments
 set formatoptions+=n    " Recognize numbered lists
-set formatoptions+=p    " Don't break one word alone on a line
+silent! set formatoptions+=p    " Don't break one word alone on a line
 set formatoptions+=j    " Join comment lines
 set splitbelow          " Split new windows below current
 set noerrorbells
@@ -137,16 +136,6 @@ let maplocalleader=" "
 if exists('g:vscode')
     " Visual Studio Code neovim integration
 else
-    set timeoutlen=400
-    set guioptions-=e
-
-    " Remap C-A and C-E to be like other programs (line beginning/end)
-    inoremap <C-A> <Home>
-    inoremap <C-E> <End>
-
-    " Map the unused C-Q to the old C-A
-    inoremap <C-Q> <C-A>
-
     " Esc to exit terminal (with some delay), Esc Esc to send Esc
     tnoremap <Esc> <C-\><C-N>
     tnoremap <Esc><Esc> <Esc>
@@ -154,10 +143,27 @@ else
     " I use ^T as the tmux prefix, so let's appropriate ^B for the terminal
     tnoremap <C-B> <C-T>
 
-    " vim-buffet
-    let g:buffet_show_index = 1
+    " Double-Esc to clear highlight of previous search
+    nnoremap <Esc><Esc> :silent! noh<CR>:<BS><Esc>
 
-    " \1 to \10 switch buffers (vim-buffet)
+    set timeoutlen=400
+    set guioptions-=e
+
+    " Map some keys to be more like other programs
+    inoremap <C-BS> <C-W>
+    inoremap <C-Del> <C-O>dw
+    inoremap <M-Left> <Home>
+    inoremap <M-Right> <End>
+    inoremap <C-A> <Home>
+    inoremap <C-E> <End>
+
+    " Map the unused C-Q to the old C-A
+    inoremap <C-Q> <C-A>
+
+    " open a new buffer and edit a file in it with 'open'
+    cabbrev open enew\|e
+
+    " \1 to \0 switch buffers (vim-buffet)
     nmap <Leader>1 <Plug>BuffetSwitch(1)
     nmap <Leader>2 <Plug>BuffetSwitch(2)
     nmap <Leader>3 <Plug>BuffetSwitch(3)
@@ -167,30 +173,42 @@ else
     nmap <Leader>7 <Plug>BuffetSwitch(7)
     nmap <Leader>8 <Plug>BuffetSwitch(8)
     nmap <Leader>9 <Plug>BuffetSwitch(9)
-    nmap <Leader>10 <Plug>BuffetSwitch(10)
+    nmap <Leader>0 <Plug>BuffetSwitch(10)
+    nnoremap <Leader>q <Esc>:bd<CR>
+    nnoremap <Leader>x <Esc>:bw!<CR>
 
     " Space tab to open a new tab
-    nmap <Leader><Tab> <Esc>:tabnew<CR>
-    nmap <Leader><S-Tab> <Esc>:tabclose<CR>
+    nnoremap <Leader><Tab> <Esc>:tabnew<CR>
+    nnoremap <Leader><S-Tab> <Esc>:tabclose<CR>
 
-    " Space 1 to 10 switch tabs
-    nmap <LocalLeader>1 1gt
-    nmap <LocalLeader>2 2gt
-    nmap <LocalLeader>3 3gt
-    nmap <LocalLeader>4 4gt
-    nmap <LocalLeader>5 5gt
-    nmap <LocalLeader>6 6gt
-    nmap <LocalLeader>7 7gt
-    nmap <LocalLeader>8 8gt
-    nmap <LocalLeader>9 9gt
-    nmap <LocalLeader>10 10gt
-    nmap <LocalLeader><Tab> gt
-    nmap <LocalLeader><S-Tab> gT
+    " Space 1 to 0 switch tabs
+    nnoremap <LocalLeader>1 1gt
+    nnoremap <LocalLeader>2 2gt
+    nnoremap <LocalLeader>3 3gt
+    nnoremap <LocalLeader>4 4gt
+    nnoremap <LocalLeader>5 5gt
+    nnoremap <LocalLeader>6 6gt
+    nnoremap <LocalLeader>7 7gt
+    nnoremap <LocalLeader>8 8gt
+    nnoremap <LocalLeader>9 9gt
+    nnoremap <LocalLeader>0 10gt
+    nnoremap <LocalLeader>q <Esc>:tabclose<CR>
+    nnoremap <LocalLeader>x <Esc>:tabclose!<CR>
+    nnoremap <LocalLeader><Tab> gt
+    nnoremap <LocalLeader><S-Tab> gT
+
+    " Esc to exit terminal (with some delay), Esc Esc to send Esc
+    tnoremap <Esc> <C-\><C-N>
+    tnoremap <Esc><Esc> <Esc>
+
+    " I use ^T as the tmux prefix, so let's appropriate ^B for the terminal
+    tnoremap <C-B> <C-T>
 
     " Tab to cycle buffers (with a hack to get rid of NERDTree)
-    nmap <Tab> <Esc>:silent! NERDTreeClose<CR><Esc>:silent! bn<CR><Esc>
-    nmap <S-Tab> <Esc>:silent! NERDTreeClose<CR><Esc>:silent! bp<CR><Esc>
+    nnoremap <Tab> <Esc>:silent! NERDTreeClose<CR><Esc>:silent! bn<CR><Esc>
+    nnoremap <S-Tab> <Esc>:silent! NERDTreeClose<CR><Esc>:silent! bp<CR><Esc>
 
+    let g:buffet_show_index = 1
     let g:buffet_always_show_tabline = 0
     let g:NERDTreeQuitOnOpen = 1
 endif

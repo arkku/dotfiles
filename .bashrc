@@ -1,11 +1,6 @@
 unset HISTFILE
 export HISTFILE
 
-if [ "$TERM" = "screen" ]; then
-    unset DISPLAY
-    export DISPLAY
-fi
-
 # If running interactively, then:
 if [ "$PS1" ]; then
     preexec_interactive_mode=''
@@ -68,13 +63,54 @@ if [ "$PS1" ]; then
     set mark-directories off
     set completion-ignore-case on
 
-    # more aliases
-    alias ll='ls -kl'
+    # Aliases
+    alias gr='grep --color=auto --exclude-dir={.git,.hg,.svn,.bzr}'
+    alias gs='git status --show-stash'
+    alias cdr='[ -n "$REPO" ] && cd "$REPO"'
+
+    # Make a directory (including parent diretory) and cd to it
+    alias md='(){ mkdir -pv "$1" && cd "$1" }'
+
+    # Make sudo apply to aliases as well
+    alias sudo='sudo '
+
+    # Redo last command with sudo
+    alias please='sudo $(fc -ln -1)'
+
+    # Grep `ps` (more brute force than pgrep)
+    alias psg='ps axww | grep --color=auto'
+
+    # Grep `history`
+    alias hgrep='history 1 | grep -i --color=auto'
+
+    # Grep aliases
+    alias agrep='alias | grep -i --color=auto'
+
+    # Copy last command
+    alias clc='fc -ln -1 | sed "s/^['$'\t'' ]*//" | tr -d "\n" | clipcopy'
+
+    # Copy current directory
+    alias cpwd='echo -n "$PWD" | clipcopy'
+
+    # Copy symlink-resolved path to current directory
+    alias cpath='( cd -P "$PWD" && echo -n "$PWD" | clipcopy "$PWD" ) && echo "$PWD"'
+
+    # Neovim
+    if which -s nvim >/dev/null 2>&1; then
+        alias vi='nvim'
+        alias nvimdiff='nvim -d'
+    fi
+
     if [ "`uname`" = "IRIX" ]; then
         alias psg='ps -efa | grep'
     else
         alias psg='ps axww | grep'
     fi
+
+    # ls
+    alias ll='ls -kl'
+    alias la='ls -kla'
+    alias l.='ls -d .*'
 
     # set a fancy prompt
     PS1='\u@$SHORT_HOSTNAME:$SHORT_PWD\$ '
@@ -92,23 +128,28 @@ if [ "$PS1" ]; then
         update_terminal_cwd() {
             local encoded=${PWD//%/%25}
             local PWD_URL="file://$HOSTNAME${encoded// /%20}"
-            [ "$TERM" = 'screen' ] && echo -ne '\033P'
+            case "$TERM" in
+            screen*|tmux*)
+                echo -ne '\033P'
+                ;;
+            *)
+                ;;
+            esac
             printf '\e]7;%s\a' "$PWD_URL"
         }
         #PROMPT_COMMAND="update_terminal_cwd; $PROMPT_COMMAND"
         TITLE_EXCLUDE_PWD=1
     fi
 
+    # Update window title
     case $TERM in
-    xterm*)
-        # Update window title.
+    xterm*|rxvt*)
         TITLE_SET_HEAD=`echo -ne '\033]0;'`
         TITLE_SET_TAIL=`echo -ne '\007'`
         install_title_updates
         preexec_install
         ;;
-    screen*)
-        # Update hardstatus.
+    screen*|tmux*)
         TITLE_SET_HEAD=`echo -ne '\033_'`
         TITLE_SET_TAIL=`echo -ne '\033\\'`
         install_title_updates
@@ -123,9 +164,10 @@ if [ "$PS1" ]; then
 
     [ -n "$COLORTERM" -a -z "$CLICOLOR" ] && export CLICOLOR=1
 
-    if [ -x "`which dircolors`" -a -r "$HOME/.dir_colors" ]; then
-        eval `dircolors -b "$HOME/.dir_colors"`
+    if [ -r "$HOME/.dir_colors" ]; then
+        which -s dircolors >/dev/null 2>&1 && eval `dircolors -b "$HOME/.dir_colors"`
     fi
+
     if ls --version 2>/dev/null | grep -q GNU; then
         alias ls='ls -F --color=auto --group-directories-first'
     elif [ "$CLICOLOR" = 1 ]; then

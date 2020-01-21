@@ -1,8 +1,5 @@
 disable log
 
-[ "$TERM" = "screen" ] && unset DISPLAY
-export DISPLAY
-
 # UTF-8 combining characters
 setopt combiningchars
 
@@ -70,6 +67,114 @@ if [[ -o interactive ]]; then
     setopt hist_no_store
     setopt hist_reduce_blanks
 
+    # Clipboard
+
+    if [ -n "$TMUX" ]; then
+        export TMUXCOPY='tmux load-buffer -'
+        export TMUXPASTE='tmux save-buffer -'
+        eval 'tmuxcopy() { echo -n "$*" | '"$TMUXCOPY"' }'
+    fi
+
+    if [ -n "$CLIPCOPY" ]; then
+        CLIPCOPY="$CLIPCOPY"
+    elif [ -z "$SSH_CONNECTION" ] && which -s pbcopy >/dev/null 2>&1; then
+        CLIPCOPY='pbcopy'
+    elif [ -n "$DISPLAY" ]; then
+        if which -s xclip >/dev/null 2>&1; then
+            CLIPCOPY='xclip -selection c'
+        elif which -s xsel >/dev/null 2>&1; then
+            CLIPCOPY='xsel -i -b'
+        fi
+    elif [ -z "$SSH_CONNECTION" ]; then
+        if which -s clip >/dev/null 2>&1; then
+            CLIPCOPY='clip'
+        elif [ -w '/dev/clipboard' ]; then
+            CLIPCOPY='cat >/dev/clipboard'
+        fi
+    fi
+    if [ -z "$CLIPCOPY" -a -n "$TMUXCOPY" ]; then
+        CLIPCOPY="$TMUXCOPY"
+    fi
+    export CLIPCOPY
+
+    if [ -n "$CLIPCOPY" ]; then
+        alias -g CL="| $CLIPCOPY"
+        eval 'clipcopy() { echo -n "$*" | '"$CLIPCOPY"' }'
+
+        # Bind ^X to copy the current input to system clipboard
+        copy-input() {
+            [ -n "$BUFFER" ] && clipcopy "$BUFFER"
+            prompt_vi_mode=' %F{white}(copied)%F{reset}'
+            zle reset-prompt
+        }
+        zle -N copy-input
+        bindkey '^X' copy-input
+    fi
+
+    if [ -n "$CLIPPASTE" ]; then
+        CLIPPASTE="$CLIPPASTE"
+    elif [ -z "$SSH_CONNECTION" ] && which -s pbpaste >/dev/null 2>&1; then
+        CLIPPASTE='pbpaste'
+    elif [ -n "$DISPLAY" ]; then
+        if which -s xclip >/dev/null 2>&1; then
+            CLIPPASTE='xclip -o -selection c'
+        elif which -s xsel >/dev/null 2>&1; then
+            CLIPPASTE='xsel -o -b'
+        fi
+    elif [ -z "$SSH_CONNECTION" -a -r '/dev/clipboard' ]; then
+        CLIPPASTE='cat /dev/clipboard'
+    fi
+    if [ -z "$CLIPPASTE" -a -n "$TMUXPASTE" ]; then
+        CLIPPASTE="$TMUXPASTE"
+    fi
+    export CLIPPASTE
+
+    # Each line is pasted and escaped as a separate argument,
+    # whitespace is trimmed, and already quoted (' or ") are not escaped
+    escape-and-paste-input() {
+        local IFS=$'\n'
+        local pasted
+        if [ -z "$1" ]; then
+            pasted=("${(@f)$(clippaste)}")
+        else
+            pasted=("${(@f)*}")
+        fi
+        local line
+        for line in $pasted; do
+            line="${line##+( )}" # trim space
+            line="${line%%+( )}"
+            if [ -z "${line:/\'*\'}" -o -z "${line:/\"*\"}" ]; then
+                # already quoted, don't escape
+                LBUFFER="$LBUFFER$line "
+            else
+                # escape the string
+                LBUFFER="$LBUFFER${(q)line} "
+            fi
+        done
+        LBUFFER="${LBUFFER/% }"
+    }
+
+    if [ -n "$CLIPPASTE" ]; then
+        eval 'clippaste() { '"$CLIPPASTE"' }'
+
+        # Bind ^B to paste ("Baste"?) and escape from system clipboard
+        paste-input() {
+            escape-and-paste-input
+        }
+        zle -N paste-input
+        bindkey '^B' paste-input
+    fi
+
+    if [ -n "$TMUX" -a -n "$TMUXPASTE" ]; then
+        eval 'tmuxpaste() { '"$TMUXPASTE"' }'
+
+        paste-tmux-input() {
+            escape-and-paste-input "$(tmuxpaste)"
+        }
+        zle -N paste-tmux-input
+        bindkey '^T' paste-tmux-input
+    fi
+
     # Aliases
     alias gr='grep --color=auto --exclude-dir={.git,.hg,.svn,.bzr}'
     alias gs='git status --show-stash'
@@ -88,19 +193,20 @@ if [[ -o interactive ]]; then
     alias psg='ps axww | grep --color=auto'
 
     # Grep `history`
-    alias hgrep='history 1 | grep --color=auto'
+    alias hgrep='history 1 | grep -i --color=auto'
+
+    # Grep aliases
+    alias agrep='alias | grep -i --color=auto'
 
     # Copy last command
-    alias clc='fc -ln -1 | xclip -selection c'
+    alias clc='clipcopy "$(fc -ln -1)"'
+    alias clct='tmuxcopy "$(fc -ln -1)"'
 
     # Copy current directory
-    alias cpwd='echo -n "$PWD" | xclip -selection c'
+    alias cpwd='clipcopy "$PWD" && echo "$PWD"'
 
-    # Use xsel if it is installed
-    if which -s xsel >/dev/null 2>&1; then
-        alias clc='fc -ln -1 | xsel -i --clipboard'
-        alias cpwd='echo -n "$PWD" | xsel -i --clipboard'
-    fi
+    # Copy symlink-resolved path to current directory
+    alias cpath='( cd -P "$PWD" && clipcopy "$PWD" && echo "$PWD" )'
 
     # Neovim
     if which -s nvim >/dev/null 2>&1; then
@@ -109,9 +215,8 @@ if [[ -o interactive ]]; then
     fi
 
     # Pipe shortcuts
-    alias -g CL='| xclip -selection c'
-    alias -g LESS='| less'
-    alias -g LL='|& less'
+    alias -g LES='| less'
+    alias -g LESS='|& less'
     alias -g GR='| grep --color=auto'
     alias -g FGR='| grep -F --color=auto'
     alias -g EGR='| egrep --color=auto'
@@ -119,13 +224,13 @@ if [[ -o interactive ]]; then
     alias -g FGRE='|& grep -F --color=auto'
     alias -g HE='| head'
     alias -g TA='| tail'
+    alias -g H1='| head -1'
     alias -g T1='| tail -1'
-    alias -g H1='| tail -1'
     alias -g HL='|& head -n $(( LINES / 2 + 1 ))'
     alias -g TL='|& tail -n $(( LINES / 2 + 1 ))'
     alias -g SO='| sort'
-    alias -g NS='| sort -n'
-    alias -g US='| sort -u'
+    alias -g SON='| sort -n'
+    alias -g SOU='| sort -u'
     alias -g X0='| xargs -0'
     alias -g NUL='>/dev/null'
     alias -g NULL='>/dev/null 2>&1'
@@ -133,11 +238,6 @@ if [[ -o interactive ]]; then
 
     # System-specific variations
     case `uname`; in
-        Darwin)
-            alias clc='fc -ln -1 | pbcopy'
-            alias cpwd='echo -n "$PWD" | pbcopy'
-            alias -g CL='| pbcopy'
-            ;;
         IRIX)
             alias psg='ps -efa | grep'
             ;;
@@ -329,13 +429,26 @@ if [[ -o interactive ]]; then
         done
     done
 
+    # Expand uppercase aliases as we type (credit: Pat Regan)
+    expand-global-alias() {
+       if [[ $LBUFFER =~ '[A-Z0-9]+$' ]]; then # Only expand uppercase aliases
+         zle _expand_alias
+         zle expand-word
+       fi
+       zle self-insert
+    }
+    zle -N expand-global-alias
+    bindkey ' ' expand-global-alias
+    bindkey '^ ' magic-space            # control-space to bypass completion
+    bindkey -M isearch ' ' magic-space  # normal space during searches
+
     # Terminal title (or screen/tmux hardstatus)
-    case $TERM in
-        screen*)
+    case "$TERM" in
+        tmux*|screen*)
             export TITLE_SET_HEAD=`echo -ne '\033_'`
             export TITLE_SET_TAIL=`echo -ne '\033\\'`
             ;;
-        xterm*)
+        xterm*|rxvt*)
             export TITLE_SET_HEAD=`echo -ne '\033]0;'`
             export TITLE_SET_TAIL=`echo -ne '\007'`
             ;;
@@ -392,7 +505,9 @@ if [[ -o interactive ]]; then
                     pwd_url+="%${ch: -2:2}"
                 fi
             done
-            [ "$TERM" = 'screen' ] && print -n '\033P'
+            if [[ $TERM == (screen|tmux)* ]]; then
+                print -n '\033P'
+            fi
             printf '\e]7;%s\a' "$pwd_url"
         }
         chpwd_functions+=( set_terminal_dir )
@@ -413,9 +528,16 @@ if [[ -o interactive ]]; then
         esac
         zle reset-prompt
     }
-
     zle -N zle-line-init
     zle -N zle-keymap-select
+
+    accept-line-vicmd() {
+        prompt_vi_mode=''
+        zle reset-prompt
+        zle accept-line
+    }
+    zle -N accept-line-vicmd
+    bindkey -M vicmd '^M' accept-line-vicmd
 
     # Prompt
 
@@ -515,7 +637,8 @@ if [[ -o interactive ]]; then
         ZSH_HIGHLIGHT_STYLES[precommand]='fg=blue,bold'
         ZSH_HIGHLIGHT_STYLES[path_prefix]='underline'
         ZSH_HIGHLIGHT_STYLES[globbing]='fg=yellow,bold'
-        ZSH_HIGHLIGHT_STYLES[suffix-alias]='fg=magenta,bold,underline'
+        ZSH_HIGHLIGHT_STYLES[suffix-alias]='fg=magenta'
+        ZSH_HIGHLIGHT_STYLES[global-alias]='fg=magenta,bold'
 
         ZSH_HIGHLIGHT_STYLES[bracket-error]='fg=red,bold'
         for style in 1 2 3 4 5; do

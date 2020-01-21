@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+if [ -n "$CLIPPASTE" ] && which -s "${CLIPPASTE/% *}" >/dev/null 2>&1; then
+    exec $CLIPPASTE
+elif [ -z "$SSH_CONNECTION" ] && which -s pbpaste >/dev/null 2>&1; then
+    exec pbpaste
+elif [ -n "$DISPLAY" ]; then
+    if which -s xclip >/dev/null 2>&1; then
+        exec xclip -o -selection c
+    elif which -s xsel >/dev/null 2>&1; then
+        exec xsel -o -b
+    fi
+elif [ -z "$SSH_CONNECTION" ]; then
+    if [ -r '/dev/clipboard' ]; then
+        exec cat /dev/clipboard
+    fi
+fi
+if [ -n "$TMUX" ]; then
+    exec tmux save-buffer -
+fi

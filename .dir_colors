@@ -10,6 +10,7 @@ TERM xterm-256color
 TERM xterm-xfree86
 TERM xterm-debian
 TERM xterm-utf8
+TERM xterm-new
 TERM mach-color
 TERM console
 TERM con132x25

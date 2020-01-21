@@ -89,7 +89,7 @@ hi VertSplit term=reverse cterm=none ctermfg=gray ctermbg=blue gui=none guibg=#2
 hi WarningMsg term=standout cterm=bold ctermfg=darkred gui=bold guifg=#cc9900
 hi ErrorMsg term=standout cterm=none ctermfg=white ctermbg=darkred gui=none guifg=#ffffff guibg=#990000
 
-hi ModeMsg term=bold cterm=bold ctermfg=lightblue gui=bold guifg=#3399cc
+hi ModeMsg term=bold cterm=bold ctermfg=brown gui=bold guifg=#3399cc
 hi MoreMsg term=bold cterm=bold ctermfg=lightblue gui=bold guifg=#009966
 hi Question term=bold cterm=bold ctermfg=lightblue gui=bold guifg=#009966
 hi Title term=bold cterm=bold ctermfg=yellow gui=bold guifg=#ff9933
@@ -148,6 +148,10 @@ hi GitGutterAdd term=standout ctermfg=lightgreen ctermbg=black guibg=#222222 gui
 hi GitGutterChange term=standout ctermfg=cyan ctermbg=black guibg=#222222 guifg=#0099ff
 hi GitGutterDelete term=standout ctermfg=lightred ctermbg=black guibg=#222222 guifg=#ff3300
 hi GitGutterChangeDelete term=standout ctermfg=magenta ctermbg=black guibg=#222222 guifg=#ff0066
+hi GitGutterChangeDeleteInvisible ctermfg=black ctermbg=black guibg=#222222 guifg=#222222
+hi GitGutterChangeInvisible ctermfg=black ctermbg=black guibg=#222222 guifg=#222222
+hi GitGutterDeleteInvisible ctermfg=black ctermbg=black guibg=#222222 guifg=#222222
+hi GitGutterAddInvisible ctermfg=black ctermbg=black guibg=#222222 guifg=#222222
 
 " vim-buffet
 function! g:BuffetSetCustomColors()

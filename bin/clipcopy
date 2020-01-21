@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+if [ -n "$CLIPCOPY" ] && which -s "${CLIPCOPY/% *}" >/dev/null 2>&1; then
+    exec $CLIPCOPY
+elif [ -z "$SSH_CONNECTION" ] && which -s pbcopy >/dev/null 2>&1; then
+    exec pbcopy
+elif [ -n "$DISPLAY" ]; then
+    if which -s xclip >/dev/null 2>&1; then
+        exec xclip -selection c
+    elif which -s xsel >/dev/null 2>&1; then
+        exec xsel -i -b
+    fi
+elif [ -z "$SSH_CONNECTION" ]; then
+    if which -s clip >/dev/null 2>&1; then
+        exec clip
+    elif [ -w '/dev/clipboard' ]; then
+        exec cat >/dev/clipboard
+    fi
+fi
+if [ -n "$TMUX" ]; then
+    exec tmux load-buffer -
+fi
