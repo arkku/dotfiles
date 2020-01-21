@@ -555,7 +555,6 @@ if [[ -o interactive ]]; then
                 pwd_prompt="…/$repo"
             fi
             unset repo
-
             export REPO="$vcs_info_msg_4_"
         else
             # Use ~ to represent the home directory

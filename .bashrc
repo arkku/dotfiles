@@ -69,7 +69,10 @@ if [ "$PS1" ]; then
     alias cdr='[ -n "$REPO" ] && cd "$REPO"'
 
     # Make a directory (including parent diretory) and cd to it
-    alias md='(){ mkdir -pv "$1" && cd "$1" }'
+    md() {
+        mkdir -pv "$1"
+        cd "$1"
+    }
 
     # Make sudo apply to aliases as well
     alias sudo='sudo '
