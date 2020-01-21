@@ -26,7 +26,7 @@ set inccommand=nosplit  " Incremental substitute
 set autowrite		" Automatically save before commands like :next and :make
 
 set background=light
-if $TERM =~ '.*-256color.*' && !($TERM_PROGRAM == "Apple_Terminal" && empty($TMUX))
+if $TERM =~ '.*-256color.*' && ($TERM_PROGRAM != "Apple_Terminal" || !empty($TMUX))
     set termguicolors
     set colorcolumn=+1
 endif
