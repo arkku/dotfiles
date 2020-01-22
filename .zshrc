@@ -187,7 +187,7 @@ if [[ -o interactive ]]; then
     alias sudo='sudo '
 
     # Redo last command with sudo
-    alias please='sudo $(fc -ln -1)'
+    alias please='sudo "$SHELL" -c "$(fc -ln -1)"'
 
     # Grep `ps` (more brute force than pgrep)
     alias psg='ps axww | grep --color=auto'
