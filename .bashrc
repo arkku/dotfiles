@@ -58,10 +58,15 @@ if [ "$PS1" ]; then
     shopt -s no_empty_cmd_completion
     shopt -s cmdhist
 
-    set editing-mode vi
+    set -o vi
     set visible-stats on
     set mark-directories off
     set completion-ignore-case on
+
+    # Bindings
+    bind '"\C-P": history-search-backward'
+    bind '"\C-N": history-search-forward'
+    bind '"\C-U": kill-whole-line'
 
     # Aliases
     alias gr='grep --color=auto --exclude-dir={.git,.hg,.svn,.bzr}'

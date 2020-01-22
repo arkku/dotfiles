@@ -338,7 +338,7 @@ if [[ -o interactive ]]; then
         esac
     }
     zsh-check-changes true
-    
+
     # Vi-mode
     bindkey -v
     export KEYTIMEOUT=1
@@ -352,8 +352,8 @@ if [[ -o interactive ]]; then
 
     local mode
     # Key bindings
-    bindkey '^P' up-history
-    bindkey '^N' down-history
+    bindkey '^P' history-beginning-search-backward
+    bindkey '^N' history-beginning-search-forward
     bindkey '^[[5~' history-search-backward
     bindkey '^[[6~' history-search-forward
     bindkey '^W' smart-backward-kill-word
@@ -394,7 +394,6 @@ if [[ -o interactive ]]; then
             bindkey ${=mode} "^[[B" down-line
         else
             bindkey ${=mode} '^A' beginning-of-line
-            bindkey ${=mode} '^E' end-of-line
             bindkey ${=mode} '^H' backward-delete-char
             bindkey ${=mode} '^?' backward-delete-char
             bindkey ${=mode} '^H' backward-delete-char
@@ -409,18 +408,19 @@ if [[ -o interactive ]]; then
     autoload -U edit-command-line
     zle -N edit-command-line
     bindkey '^ ' edit-command-line
+    bindkey -M vicmd v edit-command-line
 
     # Vim-like surround
-   autoload -Uz surround
-   zle -N delete-surround surround
-   zle -N add-surround surround
-   zle -N change-surround surround
-   bindkey -a 'cs' change-surround
-   bindkey -a 'ds' delete-surround
-   bindkey -a 'ys' add-surround
-   bindkey -M visual 'S' add-surround
+    autoload -Uz surround
+    zle -N delete-surround surround
+    zle -N add-surround surround
+    zle -N change-surround surround
+    bindkey -a 'cs' change-surround
+    bindkey -a 'ds' delete-surround
+    bindkey -a 'ys' add-surround
+    bindkey -M visual 'S' add-surround
 
-   # In vi-mode, type vi" to select quoted text
+    # In vi-mode, type vi" to select quoted text
     autoload -U select-quoted
     zle -N select-quoted
     for m in visual viopp; do

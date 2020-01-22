@@ -100,9 +100,8 @@ if has("autocmd")
     au FileType python set omnifunc=pythoncomplete#Complete
     au BufNewFile,BufRead *.pde set filetype=cpp
     au BufNewFile,BufRead *.rb set filetype=ruby
-    au BufNewFile,BufRead *.c set filetype=c
-    au BufNewFile,BufRead *.m set filetype=objc
     au BufNewFile,BufRead *.swift set filetype=swift
+    au BufNewFile,BufRead *.inc set filetype=asm
 endif " has ("autocmd")
 
 set completeopt+=menuone,noinsert,noselect,preview
@@ -169,6 +168,8 @@ if 1
     inoremap <M-Right> <End>
     inoremap <C-A> <Home>
     inoremap <C-E> <End>
+    cnoremap <C-A> <Home>
+    cnoremap <C-E> <End>
 
     " Map the unused C-Q to the old C-A
     inoremap <C-Q> <C-A>
@@ -224,4 +225,9 @@ if 1
     let g:buffet_show_index = 1
     let g:buffet_always_show_tabline = 0
     let g:NERDTreeQuitOnOpen = 1
+
+    if has("autocmd")
+        " Strip space at the end of line in programming language files
+        autocmd FileType c,swift,cc,cs,cxx,cpp,h,hpp,java,php,python,ruby,sh,bash,zsh,eiffel,asm,elixir,erlang,awk,json,javascript,html,css,scss,xml,xhtml,yaml,dart,kotlin,rust,d autocmd BufWritePre <buffer> %s/\s\+$//e
+    endif
 endif

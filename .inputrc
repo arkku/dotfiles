@@ -1,6 +1,7 @@
 # ~/.inputrc
 # See readline(3readline) and `info rluserman' for more information.
 
+set editing-mode vi
 set meta-flag on
 set input-meta on
 set output-meta on
@@ -8,19 +9,24 @@ set convert-meta off
 set show-all-if-ambiguous on
 set visible-stats on
 set mark-symlinked-directories on
-set completion-ignore-case off
+set completion-ignore-case on
 set bind-tty-special-chars on
+set colored-stats on
+set completion-prefix-display-length 6
+set show-all-if-unmodified on
 
 set enable-keypad on
 set bell-style none 
 
 # Basic editing
-"^W": backward-kill-word
-"^K": kill-word
-"^U": kill-whole-line
-"^Y": yank
-"^D": delete-char
-"^_": undo
+"\C-W": backward-kill-word
+"\C-K": kill-word
+"\C-U": kill-whole-line
+"\C-Y": yank
+"\C-D": delete-char
+"\C-_": undo
+"\C-A": beginning-of-line
+"\C-E": end-of-line
 
 # home/end
 "\e[1~": beginning-of-line
