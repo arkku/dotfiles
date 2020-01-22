@@ -57,12 +57,10 @@ set bell-style none
 "\C-?": backward-delete-char
 "\C-H": backward-delete-char
 
-# ctrl-backspace
-"\C-W": backward-kill-word
-
 # cmd/alt-backspace
 "\e\C-W": backward-kill-line
 "\e\C-H": backward-kill-line
+"\e\C-?": backward-kill-line
 
 # arrows
 "\eOA": previous-history
@@ -97,13 +95,17 @@ set bell-style none
 "\e\e[B": history-search-forward
 "\e\e[C": end-of-line
 "\e\e[D": beginning-of-line
+"\e[1;4A": history-search-backward
+"\e[1;4B": history-search-forward
+"\e[1;4C": end-of-line
+"\e[1;4D": beginning-of-line
 
 # alt arrows
-"\e[[A": previous-history
-"\e[[B": next-history
 "\e0A": previous-history
 "\e0B": next-history
-"\e[[C": end-of-line
-"\e[[D": beginning-of-line
+"\e[1;3A": previous-history
+"\e[1;3B": next-history
 "\e0C": end-of-line
 "\e0D": beginning-of-line
+"\e[1;3C": end-of-line
+"\e[1;3D": beginning-of-line

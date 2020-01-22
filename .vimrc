@@ -1,10 +1,5 @@
 " Configuration file for vim
 
-" Prevent modelines in files from being evaluated (avoids a potential
-" security problem wherein a malicious user could write a hazardous
-" modeline into a file) (override default value of 5)
-set modelines=0
-
 if &term =~ ".*256col.*"
     set t_Co=256
     set t_Sf=[3%dm
@@ -20,13 +15,19 @@ elseif &term =~ "xterm.*" || &term == "screen" || &term == "tmux" || &term =~ ".
     set t_Sb=[4%dm
 endif
 
-"set encoding=utf-8
+set ttymouse=xterm2
 
+set nohls               " Don't hilight search terms
 set nocompatible	" Use Vim defaults of 100% vi compatibility
+
+set visualbell
+set t_vb=
+set belloff=all
+silent! set encoding=utf-8
 set backspace=indent,eol,start
 set nostartofline       " Try to stay in the same column
-set confirm             " Ask to save changes rather than fail
 
+set modelines=0
 set autoindent		" always set autoindenting on
 set viminfo='20,\"50	" read/write a .viminfo file, don't store more than
 			" 50 lines of registers
@@ -40,10 +41,13 @@ set showmatch		" Show matching brackets.
 set ignorecase		" Do case insensitive matching
 
 set incsearch		" Incremental search
-set nohls               " Don't hilight search terms
-set autowrite		" Automatically save before commands like :next and :make
+silent! set inccommand=nosplit  " Incremental substitute
 
-set ttymouse=xterm2
+set confirm             " Ask to save changes rather than fail
+set autowrite		" Automatically save before commands like :next and :make
+silent! set autowriteall
+silent! set autoread
+
 set mouse=a		" Use mouse in all modes
 set number		" Show line numbers
 set shiftwidth=4	" Use indent depth of 4
@@ -57,10 +61,12 @@ set foldclose=all	" Close folds automatically
 set nofoldenable
 set foldmethod=marker
 set textwidth=79        " Wordwrap at this column
-set formatoptions=tcl1  " Wrap, but not long lines, and not 1-letter words
+set formatoptions=cl1
 set formatoptions+=q    " Allow formatting of comments
 set formatoptions+=n    " Recognize numbered lists
+silent! set formatoptions+=p    " Don't break one word alone on a line
 set formatoptions+=j    " Join comment lines
+set formatoptions-=t
 set splitbelow          " Split new windows below current
 set noerrorbells
 set scrolloff=4         " Scroll before reaching screen edge
@@ -75,14 +81,10 @@ set cino+=J1            " Indent JavaScript object declarations
 
 "set ttyfast
 
-" Disable beeping
-set belloff=all
-set visualbell
-set t_vb=
-
 set wildmenu
 set wildmode=longest:full,longest
 set wildignore+=*.o,*~
+silent! set wildoptions=pum
 
 set nrformats-=octal
 
@@ -113,11 +115,6 @@ let g:ruby_minlines = 100
 
 " Color scheme:
 syntax on
-if &background == "light"
-    colorscheme arkkulight
-else
-    colorscheme arkku
-endif
 
 " taglist.vim:
 let Tlist_Close_On_Select = 1
@@ -148,6 +145,12 @@ set listchars=tab:>\ ,trail:-,extends:>,precedes:<,nbsp:+
 nnoremap <Space> <Nop>
 let maplocalleader=" "
 
+if &background == "light"
+    colorscheme arkkulight
+else
+    colorscheme arkku
+endif
+
 if 1
     " Paste in insert mode with C-B, toggling paste mode (mnemonic: "Baste")
     set pastetoggle=<F10>
@@ -155,11 +158,54 @@ if 1
         inoremap <C-B> <F10><C-R>+<F10>
     endif
 
+    " ctrl arrows
+    noremap <Esc>[5D b
+    noremap <Esc>[5C w
+    noremap <Esc>[1;5D b
+    noremap <Esc>[1;5C w
+    noremap <Esc>[5A <Up>
+    noremap <Esc>[5B <Down>
+    noremap <Esc>[1;5A <Up>
+    noremap <Esc>[1;5B <Down>
+    inoremap <Esc>[5D <C-O>b
+    inoremap <Esc>[5C <C-O>w
+    inoremap <Esc>[1;5D <C-O>b
+    inoremap <Esc>[1;5C <C-O>w
+    inoremap <Esc>[5A <Up>
+    inoremap <Esc>[5B <Down>
+    inoremap <Esc>[1;5A <Up>
+    inoremap <Esc>[1;5B <Down>
+
+    " alt arrows
+    noremap <Esc>[1;3D <Home>
+    noremap <Esc>[1;3C <End>
+    noremap <Esc><Esc>[D <Home>
+    noremap <Esc><Esc>[C <End>
+    noremap <Esc>[1;3A <Up>
+    noremap <Esc>[1;3B <Down>
+    noremap <Esc><Esc>[A <Up>
+    noremap <Esc><Esc>[B <Down>
+    inoremap <Esc>[1;3D <Home>
+    inoremap <Esc>[1;3C <End>
+    inoremap <Esc><Esc>[D <Home>
+    inoremap <Esc><Esc>[C <End>
+    inoremap <Esc>[1;3A <Up>
+    inoremap <Esc>[1;3B <Down>
+    inoremap <Esc><Esc>[A <Up>
+    inoremap <Esc><Esc>[B <Down>
+
     set ttimeout
     set ttimeoutlen=100
 
     set timeoutlen=400
     set guioptions-=e
+
+    set switchbuf=useopen,split
+    silent! set switchbuf+=usetab
+
+    " alt backspace
+    inoremap <Esc><C-H> <C-U>
+    inoremap <Esc><C-?> <C-U>
 
     " Map some keys to be more like other programs
     inoremap <C-BS> <C-W>
@@ -229,5 +275,6 @@ if 1
     if has("autocmd")
         " Strip space at the end of line in programming language files
         autocmd FileType c,swift,cc,cs,cxx,cpp,h,hpp,java,php,python,ruby,sh,bash,zsh,eiffel,asm,elixir,erlang,awk,json,javascript,html,css,scss,xml,xhtml,yaml,dart,kotlin,rust,d autocmd BufWritePre <buffer> %s/\s\+$//e
+        autocmd FileType text,markdown,textile setlocal formatoptions+=t
     endif
 endif

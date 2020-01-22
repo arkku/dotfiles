@@ -1,13 +1,19 @@
 " Configuration file for neovim
 
-set modelines=0
 
-set encoding=utf-8
+set background=light
+if $TERM =~ '.*-256color.*' && ($TERM_PROGRAM != "Apple_Terminal" || !empty($TMUX))
+    set termguicolors
+    set colorcolumn=+1
+endif
 
+
+set belloff=all
+silent! set encoding=utf-8
 set backspace=indent,eol,start
 set nostartofline       " Try to stay in the same column
-set confirm             " Ask to save changes rather than fail
 
+set modelines=0
 set autoindent		" always set autoindenting on
 set viminfo='20,\"50	" read/write a .viminfo file, don't store more than
 			" 50 lines of registers
@@ -21,15 +27,12 @@ set showmatch		" Show matching brackets.
 set ignorecase		" Do case insensitive matching
 
 set incsearch		" Incremental search
-set inccommand=nosplit  " Incremental substitute
+silent! set inccommand=nosplit  " Incremental substitute
 
+set confirm             " Ask to save changes rather than fail
 set autowrite		" Automatically save before commands like :next and :make
-
-set background=light
-if $TERM =~ '.*-256color.*' && ($TERM_PROGRAM != "Apple_Terminal" || !empty($TMUX))
-    set termguicolors
-    set colorcolumn=+1
-endif
+silent! set autowriteall
+silent! set autoread
 
 set mouse=a		" Use mouse in all modes
 set number		" Show line numbers
@@ -44,11 +47,12 @@ set foldclose=all	" Close folds automatically
 set nofoldenable
 set foldmethod=marker
 set textwidth=79        " Wordwrap at this column
-set formatoptions=tcl1  " Wrap, but not long lines, and not 1-letter words
+set formatoptions=cl1
 set formatoptions+=q    " Allow formatting of comments
 set formatoptions+=n    " Recognize numbered lists
 silent! set formatoptions+=p    " Don't break one word alone on a line
 set formatoptions+=j    " Join comment lines
+set formatoptions-=t
 set splitbelow          " Split new windows below current
 set noerrorbells
 set scrolloff=4         " Scroll before reaching screen edge
@@ -63,12 +67,10 @@ set cino+=J1            " Indent JavaScript object declarations
 
 "set ttyfast
 
-set belloff=all
-
 set wildmenu
 set wildmode=longest:full,longest
 set wildignore+=*.o,*~
-"set wildoptions=pum
+silent! set wildoptions=pum
 
 set nrformats-=octal
 
@@ -88,8 +90,6 @@ if has("autocmd")
     au BufNewFile,BufRead *.rb set filetype=ruby
     au BufNewFile,BufRead *.swift set filetype=swift
     au BufNewFile,BufRead *.inc set filetype=asm
-
-    au VimLeave * set guicursor=a:block-blinkon0
 endif " has ("autocmd")
 
 set completeopt+=menuone,noinsert,noselect,preview
@@ -101,7 +101,6 @@ let g:ruby_minlines = 100
 
 " Color scheme
 syntax on
-colorscheme arkkulight
 
 " taglist.vim:
 let Tlist_Close_On_Select = 1
@@ -132,6 +131,8 @@ set listchars=tab:>\ ,trail:-,extends:>,precedes:<,nbsp:+
 nnoremap <Space> <Nop>
 let maplocalleader=" "
 
+colorscheme arkkulight
+
 if exists('g:vscode')
     " Visual Studio Code neovim integration
 else
@@ -147,6 +148,13 @@ else
 
     set timeoutlen=400
     set guioptions-=e
+
+    set switchbuf=useopen,split
+    silent! set switchbuf+=usetab
+
+    " alt backspace
+    inoremap <Esc><C-H> <C-U>
+    inoremap <Esc><C-?> <C-U>
 
     " Map some keys to be more like other programs
     inoremap <C-BS> <C-W>
@@ -216,5 +224,6 @@ else
     if has("autocmd")
         " Strip space at the end of line in programming language files
         autocmd FileType c,swift,cc,cs,cxx,cpp,h,hpp,java,php,python,ruby,sh,bash,zsh,eiffel,asm,elixir,erlang,awk,json,javascript,html,css,scss,xml,xhtml,yaml,dart,kotlin,rust,d autocmd BufWritePre <buffer> %s/\s\+$//e
+        autocmd FileType text,markdown,textile setlocal formatoptions+=t
     endif
 endif

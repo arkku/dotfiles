@@ -1,6 +1,8 @@
 [core]
-	editor = vim
+	editor = nvim
 	excludesfile = ~/.gitignore_global
+[mergetool "nvim"]
+        cmd = nvim -f -c \"Gdiff\" \"$MERGED\"
 [color]
 	ui = auto
 [alias]
@@ -17,4 +19,3 @@
 	clean = git lfs clean %f
 	smudge = git lfs smudge %f
 	required = true
-

@@ -4,7 +4,7 @@
 !*faceName: Monaco
 !*faceSize: 9
 xterm*loginShell: true
-UXTerm*termName: xterm-new
+UXTerm*termName: xterm-256color
 
 xterm*renderFont: true
 xterm*boldFont: -misc-fixed-bold-r-normal-*-13-*-*-*-*-iso10646-1

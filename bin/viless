@@ -1,0 +1,17 @@
+#!/bin/sh
+FILE='-'
+if [ -r "$1" ]; then
+    FILE="$1"
+    shift
+fi
+VIM=vim
+if which -s nvim 2>/dev/null; then
+    VIM=nvim
+fi
+"$VIM" -R -c 'set nomod nolist' \
+    -c 'noremap q :quit<CR>' \
+    -c 'noremap <SPACE> <C-D><C-G>' \
+    -c 'noremap b <C-U><C-G>' \
+    -c 'nnoremap <Up> <C-Y>' \
+    -c 'nnoremap <Down> <C-E>' \
+    "$FILE" "$@"

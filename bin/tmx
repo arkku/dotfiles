@@ -30,7 +30,7 @@ if [ "$1" = "prefix" -a -n "$2" ]; then
     shift
     shift
 elif [ "$1" = "b" ]; then
-    more_args="${more_args}; set-option prefix ^b"
+    more_args="${more_args}; set-option prefix ^b; unbind b; unbind C-b; bind b send-prefix; bind C-b send-prefix"
     shift
 fi
 

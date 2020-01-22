@@ -1,0 +1,19 @@
+#!/bin/sh
+if [ -n "$1" ]; then
+    export MANPAGER="$0"
+    exec man -P "$0" "$@"
+fi
+VIM=vim
+if which -s nvim 2>/dev/null; then
+    COL='cat'
+    VIM='nvim'
+else
+    COL='col -bpx'
+fi
+$COL | $VIM -R -c 'set ft=man nomod nolist' \
+    -c 'noremap q :quit<CR>' \
+    -c 'noremap <SPACE> <C-D><C-G>' \
+    -c 'noremap b <C-U><C-G>' \
+    -c 'nnoremap <Up> <C-Y>' \
+    -c 'nnoremap <Down> <C-E>' \
+    -c 'nnoremap K :Man <C-R>=expand("<cword>")<CR><CR>' - "$@"

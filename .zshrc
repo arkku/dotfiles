@@ -108,7 +108,7 @@ if [[ -o interactive ]]; then
             zle reset-prompt
         }
         zle -N copy-input
-        bindkey '^X' copy-input
+        bindkey '\C-X' copy-input
     fi
 
     if [ -n "$CLIPPASTE" ]; then
@@ -162,7 +162,7 @@ if [[ -o interactive ]]; then
             escape-and-paste-input
         }
         zle -N paste-input
-        bindkey '^B' paste-input
+        bindkey '\C-B' paste-input
     fi
 
     if [ -n "$TMUX" -a -n "$TMUXPASTE" ]; then
@@ -172,7 +172,7 @@ if [[ -o interactive ]]; then
             escape-and-paste-input "$(tmuxpaste)"
         }
         zle -N paste-tmux-input
-        bindkey '^T' paste-tmux-input
+        bindkey '\C-T' paste-tmux-input
     fi
 
     # Aliases
@@ -212,29 +212,37 @@ if [[ -o interactive ]]; then
     if which -s nvim >/dev/null 2>&1; then
         alias vi='nvim'
         alias nvimdiff='nvim -d'
+        alias -g :VI='| nvim -R -'
+        alias -g :VIM='|& nvim -R -'
+        if which -s viman >/dev/null 2>&1; then
+            [ -z "$MANPAGER" ] && export MANPAGER='viman'
+        fi
+    else
+        alias -g :VI='| vim -R -'
+        alias -g :VIM='|& vim -R -'
+    fi
+    if which -s viless >/dev/null 2>&1; then
+        alias -g :VL='| viless'
     fi
 
     # Pipe shortcuts
-    alias -g LES='| less'
-    alias -g LESS='|& less'
-    alias -g GR='| grep --color=auto'
-    alias -g FGR='| grep -F --color=auto'
-    alias -g EGR='| egrep --color=auto'
-    alias -g GRE='|& grep --color=auto'
-    alias -g FGRE='|& grep -F --color=auto'
-    alias -g HE='| head'
-    alias -g TA='| tail'
-    alias -g H1='| head -1'
-    alias -g T1='| tail -1'
-    alias -g HL='|& head -n $(( LINES / 2 + 1 ))'
-    alias -g TL='|& tail -n $(( LINES / 2 + 1 ))'
-    alias -g SO='| sort'
-    alias -g SON='| sort -n'
-    alias -g SOU='| sort -u'
-    alias -g X0='| xargs -0'
-    alias -g NUL='>/dev/null'
-    alias -g NULL='>/dev/null 2>&1'
-    alias -g WCL='| wc -l'
+    alias -g :L='| less -XRF'
+    alias -g :LE='|& less -XRF'
+    alias -g :G='| grep --color=auto'
+    alias -g :FG='| grep -F --color=auto'
+    alias -g :EG='| egrep --color=auto'
+    alias -g :GR='|& grep --color=auto'
+    alias -g :FGR='|& grep -F --color=auto'
+    alias -g :H1='| head -1'
+    alias -g :T1='| tail -1'
+    alias -g :H='|& head -n $(( LINES / 2 + 1 ))'
+    alias -g :T='|& tail -n $(( LINES / 2 + 1 ))'
+    alias -g :S='| sort'
+    alias -g :SN='| sort -n'
+    alias -g :SU='| sort -u'
+    alias -g :N='>/dev/null'
+    alias -g :NUL='>/dev/null 2>&1'
+    alias -g :WC='| wc -l'
 
     # System-specific variations
     case `uname`; in
@@ -314,9 +322,17 @@ if [[ -o interactive ]]; then
     precmd_functions+=( precmd_vcs_info )
     zstyle ':vcs_info:*' enable git
     zstyle ':vcs_info:*' use-prompt-escapes true
-    zstyle ':vcs_info:*:*' max-exports 5
-    zstyle ':vcs_info:*:*' formats '%F{cyan}%r%F{white}/%F{cyan}%b%F{green}%c%F{yellow}%u%F{reset}' ' %r/%b%c%u' ' ' '%r/%S' '%R'
-    zstyle ':vcs_info:*:*' actionformats '%F{cyan}%r%F{white}/%F{cyan}%b%F{white}|%F{red}%a%F{green}%c%F{yellow}%u%F{reset}' '%r/%b %a%c%u' '%F{white}# %s %a: %m%F{reset} ' '%r/%S' '%R'
+    zstyle ':vcs_info:*:*' max-exports 6
+
+    # 0: repository name
+    # 1: branch
+    # 2: repository subdir
+    # 3: repository root path
+    # 4: info markers
+    # 5: actions
+    zstyle ':vcs_info:*:*' formats '%r' '%b' '%S' '%R' '%c%u' ' '
+    zstyle ':vcs_info:*:*' actionformats '%r' '%b' '%S' '%R' '%c%u' '%a'
+
     zstyle ':vcs_info:*' get-revision false
     zstyle ':vcs_info:*' stagedstr '+'
     zstyle ':vcs_info:*' unstagedstr '~'
@@ -352,62 +368,63 @@ if [[ -o interactive ]]; then
 
     local mode
     # Key bindings
-    bindkey '^P' history-beginning-search-backward
-    bindkey '^N' history-beginning-search-forward
-    bindkey '^[[5~' history-search-backward
-    bindkey '^[[6~' history-search-forward
-    bindkey '^W' smart-backward-kill-word
-    bindkey '^K' kill-word
-    bindkey '^U' kill-whole-line
-    bindkey '^Y' yank
-    bindkey '^Q' push-line-or-edit
-    bindkey '^D' delete-char
-    bindkey '^_' history-incremental-pattern-search-backward
-    bindkey '^\\' history-incremental-pattern-search-forward
+    bindkey '\C-P' history-beginning-search-backward
+    bindkey '\C-N' history-beginning-search-forward
+    bindkey '\e[5~' history-search-backward
+    bindkey '\e[6~' history-search-forward
+    bindkey '\e[1;3C' beginning-of-line
+    bindkey '\e[1;3D' end-of-line
+    bindkey '\C-W' smart-backward-kill-word
+    bindkey '\C-K' kill-word
+    bindkey '\C-U' kill-whole-line
+    bindkey '\C-Y' yank
+    bindkey '\C-Q' push-line-or-edit
+    bindkey '\C-D' delete-char
+    bindkey '\C-_' history-incremental-pattern-search-backward
+    bindkey '\C-\\' history-incremental-pattern-search-forward
     bindkey -M vicmd '/' history-incremental-pattern-search-backward
     bindkey -M vicmd '?' history-incremental-pattern-search-forward
-    bindkey '^L' clear-screen
+    bindkey '\C-L' clear-screen
     for mode in vicmd viins; do
-        bindkey -M "$mode" '^R' redo
-        bindkey -M "$mode" '^Z' undo
+        bindkey -M "$mode" '\C-R' redo
+        bindkey -M "$mode" '\C-Z' undo
     done
     for mode in '-M vicmd' '-M viins' ''; do
         # Make navigation the same for vi mode
-        bindkey ${=mode} '^[[C' forward-char
-        bindkey ${=mode} '^[[D' backward-char
-        bindkey ${=mode} '^[OC' forward-char
-        bindkey ${=mode} '^[OD' backward-char
-        bindkey ${=mode} '^[[1~' beginning-of-line
-        bindkey ${=mode} '^[[4~' end-of-line
-        bindkey ${=mode} '^[[5C' forward-word
-        bindkey ${=mode} '^[[5D' backward-word
-        bindkey ${=mode} '^[[1;5C' forward-word
-        bindkey ${=mode} '^[[1;5D' backward-word
-        bindkey ${=mode} '^[[3~' delete-char
-        bindkey ${=mode} '^E' end-of-line
+        bindkey ${=mode} '\e[C' forward-char
+        bindkey ${=mode} '\e[D' backward-char
+        bindkey ${=mode} '\eOC' forward-char
+        bindkey ${=mode} '\eOD' backward-char
+        bindkey ${=mode} '\e[1~' beginning-of-line
+        bindkey ${=mode} '\e[4~' end-of-line
+        bindkey ${=mode} '\e[5C' forward-word
+        bindkey ${=mode} '\e[5D' backward-word
+        bindkey ${=mode} '\e[1;5C' forward-word
+        bindkey ${=mode} '\e[1;5D' backward-word
+        bindkey ${=mode} '\e[3~' delete-char
+        bindkey ${=mode} '\C-E' end-of-line
         if [[ "$mode" = '-M vicmd' ]]; then
-            bindkey ${=mode} '^?' backward-char
-            bindkey ${=mode} '^H' backward-char
-            bindkey ${=mode} "^[OA" up-line
-            bindkey ${=mode} "^[OB" down-line
-            bindkey ${=mode} "^[[A" up-line
-            bindkey ${=mode} "^[[B" down-line
+            bindkey ${=mode} '\C-?' backward-char
+            bindkey ${=mode} '\C-H' backward-char
+            bindkey ${=mode} '\eOA' up-line
+            bindkey ${=mode} '\eOB' down-line
+            bindkey ${=mode} '\e[A' up-line
+            bindkey ${=mode} '\e[B' down-line
         else
-            bindkey ${=mode} '^A' beginning-of-line
-            bindkey ${=mode} '^H' backward-delete-char
-            bindkey ${=mode} '^?' backward-delete-char
-            bindkey ${=mode} '^H' backward-delete-char
-            bindkey ${=mode} "^[OA" up-line-or-history
-            bindkey ${=mode} "^[OB" down-line-or-history
-            bindkey ${=mode} "^[[A" up-line-or-history
-            bindkey ${=mode} "^[[B" down-line-or-history
+            bindkey ${=mode} '\C-A' beginning-of-line
+            bindkey ${=mode} '\C-?' backward-delete-char
+            bindkey ${=mode} '\C-H' backward-delete-char
+            bindkey ${=mode} '\eOA' up-line-or-history
+            bindkey ${=mode} '\eOB' down-line-or-history
+            bindkey ${=mode} '\e[A' up-line-or-history
+            bindkey ${=mode} '\e[B' down-line-or-history
         fi
     done
     unset mode
 
     autoload -U edit-command-line
     zle -N edit-command-line
-    bindkey '^ ' edit-command-line
+    bindkey '\C- ' edit-command-line
     bindkey -M vicmd v edit-command-line
 
     # Vim-like surround
@@ -431,7 +448,7 @@ if [[ -o interactive ]]; then
 
     # Expand uppercase aliases as we type (credit: Pat Regan)
     expand-global-alias() {
-       if [[ $LBUFFER =~ '[A-Z0-9]+$' ]]; then # Only expand uppercase aliases
+        if [[ $LBUFFER =~ ' [:][A-Z0-9]+$' ]]; then # Only expand uppercase aliases
          zle _expand_alias
          zle expand-word
        fi
@@ -439,8 +456,8 @@ if [[ -o interactive ]]; then
     }
     zle -N expand-global-alias
     bindkey ' ' expand-global-alias
-    bindkey '^ ' magic-space            # control-space to bypass completion
     bindkey -M isearch ' ' magic-space  # normal space during searches
+    # Note: Do Ctrl-V + space to force a space without completing
 
     # Terminal title (or screen/tmux hardstatus)
     case "$TERM" in
@@ -483,7 +500,10 @@ if [[ -o interactive ]]; then
 
         set_title_prompt() {
             print -n "$TITLE_SET_HEAD"
-            print -Pn '%n@%m$vcs_info_msg_1_'
+            print -Pn '%n@%m'
+            if [ -n "$vcs_info_msg_0_" ]; then
+                print -n " $vcs_info_msg_0_/$vcs_info_msg_1_$vcs_info_msg_4_"
+            fi
             print -n "$TITLE_SET_TAIL"
         }
         precmd_functions+=( set_title_prompt )
@@ -537,15 +557,20 @@ if [[ -o interactive ]]; then
         zle accept-line
     }
     zle -N accept-line-vicmd
-    bindkey -M vicmd '^M' accept-line-vicmd
+    bindkey -M vicmd '\C-M' accept-line-vicmd
 
     # Prompt
+    pwd_prompt=''
+    vcs_prompt=''
 
     format_pwd() {
         setopt localoptions extendedglob
-        if [ -n "$vcs_info_msg_3_" ]; then
+
+        if [ -n "$vcs_info_msg_0_" ]; then
             # Inside a git repository: start display from the repository base
-            local repo="${vcs_info_msg_3_/%\/./}"
+            local repo="$vcs_info_msg_0_/$vcs_info_msg_2_"
+            # Strip the trailing '/.' if we are in the repo root dir
+            repo="${repo/%\/./}"
             if [ "$PWD" = "$HOME/$repo" ]; then
                 pwd_prompt="~/$repo"
             elif [ ${#PWD} -le $(( ${#repo} + 5 )) ]; then
@@ -555,7 +580,7 @@ if [[ -o interactive ]]; then
                 pwd_prompt="…/$repo"
             fi
             unset repo
-            export REPO="$vcs_info_msg_4_"
+            export REPO="$vcs_info_msg_3_"
         else
             # Use ~ to represent the home directory
             pwd_prompt="${PWD/#$HOME/~}"
@@ -569,17 +594,61 @@ if [[ -o interactive ]]; then
             export REPO
         fi
 
-        local trimmed
-
         # Keep the first and last two directories only
-        trimmed="${pwd_prompt:/#%(#b)((…[[:alpha:]]#|\~|)\/[^\/]##\/[^\/]##\/)(#b)([^\/]##\/)##(#b)([^\/]##\/[^\/]##)/$match[1]…/$match[4]}"
+        local trimmed="${pwd_prompt:/#%(#b)((…[[:alpha:]]#|\~|)\/[^\/]##\/[^\/]##\/)(#b)([^\/]##\/)##(#b)([^\/]##\/[^\/]##)/$match[1]…/$match[4]}"
         [[ ${#trimmed} -lt ${#pwd_prompt} ]] && pwd_prompt="$trimmed"
 
         # Clean up multiple ellipses
         pwd_prompt="${pwd_prompt//(…\/)##/…/}"
 
         # Convert the UTF-8 ellipsis if necessary
-        [[ "$ELLIPSIS" != '…' ]] && pwd_prompt="${pwd_prompt//…/${ELLIPSIS:-...}}"
+        [[ $ELLIPSIS != '…' ]] && pwd_prompt="${pwd_prompt//…/${ELLIPSIS:-...}}"
+
+        vcs_prompt=''
+        vcs_status=''
+        if [ -n "$vcs_info_msg_0_" ]; then
+            vcs_prompt='%F{white}'
+            trimmed="$vcs_info_msg_1_"
+            [[ ${#trimmed} -gt 20 ]] && trimmed="${trimmed//#*\//}"
+
+            local pwd_truncated=''
+            local columns="${COLUMNS:-0}"
+            columns=$(( columns - ${#pwd_prompt} - 3 ))
+            if [[ $columns -lt 65 ]]; then
+                columns=65
+                pwd_truncated=1
+                [[ $columns -gt $(( COLUMNS  - 5 )) ]] && columns=$(( COLUMNS - 5 ))
+            fi
+
+            if [ "$trimmed" = 'master' -a $(( space - ${#vcs_info_msg_0_} )) -lt 40 ]; then
+                trimmed='m'
+            fi
+
+            local used=${#trimmed}
+            [[ $used -gt 20 ]] && used=20
+            used=$(( used + 5 ))
+
+            local space=$(( columns - used ))
+
+            if [ -n "$pwd_truncated" -a $space -gt 20 ]; then
+                # Only show repo on right if it may be truncated on left
+                vcs_prompt+="%$(( -(columns - 10) ))<${ELLIPSIS:-...}<${vcs_info_msg_0_//\%/%%}%<<"
+            fi
+            if [ "$vcs_info_msg_1_" = 'master' ]; then
+                vcs_prompt+="/%F{blue}${trimmed}"
+            else
+                vcs_prompt+="/%F{cyan}%20<${ELLIPSIS:-...}<${trimmed//\%/%%}%<<"
+            fi
+
+            # Show markers for changes in repo
+            [ -n "$vcs_info_msg_4_" ] && vcs_prompt+="%F{yellow}${vcs_info_msg_4_//\%/%%}"
+
+            if [ -n "$vcs_info_msg_5_" -a ! "$vcs_info_msg_5_" = ' ' ]; then
+                vcs_status="%F{white}%-5>${ELLIPSIS:-...}>${vcs_info_msg_5_//\%/%%}%>>%F{reset}"
+            fi
+
+            unset columns used pwd_truncated space
+        fi
 
         # Escape any percents to avoid prompt expansion
         pwd_prompt="${pwd_prompt//\%/%%}"
@@ -597,9 +666,13 @@ if [[ -o interactive ]]; then
     # Right prompt:
     # [git repo/branch] [markers if there are local changes]
 
-    export PROMPT='%(?..%F{red}?$?%F{reset} )%F{white}!%! %(!__${SUDO_USER:+%n })${prompt_vi_mode}$vcs_info_msg_2_
-%F{cyan}%-65<$ELLIPSIS<${pwd_prompt:-%~}%<<%F{reset}%(!_#_${PROMPTCHAR:-%#}) '
-    export RPROMPT='    %F{cyan}%(1j.%j&.)$vcs_info_msg_0_%F{reset}'
+    export pwd_prompt="$PWD"
+    export vcs_prompt=''
+    export vcs_status=''
+    export prompt_vi_mode=''
+    export PROMPT='%(?..%F{red}?$?%F{reset} )%F{white}!%! %(!__${SUDO_USER:+%n })${prompt_vi_mode}${vcs_status}
+%F{cyan}%-60<$ELLIPSIS<${pwd_prompt:-%~}%<<%F{reset}%(!_#_${PROMPTCHAR:-%#}) '
+    export RPROMPT='    %F{magenta}%(1j.%j&.)$vcs_prompt%F{reset}'
 
     # Syntax highlighting
     local hlpath
