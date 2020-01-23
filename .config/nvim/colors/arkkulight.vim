@@ -25,7 +25,7 @@ hi Float term=none cterm=none ctermfg=darkgreen gui=none guifg=#0099aa
 hi Character term=none cterm=none ctermfg=darkgreen gui=none guifg=#0041a3
 hi String term=none cterm=none ctermfg=brown gui=none guifg=#dd6666
 
-hi Identifier term=none cterm=none ctermfg=lightblue gui=none guifg=#003366
+hi Identifier term=none cterm=none ctermfg=blue gui=none guifg=#003366
 hi clear Function
 hi Function term=none cterm=none gui=none guifg=#000000
 
