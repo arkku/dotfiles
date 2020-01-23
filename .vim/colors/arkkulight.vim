@@ -165,3 +165,9 @@ function! g:BuffetSetCustomColors()
     hi! BuffetModActiveBuffer term=reverse cterm=none ctermfg=lightblue ctermbg=blue gui=none guibg=#cccccc guifg=#403f53
 endfunction
 
+if !empty($TMUX) || !empty($TERM_PROGRAM)
+    hi SpellBad gui=none guibg=#ffddcc
+    hi SpellCap gui=none guibg=#ffddff
+    hi SpellRare gui=none
+    hi SpellLocal gui=none
+endif

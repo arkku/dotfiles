@@ -12,7 +12,7 @@ hi NormalNC term=none cterm=none gui=none guifg=#333333
 hi Terminal term=none cterm=none gui=none guifg=#000000 guibg=#ffffff
 
 hi SpecialKey term=reverse cterm=bold ctermfg=cyan gui=bold guifg=#0066cc guibg=#f0f0ff
-hi WhiteSpace term=standout cterm=none ctermfg=lightcyan gui=none guifg=#d0f0f0
+hi WhiteSpace term=standout cterm=none ctermfg=lightcyan gui=none guifg=#c0f0f0
 hi Conceal term=underline cterm=none ctermfg=gray gui=none guifg=#cccccc
 
 " Syntax highlighting
@@ -165,3 +165,9 @@ function! g:BuffetSetCustomColors()
     hi! BuffetModActiveBuffer term=reverse cterm=none ctermfg=lightblue ctermbg=blue gui=none guibg=#cccccc guifg=#403f53
 endfunction
 
+if !empty($TMUX) || !empty($TERM_PROGRAM)
+    hi SpellBad gui=none guibg=#ffddcc
+    hi SpellCap gui=none guibg=#ffddff
+    hi SpellRare gui=none
+    hi SpellLocal gui=none
+endif

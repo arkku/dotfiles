@@ -17,8 +17,8 @@ endif
 
 set ttymouse=xterm2
 
-set nohls               " Don't hilight search terms
 set nocompatible	" Use Vim defaults of 100% vi compatibility
+set nohls               " Don't hilight search terms
 
 set visualbell
 set t_vb=
@@ -29,10 +29,9 @@ set nostartofline       " Try to stay in the same column
 
 set modelines=0
 set autoindent		" always set autoindenting on
-set viminfo='20,\"50	" read/write a .viminfo file, don't store more than
-			" 50 lines of registers
-set history=50		" keep 50 lines of command line history
+set viminfo='20,\"100	" read/write a .viminfo file
 set ruler		" show the cursor position all the time
+set whichwrap=b,s,[,]   " Allow arrows to wrap over lines in insert mode
 
 set secure              " Secure external vimrcs
 
@@ -66,6 +65,8 @@ set formatoptions+=q    " Allow formatting of comments
 set formatoptions+=n    " Recognize numbered lists
 silent! set formatoptions+=p    " Don't break one word alone on a line
 set formatoptions+=j    " Join comment lines
+set formatoptions+=r    " Auto-insert comment leader on return
+"set formatoptions+=a    " Automatically reformat paragraphs
 set formatoptions-=t
 set splitbelow          " Split new windows below current
 set noerrorbells
@@ -145,58 +146,88 @@ set listchars=tab:>\ ,trail:-,extends:>,precedes:<,nbsp:+
 nnoremap <Space> <Nop>
 let maplocalleader=" "
 
+silent! set virtualedit=onemore,block
+
 if &background == "light"
     colorscheme arkkulight
 else
     colorscheme arkku
 endif
 
+set ttimeout
+set ttimeoutlen=100
+
+" Paste in insert mode with C-B, toggling paste mode (mnemonic: "Baste")
+set pastetoggle=<F10>
+if empty(mapcheck('<C-B>', 'i'))
+    inoremap <C-B> <F10><C-R>+<F10>
+endif
+
+" arrows
+noremap <Esc>[D <Left>
+noremap <Esc>[C <Right>
+noremap <Esc>[A <Up>
+noremap <Esc>[B <Down>
+inoremap <Esc>[D <Left>
+inoremap <Esc>[C <Right>
+inoremap <Esc>[A <Up>
+inoremap <Esc>[B <Down>
+noremap <Esc>OD <Left>
+noremap <Esc>OC <Right>
+noremap <Esc>OA <Up>
+noremap <Esc>OB <Down>
+inoremap <Esc>OD <Left>
+inoremap <Esc>OC <Right>
+inoremap <Esc>OA <Up>
+inoremap <Esc>OB <Down>
+
+" ctrl arrows
+noremap <Esc>[5D B
+noremap <Esc>[5C W
+noremap <Esc>[1;5D B
+noremap <Esc>[1;5C W
+noremap <Esc>[5A <Home>
+noremap <Esc>[5B <End>
+noremap <Esc>[1;5A <Home>
+noremap <Esc>[1;5B <End>
+inoremap <Esc>[5D <C-O>b
+inoremap <Esc>[5C <C-O>w
+inoremap <Esc>[1;5D <C-O>b
+inoremap <Esc>[1;5C <C-O>w
+inoremap <Esc>[5A <Home>
+inoremap <Esc>[5B <End>
+inoremap <Esc>[1;5A <Home>
+inoremap <Esc>[1;5B <End>
+
+" alt arrows
+noremap <Esc>[1;3D b
+noremap <Esc>[1;3C w
+noremap <Esc><Esc>[D b
+noremap <Esc><Esc>[C w
+noremap <Esc>[1;3A <Home>
+noremap <Esc>[1;3B <End>
+noremap <Esc><Esc>[A <Home>
+noremap <Esc><Esc>[B <End>
+inoremap <Esc>[1;3D <C-O>b
+inoremap <Esc>[1;3C <C-O>w
+inoremap <Esc><Esc>[D <C-O>b
+inoremap <Esc><Esc>[C <C-O>w
+inoremap <Esc>[1;3A <Home>
+inoremap <Esc>[1;3B <End>
+inoremap <Esc><Esc>[A <Home>
+inoremap <Esc><Esc>[B <End>
+
+" cmd arrows
+noremap <Esc>[1;4D <Home>
+noremap <Esc>[1;4C <End>
+noremap <Esc>[1;4A <PageUp>
+noremap <Esc>[1;4B <PageDown>
+inoremap <Esc>[1;4D <Home>
+inoremap <Esc>[1;4C <End>
+inoremap <Esc>[1;4A <PageUp>
+inoremap <Esc>[1;4B <PageDown>
+
 if 1
-    " Paste in insert mode with C-B, toggling paste mode (mnemonic: "Baste")
-    set pastetoggle=<F10>
-    if empty(mapcheck('<C-B>', 'i'))
-        inoremap <C-B> <F10><C-R>+<F10>
-    endif
-
-    " ctrl arrows
-    noremap <Esc>[5D b
-    noremap <Esc>[5C w
-    noremap <Esc>[1;5D b
-    noremap <Esc>[1;5C w
-    noremap <Esc>[5A <Up>
-    noremap <Esc>[5B <Down>
-    noremap <Esc>[1;5A <Up>
-    noremap <Esc>[1;5B <Down>
-    inoremap <Esc>[5D <C-O>b
-    inoremap <Esc>[5C <C-O>w
-    inoremap <Esc>[1;5D <C-O>b
-    inoremap <Esc>[1;5C <C-O>w
-    inoremap <Esc>[5A <Up>
-    inoremap <Esc>[5B <Down>
-    inoremap <Esc>[1;5A <Up>
-    inoremap <Esc>[1;5B <Down>
-
-    " alt arrows
-    noremap <Esc>[1;3D <Home>
-    noremap <Esc>[1;3C <End>
-    noremap <Esc><Esc>[D <Home>
-    noremap <Esc><Esc>[C <End>
-    noremap <Esc>[1;3A <Up>
-    noremap <Esc>[1;3B <Down>
-    noremap <Esc><Esc>[A <Up>
-    noremap <Esc><Esc>[B <Down>
-    inoremap <Esc>[1;3D <Home>
-    inoremap <Esc>[1;3C <End>
-    inoremap <Esc><Esc>[D <Home>
-    inoremap <Esc><Esc>[C <End>
-    inoremap <Esc>[1;3A <Up>
-    inoremap <Esc>[1;3B <Down>
-    inoremap <Esc><Esc>[A <Up>
-    inoremap <Esc><Esc>[B <Down>
-
-    set ttimeout
-    set ttimeoutlen=100
-
     set timeoutlen=400
     set guioptions-=e
 
@@ -213,15 +244,17 @@ if 1
     inoremap <M-Left> <Home>
     inoremap <M-Right> <End>
     inoremap <C-A> <Home>
-    inoremap <C-E> <End>
     cnoremap <C-A> <Home>
-    cnoremap <C-E> <End>
+    inoremap <expr> <C-E> pumvisible() ? "\<C-E>" : "\<End>"
+    cnoremap <expr> <C-E> pumvisible() ? "<C-E>" : "\<End>"
 
     " Map the unused C-Q to the old C-A
     inoremap <C-Q> <C-A>
 
     " open a new buffer and edit a file in it with 'open'
     cabbrev open enew\|e
+    cabbrev vopen vnew\|e
+    cabbrev hopen new\|e
 
     " \1 to \0 switch buffers (vim-buffet)
     nmap <Leader>1 <Plug>BuffetSwitch(1)
@@ -236,6 +269,11 @@ if 1
     nmap <Leader>0 <Plug>BuffetSwitch(10)
     nnoremap <Leader>q <Esc>:bd<CR>
     nnoremap <Leader>x <Esc>:bw!<CR>
+
+    " Quickfix
+    nnoremap <Leader>f <Esc>:copen<CR>
+    nnoremap <Leader>F <Esc>:ccl<CR>
+    nnoremap <Leader>w <Esc>:cw<CR>
 
     " Space tab to open a new tab
     nnoremap <Leader><Tab> <Esc>:tabnew<CR>
@@ -263,6 +301,7 @@ if 1
 
     " I use ^T as the tmux prefix, so let's appropriate ^B for the terminal
     tnoremap <C-B> <C-T>
+    inoremap <C-B> <C-T>
 
     " Tab to cycle buffers (with a hack to get rid of NERDTree)
     nnoremap <Tab> <Esc>:silent! NERDTreeClose<CR><Esc>:silent! bn<CR><Esc>

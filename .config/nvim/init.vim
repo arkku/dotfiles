@@ -7,7 +7,6 @@ if $TERM =~ '.*-256color.*' && ($TERM_PROGRAM != "Apple_Terminal" || !empty($TMU
     set colorcolumn=+1
 endif
 
-
 set belloff=all
 silent! set encoding=utf-8
 set backspace=indent,eol,start
@@ -15,10 +14,9 @@ set nostartofline       " Try to stay in the same column
 
 set modelines=0
 set autoindent		" always set autoindenting on
-set viminfo='20,\"50	" read/write a .viminfo file, don't store more than
-			" 50 lines of registers
-set history=50		" keep 50 lines of command line history
+set viminfo='20,\"100	" read/write a .viminfo file
 set ruler		" show the cursor position all the time
+set whichwrap=b,s,[,]   " Allow arrows to wrap over lines in insert mode
 
 set secure              " Secure external vimrcs
 
@@ -52,6 +50,8 @@ set formatoptions+=q    " Allow formatting of comments
 set formatoptions+=n    " Recognize numbered lists
 silent! set formatoptions+=p    " Don't break one word alone on a line
 set formatoptions+=j    " Join comment lines
+set formatoptions+=r    " Auto-insert comment leader on return
+"set formatoptions+=a    " Automatically reformat paragraphs
 set formatoptions-=t
 set splitbelow          " Split new windows below current
 set noerrorbells
@@ -131,21 +131,33 @@ set listchars=tab:>\ ,trail:-,extends:>,precedes:<,nbsp:+
 nnoremap <Space> <Nop>
 let maplocalleader=" "
 
+silent! set virtualedit=onemore,block
+
 colorscheme arkkulight
+
+" ctrl arrows
+noremap <C-Left> B
+noremap <C-Right> W
+noremap <C-Up> <Home>
+noremap <C-Down> <End>
+inoremap <C-Left> <C-O>b
+inoremap <C-Right> <C-O>w
+inoremap <C-Up> <Home>
+inoremap <C-Down> <End>
+
+" alt arrows
+noremap <A-Left> b
+noremap <A-Right> w
+noremap <A-Up> <Home>
+noremap <A-Down> <End>
+inoremap <A-Left> <C-O>b
+inoremap <A-Right> <C-O>w
+inoremap <A-Up> <Home>
+inoremap <A-Down> <End>
 
 if exists('g:vscode')
     " Visual Studio Code neovim integration
 else
-    " Esc to exit terminal (with some delay), Esc Esc to send Esc
-    tnoremap <Esc> <C-\><C-N>
-    tnoremap <Esc><Esc> <Esc>
-
-    " I use ^T as the tmux prefix, so let's appropriate ^B for the terminal
-    tnoremap <C-B> <C-T>
-
-    " Double-Esc to clear highlight of previous search
-    nnoremap <Esc><Esc> :silent! noh<CR>:<BS><Esc>
-
     set timeoutlen=400
     set guioptions-=e
 
@@ -162,15 +174,17 @@ else
     inoremap <M-Left> <Home>
     inoremap <M-Right> <End>
     inoremap <C-A> <Home>
-    inoremap <C-E> <End>
     cnoremap <C-A> <Home>
-    cnoremap <C-E> <End>
+    inoremap <expr> <C-E> pumvisible() ? "\<C-E>" : "\<End>"
+    cnoremap <expr> <C-E> pumvisible() ? "<C-E>" : "\<End>"
 
     " Map the unused C-Q to the old C-A
     inoremap <C-Q> <C-A>
 
     " open a new buffer and edit a file in it with 'open'
     cabbrev open enew\|e
+    cabbrev vopen vnew\|e
+    cabbrev hopen new\|e
 
     " \1 to \0 switch buffers (vim-buffet)
     nmap <Leader>1 <Plug>BuffetSwitch(1)
@@ -185,6 +199,11 @@ else
     nmap <Leader>0 <Plug>BuffetSwitch(10)
     nnoremap <Leader>q <Esc>:bd<CR>
     nnoremap <Leader>x <Esc>:bw!<CR>
+
+    " Quickfix
+    nnoremap <Leader>f <Esc>:copen<CR>
+    nnoremap <Leader>F <Esc>:ccl<CR>
+    nnoremap <Leader>w <Esc>:cw<CR>
 
     " Space tab to open a new tab
     nnoremap <Leader><Tab> <Esc>:tabnew<CR>
@@ -212,6 +231,7 @@ else
 
     " I use ^T as the tmux prefix, so let's appropriate ^B for the terminal
     tnoremap <C-B> <C-T>
+    inoremap <C-B> <C-T>
 
     " Tab to cycle buffers (with a hack to get rid of NERDTree)
     nnoremap <Tab> <Esc>:silent! NERDTreeClose<CR><Esc>:silent! bn<CR><Esc>
