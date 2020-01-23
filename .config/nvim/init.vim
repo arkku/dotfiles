@@ -1,11 +1,24 @@
 " Configuration file for neovim
 
-
-set background=light
 if $TERM =~ '.*-256color.*' && ($TERM_PROGRAM != "Apple_Terminal" || !empty($TMUX))
     set termguicolors
     set colorcolumn=+1
     set list
+endif
+
+" Try to determine the terminal background color
+if $BACKGROUND == 'dark'
+    set background=dark
+elseif $BACKGROUND == 'light'
+    set background=light
+elseif $COLORFGBG =~ '.*[,;][0-68]$'
+    set background=dark
+elseif $COLORFGBG =~ '.*[,;]\(7\|1[0-9]\)$'
+    set background=light
+elseif $TERM =~ '.*\(linux\|ansi\|vt[0-9]|dos|bsd\).*'
+    set background=dark
+elseif &termguicolors
+    set background=light
 endif
 
 set belloff=all
@@ -134,7 +147,7 @@ let maplocalleader=" "
 
 silent! set virtualedit=onemore,block
 
-colorscheme arkkulight
+colorscheme arkku
 
 " ctrl arrows
 noremap <C-Left> B

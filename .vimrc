@@ -15,6 +15,16 @@ elseif &term =~ "xterm.*" || &term == "screen" || &term == "tmux" || &term =~ ".
     set t_Sb=[4%dm
 endif
 
+if $BACKGROUND == 'dark'
+    set background=dark
+elseif $BACKGROUND == 'light'
+    set background=light
+elseif $COLORFGBG =~ '.*[,;][0-68]$'
+    set background=dark
+elseif $COLORFGBG =~ '.*[,;]\(7\|1[0-9]\)$'
+    set background=light
+endif
+
 set ttymouse=xterm2
 
 set nocompatible        " Use Vim defaults of 100% vi compatibility
@@ -148,11 +158,7 @@ let maplocalleader=" "
 
 silent! set virtualedit=onemore,block
 
-if &background == "light"
-    colorscheme arkkulight
-else
-    colorscheme arkku
-endif
+colorscheme arkku
 
 set ttimeout
 set ttimeoutlen=100
