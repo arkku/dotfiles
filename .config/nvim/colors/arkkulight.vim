@@ -66,7 +66,7 @@ hi Ignore term=none cterm=none ctermfg=white gui=none guifg=#fefefe
 
 hi Error term=reverse cterm=none ctermfg=white ctermbg=darkred gui=none guifg=#ffffff guibg=#990000
 
-hi Todo term=standout cterm=none ctermfg=white ctermbg=darkgreen gui=none guifg=#ffffff guibg=#006600
+hi Todo term=standout cterm=none ctermfg=white ctermbg=darkgreen gui=none guifg=#003300 guibg=#99ffdd
 
 " Search and Selection
 hi IncSearch term=reverse cterm=reverse gui=none guibg=#ffe07a
@@ -171,3 +171,31 @@ if !empty($TMUX) || !empty($TERM_PROGRAM)
     hi SpellRare gui=none
     hi SpellLocal gui=none
 endif
+
+hi! link vimVar Identifier
+hi! link vimGroup Identifier
+hi! link vimMap Identifier
+hi! link vimFunc Function
+hi! link vimFunction Function
+hi! link vimUserFunc Function
+hi! link helpSpecial Special
+hi! link vimSet Normal
+hi! link vimSetEqual Normal
+hi! link vimCommand Keyword
+hi! link vimCmdSep Operator
+hi! link vimExecute Statement
+hi! link vimPattern Special
+hi! link vimSubstRep String
+hi! link vimSubstRange Special
+hi! link vimRange Special
+
+hi! link helpOption Special
+hi! link helpExample String
+hi! link helpVim Keyword
+hi! link helpHyperTextJump Label
+hi! link helpHyperTextEntry Tag
+hi! link helpCommand PreProc
+hi! link helpFunction Title
+hi! link helpOperator Character
+hi! link helpNote Todo
+

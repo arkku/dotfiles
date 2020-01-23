@@ -17,7 +17,7 @@ endif
 
 set ttymouse=xterm2
 
-set nocompatible	" Use Vim defaults of 100% vi compatibility
+set nocompatible        " Use Vim defaults of 100% vi compatibility
 set nohls               " Don't hilight search terms
 
 set visualbell
@@ -28,35 +28,35 @@ set backspace=indent,eol,start
 set nostartofline       " Try to stay in the same column
 
 set modelines=0
-set autoindent		" always set autoindenting on
-set viminfo='20,\"100	" read/write a .viminfo file
-set ruler		" show the cursor position all the time
+set autoindent          " always set autoindenting on
+set viminfo='20,\"100   " read/write a .viminfo file
+set ruler               " show the cursor position all the time
 set whichwrap=b,s,[,]   " Allow arrows to wrap over lines in insert mode
 
 set secure              " Secure external vimrcs
 
-set showcmd		" Show (partial) command in status line.
-set showmatch		" Show matching brackets.
-set ignorecase		" Do case insensitive matching
+set showcmd             " Show (partial) command in status line.
+set showmatch           " Show matching brackets.
+set ignorecase          " Do case insensitive matching
 
-set incsearch		" Incremental search
+set incsearch           " Incremental search
 silent! set inccommand=nosplit  " Incremental substitute
 
 set confirm             " Ask to save changes rather than fail
-set autowrite		" Automatically save before commands like :next and :make
+set autowrite           " Automatically save before commands like :next and :make
 silent! set autowriteall
 silent! set autoread
 
-set mouse=a		" Use mouse in all modes
-set number		" Show line numbers
-set shiftwidth=4	" Use indent depth of 4
-set softtabstop=4	
+set mouse=a             " Use mouse in all modes
+set number              " Show line numbers
+set shiftwidth=4        " Use indent depth of 4
+set softtabstop=4
 set tabstop=8
 set expandtab
 set smarttab
-set wrap		" Wrap long lines on screen
-set linebreak		" Wrap at word boundaries
-set foldclose=all	" Close folds automatically
+set wrap                " Wrap long lines on screen
+set linebreak           " Wrap at word boundaries
+set foldclose=all       " Close folds automatically
 set nofoldenable
 set foldmethod=marker
 set textwidth=79        " Wordwrap at this column
@@ -157,11 +157,25 @@ endif
 set ttimeout
 set ttimeoutlen=100
 
-" Paste in insert mode with C-B, toggling paste mode (mnemonic: "Baste")
-set pastetoggle=<F10>
-if empty(mapcheck('<C-B>', 'i'))
-    inoremap <C-B> <F10><C-R>+<F10>
-endif
+" ctrl arrows
+noremap <C-Left> B
+noremap <C-Right> W
+noremap <C-Up> <Home>
+noremap <C-Down> <End>
+inoremap <C-Left> <C-O>b
+inoremap <C-Right> <C-O>w
+inoremap <C-Up> <Home>
+inoremap <C-Down> <End>
+
+" alt arrows
+noremap <A-Left> b
+noremap <A-Right> w
+noremap <A-Up> <Home>
+noremap <A-Down> <End>
+inoremap <A-Left> <C-O>b
+inoremap <A-Right> <C-O>w
+inoremap <A-Up> <Home>
+inoremap <A-Down> <End>
 
 " arrows
 noremap <Esc>[D <Left>
@@ -243,10 +257,14 @@ if 1
     inoremap <C-Del> <C-O>dw
     inoremap <M-Left> <Home>
     inoremap <M-Right> <End>
+
     inoremap <C-A> <Home>
-    cnoremap <C-A> <Home>
     inoremap <expr> <C-E> pumvisible() ? "\<C-E>" : "\<End>"
-    cnoremap <expr> <C-E> pumvisible() ? "<C-E>" : "\<End>"
+    inoremap <C-B> <C-E>
+    " ^- map the unused C-B to the old C-E, even the mnemonic makes more sense
+
+    cnoremap <C-A> <Home>
+    cnoremap <C-B> <C-A>
 
     " Map the unused C-Q to the old C-A
     inoremap <C-Q> <C-A>
@@ -255,6 +273,9 @@ if 1
     cabbrev open enew\|e
     cabbrev vopen vnew\|e
     cabbrev hopen new\|e
+
+    " strip trailing whitespace
+    cabbrev stws %s/\s\+$//e
 
     " \1 to \0 switch buffers (vim-buffet)
     nmap <Leader>1 <Plug>BuffetSwitch(1)
@@ -301,7 +322,6 @@ if 1
 
     " I use ^T as the tmux prefix, so let's appropriate ^B for the terminal
     tnoremap <C-B> <C-T>
-    inoremap <C-B> <C-T>
 
     " Tab to cycle buffers (with a hack to get rid of NERDTree)
     nnoremap <Tab> <Esc>:silent! NERDTreeClose<CR><Esc>:silent! bn<CR><Esc>
@@ -310,10 +330,16 @@ if 1
     let g:buffet_show_index = 1
     let g:buffet_always_show_tabline = 0
     let g:NERDTreeQuitOnOpen = 1
+endif
 
-    if has("autocmd")
-        " Strip space at the end of line in programming language files
-        autocmd FileType c,swift,cc,cs,cxx,cpp,h,hpp,java,php,python,ruby,sh,bash,zsh,eiffel,asm,elixir,erlang,awk,json,javascript,html,css,scss,xml,xhtml,yaml,dart,kotlin,rust,d autocmd BufWritePre <buffer> %s/\s\+$//e
-        autocmd FileType text,markdown,textile setlocal formatoptions+=t
-    endif
+if has("autocmd")
+    "au FileType u,swift,cc,cs,cxx,cpp,h,hpp,java,php,python,ruby,sh,bash,zsh,eiffel,asm,elixir,erlang,awk,json,javascript,html,css,scss,xml,xhtml,yaml,dart,kotlin,rust,d autocmd BufWritePre <buffer> %s/\s\+$//e
+    " Wrap text only in text files
+    au FileType text,markdown,textile setlocal formatoptions+=t
+endif
+
+" Paste in insert mode with C-B, toggling paste mode (mnemonic: "Baste")
+set pastetoggle=<F10>
+if empty(mapcheck('<C-B>', 'i'))
+    inoremap <C-B> <F10><C-R>+<F10>
 endif
