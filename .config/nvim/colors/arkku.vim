@@ -146,11 +146,11 @@ hi GitGutterDeleteInvisible ctermfg=black ctermbg=black guibg=#222222 guifg=#000
 hi GitGutterAddInvisible ctermfg=black ctermbg=black guibg=#222222 guifg=#000000
 
 if &background == "dark"
-    hi Normal term=none cterm=none gui=none guifg=#aaaaaa guibg=#080811 ctermfg=gray ctermbg=black
+    hi Normal term=none cterm=none gui=none guifg=#aaaaaa guibg=#080811
     hi NormalNC term=none cterm=none gui=none guifg=#999999
     hi Terminal term=none cterm=none gui=none guifg=#aaaaaa guibg=#080811
 
-    hi LineNr term=reverse cterm=none ctermbg=black ctermfg=darkblue gui=none guibg=#222222 guifg=#666666
+    hi LineNr term=reverse cterm=none ctermbg=black ctermfg=darkgray gui=none guibg=#222222 guifg=#666666
 
     hi SpecialKey term=reverse cterm=bold ctermfg=cyan gui=bold guibg=#0066cc guifg=#f0f0ff
     hi WhiteSpace term=standout cterm=none ctermfg=darkblue gui=none guifg=#000044
