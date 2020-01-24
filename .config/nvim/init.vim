@@ -9,7 +9,7 @@ elseif $COLORFGBG =~ '.*[,;][0-68]$'
     set background=dark
 elseif $COLORFGBG =~ '.*[,;]\(7\|1[0-9]\)$'
     set background=light
-elseif $TERM =~ '.*\(linux\|ansi\|vt[0-9]|dos|bsd\).*'
+elseif $TERM =~ '.*\(linux\|ansi\|vt[0-9]\|dos|bsd\).*'
     set background=dark
 else
     set background=light
