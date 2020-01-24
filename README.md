@@ -366,3 +366,8 @@ assembly.
 
 Settings are provided for radare2, mainly to set Intel syntax for assembly and
 to enable fancy UTF-8.
+
+### XCode
+
+Colour schemes and key bindings are included for XCode. They need to be
+selected from preferences to be active.
