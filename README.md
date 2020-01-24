@@ -17,7 +17,7 @@ This is a checklist for me when I set up a new machine.
 * [ArkkuDvorak](https://arkku.com/dvorak/)
 * [XCode](https://developer.apple.com/download/)
 * [Homebrew](https://brew.sh)
-* [rvm](https://rvm.io)
+* [rvm](https://rvm.io) (remember `readline`!)
 * zsh-syntax-highlighting (`brew` or `apt-get`)
 * [vim plugins](https://github.com/arkku/vim-plugin-collection/)
 * [VS Code](https://code.visualstudio.com)

@@ -1,11 +1,5 @@
 " Configuration file for neovim
 
-if $TERM =~ '.*-256color.*' && ($TERM_PROGRAM != "Apple_Terminal" || !empty($TMUX))
-    set termguicolors
-    set colorcolumn=+1
-    set list
-endif
-
 " Try to determine the terminal background color
 if $BACKGROUND == 'dark'
     set background=dark
@@ -17,8 +11,14 @@ elseif $COLORFGBG =~ '.*[,;]\(7\|1[0-9]\)$'
     set background=light
 elseif $TERM =~ '.*\(linux\|ansi\|vt[0-9]|dos|bsd\).*'
     set background=dark
-elseif &termguicolors
+else
     set background=light
+endif
+
+if ($TERM =~ '.*-256color.*' && ($TERM_PROGRAM != "Apple_Terminal" || !empty($TMUX))) || !empty($TERMGUICOLORS)
+    set termguicolors
+    set colorcolumn=+1
+    set list
 endif
 
 set belloff=all
