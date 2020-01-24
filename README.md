@@ -152,6 +152,11 @@ keyboard shortcuts.
 * git merge/rebase/patch status is also show on this line
 * the vi command-mode is shown with a `(vi)` indicator on the above line
 
+#### Autocompletion
+
+Autocompletion is set to be case-, hyphen-, and underscore-insensitive. If
+`fzf` is installed, autocompletion is also made fuzzy.
+
 #### Title
 
 * the window/screen/tmux title shows `user@host` when idle, followed by the git
@@ -220,7 +225,7 @@ when pressing space, e.g., `cat file :H1 ` will expand the `:H1` to `| head -1`
 so that it may be edited or followed by more pipes.
 
 * `:L` – `| less`
-* `:LE` - |& less`
+* `:LE` - `|& less`
 * `:G` – `| grep`
 * `:FG` – `| grep -F`
 * `:EG` – `| egrep`
@@ -233,8 +238,8 @@ so that it may be edited or followed by more pipes.
 * `:S` – `| sort`
 * `:SN` – `| sort -n`
 * `:SU` – `| sort -u`
-* `:N` – `>/dev/null`
-* `:NUL` – `>/dev/null 2>&1`
+* `:N` – `\>/dev/null`
+* `:NUL` – `\>/dev/null 2>&1`
 * `:WC` – `| wc -l`
 * `:VL` – `| viless` (an included script for use of `vim` or `nvim` as `less`)
 * `:VI` – `| vim -R -`
@@ -259,7 +264,7 @@ Unless otherwise noted, the following bindings are all after the prefix
 
 * `r` – reload configuration from disk
 * `|` – split the window horizontally, opening in the current directory
-* `\\` – split the window horizontally at full width
+* `\` – split the window horizontally at full width
 * `-` – split the window horizontally, opening in the current directory
 * `_` – split the window horizontally at full width
 * `h` – split the window vertically at full width, opening in the current
