@@ -238,8 +238,8 @@ so that it may be edited or followed by more pipes.
 * `:S` – `| sort`
 * `:SN` – `| sort -n`
 * `:SU` – `| sort -u`
-* `:N` – `\>/dev/null`
-* `:NUL` – `\>/dev/null 2>&1`
+* `:N` – `>/dev/null`
+* `:NUL` – `>/dev/null 2>&1`
 * `:WC` – `| wc -l`
 * `:VL` – `| viless` (an included script for use of `vim` or `nvim` as `less`)
 * `:VI` – `| vim -R -`
