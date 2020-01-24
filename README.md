@@ -24,6 +24,9 @@ This is a checklist for me when I set up a new machine.
 * [VS Code](https://code.visualstudio.com)
 * [ag](https://github.com/ggreer/the_silver_searcher)
 * [fzf](https://github.com/junegunn/fzf)
+* [gpg](https://gnupg.org/download/) (also keys and passphrase input utility)
+* `~/.ssh` (keys, permissions, authorized keys, include shared config)
+* `~/.gitconfig` (account, signing, editor, merge tool, shared config)
 * `~/.profile` and `~/.zprofile` (source `~/.profile_shared`)
 
 ## Features
