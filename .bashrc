@@ -2,7 +2,7 @@ unset HISTFILE
 export HISTFILE
 
 # If running interactively, then:
-if [ "$PS1" ]; then
+if [ -n "$PS1" -a -z "$ENVONLY" ]; then
     preexec_interactive_mode=''
     function preexec_install () {
         if [ -z "$DISABLE_PREEXEC" ]; then

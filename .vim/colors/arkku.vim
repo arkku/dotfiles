@@ -37,7 +37,7 @@ hi Boolean term=none cterm=none ctermfg=blue gui=none guifg=#0066cc
 hi Number term=none cterm=none ctermfg=blue gui=none guifg=#0099aa
 hi Float term=none cterm=none ctermfg=blue gui=none guifg=#0099aa
 hi Character term=none cterm=none ctermfg=blue gui=none guifg=#0041a3
-hi String term=none cterm=none ctermfg=brown gui=none guifg=#dd6666
+hi String term=none cterm=none ctermfg=brown gui=none guifg=#993399
 
 hi Identifier term=none cterm=none ctermfg=darkblue gui=none guifg=#003366
 hi clear Function
@@ -48,15 +48,15 @@ hi clear Repeat
 hi clear Exception
 hi clear Statement
 hi Statement term=none cterm=bold gui=bold guifg=#333333
-hi Label term=bold cterm=bold ctermfg=darkblue gui=bold guifg=#0066cc
+hi Label term=bold cterm=bold ctermfg=darkblue gui=bold guifg=#006699
 hi clear Operator
 hi clear Keyword
 hi Operator term=none cterm=none gui=none guifg=#000000
 hi Keyword term=bold cterm=bold gui=bold guifg=#000000
 
 hi clear PreCondit
-hi PreProc term=none cterm=bold ctermfg=darkgreen gui=bold guifg=#006600
-hi Include term=none cterm=bold ctermfg=darkgreen gui=none guifg=#006600
+hi PreProc term=none cterm=bold ctermfg=darkgreen gui=bold guifg=#006633
+hi Include term=none cterm=bold ctermfg=darkgreen gui=none guifg=#006633
 hi Macro term=none cterm=bold ctermfg=green gui=none guifg=#009933
 
 hi clear Structure
@@ -169,16 +169,16 @@ if &background == "dark"
     hi Identifier term=none cterm=none ctermfg=cyan gui=none guifg=#33aacc
     hi Function term=none cterm=none gui=none guifg=#ccccff
 
-    hi Statement term=none cterm=bold ctermfg=white gui=bold guifg=#ccccff
+    hi Statement term=none cterm=bold gui=bold guifg=#ccccff
     hi Label term=bold cterm=bold ctermfg=lightblue gui=bold guifg=#33cc99
-    hi Operator term=none cterm=none ctermfg=white gui=none guifg=#ffffff
-    hi Keyword term=bold cterm=bold ctermfg=white gui=bold guifg=#f0f0ff
+    hi Operator term=none cterm=none gui=none guifg=#ffffff
+    hi Keyword term=bold cterm=bold gui=bold guifg=#f0f0ff
 
     hi PreProc term=none cterm=bold ctermfg=green gui=bold guifg=#00aa33
     hi Include term=none cterm=bold ctermfg=green gui=none guifg=#00aa33
     hi Macro term=none cterm=bold ctermfg=lightgreen gui=none guifg=#00ff66
 
-    hi Type term=none cterm=bold ctermfg=white gui=bold guifg=#f0f0ff
+    hi Type term=none cterm=bold gui=bold guifg=#f0f0ff
 
     hi Special term=bold cterm=none ctermfg=cyan gui=none guifg=#99bbff
 
@@ -250,6 +250,19 @@ if &background == "dark"
         hi SpellCap gui=none guibg=#000000
         hi SpellRare gui=none
         hi SpellLocal gui=none
+    endif
+
+    " Only set the fg white if we are very sure that the bg is dark:
+    " a false positive means important text will be potentially invisible,
+    " but a false negative is often no big deal since the bold attribute makes
+    " the default text white on many terminals anyway.
+    if !empty($BACKGROUND) || !empty($TERMFGBG)
+        hi Statement ctermfg=white
+        hi Operator ctermfg=white
+        hi Keyword ctermfg=white
+        hi Type ctermfg=white
+    else
+        hi Operator cterm=bold
     endif
 else " Light background
     " Terminal

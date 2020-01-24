@@ -6,7 +6,7 @@ setopt combiningchars
 # Add custom functions directory to fpath
 [ -e "$HOME/.zsh/functions" ] && fpath=( "$HOME/.zsh/functions" "${fpath[@]}" )
 
-if [[ -o interactive ]]; then
+if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
     local is_root=`print -nP '%(!_1_)'`
     local is_sudo="${is_root:-$SUDO_USER}"
 
@@ -509,7 +509,7 @@ if [[ -o interactive ]]; then
         precmd_functions+=( set_title_prompt )
     fi
 
-    if [ "$TERM_PROGRAM" = "Apple_Terminal" ]; then
+    if [ "$TERM_PROGRAM" = 'Apple_Terminal' ] && [[ $TERM != (screen|tmux)* ]]; then
         set_terminal_dir() {
             local percent='%'
             local pwd_url=''
@@ -525,10 +525,8 @@ if [[ -o interactive ]]; then
                     pwd_url+="%${ch: -2:2}"
                 fi
             done
-            if [[ $TERM == (screen|tmux)* ]]; then
-                print -n '\033P'
-            fi
-            printf '\e]7;%s\a' "$pwd_url"
+            print -Pn "\e]7;file://%M"
+            print -n "$pwd_url\a"
         }
         chpwd_functions+=( set_terminal_dir )
         set_terminal_dir # Set the initial directory

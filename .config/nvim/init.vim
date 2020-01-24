@@ -9,7 +9,7 @@ elseif $COLORFGBG =~ '.*[,;][0-68]$'
     set background=dark
 elseif $COLORFGBG =~ '.*[,;]\(7\|1[0-9]\)$'
     set background=light
-elseif $TERM =~ '.*\(linux\|ansi\|vt[0-9]\|dos|bsd\).*'
+elseif $TERM =~ '.*\(linux\|ansi\|vt[0-9]\|dos\|bsd\|mach\|console\|con[0-9]\).*'
     set background=dark
 else
     set background=light
@@ -113,9 +113,6 @@ let g:rubycomplete_buffer_loading = 1
 let g:rubycomplete_rails = 0
 let g:ruby_minlines = 100
 
-" Color scheme
-syntax on
-
 " taglist.vim:
 let Tlist_Close_On_Select = 1
 let Tlist_GainFocus_On_ToggleOpen = 1
@@ -147,7 +144,12 @@ let maplocalleader=" "
 
 silent! set virtualedit=onemore,block
 
+syntax on
 colorscheme arkku
+
+" alt backspace
+noremap! <Esc><C-H> <C-U>
+noremap! <Esc><C-?> <C-U>
 
 " ctrl arrows
 noremap <C-Left> B
@@ -156,8 +158,8 @@ noremap <C-Up> <Home>
 noremap <C-Down> <End>
 inoremap <C-Left> <C-O>b
 inoremap <C-Right> <C-O>w
-inoremap <C-Up> <Home>
-inoremap <C-Down> <End>
+noremap! <C-Up> <Home>
+noremap! <C-Down> <End>
 
 " alt arrows
 noremap <A-Left> b
@@ -166,8 +168,26 @@ noremap <A-Up> <Home>
 noremap <A-Down> <End>
 inoremap <A-Left> <C-O>b
 inoremap <A-Right> <C-O>w
-inoremap <A-Up> <Home>
-inoremap <A-Down> <End>
+cnoremap <A-Left> <S-Left>
+cnoremap <A-Right> <S-Right>
+noremap! <A-Up> <Home>
+noremap! <A-Down> <End>
+inoremap <M-Left> <C-O>b
+inoremap <M-Right> <C-O>w
+cnoremap <M-Left> <S-Left>
+cnoremap <M-Right> <S-Right>
+
+noremap! <C-A> <Home>
+" Map the unused C-Q to the old C-A
+noremap! <C-Q> <C-A>
+
+" Map C-E to end of line or close any open pop-up menu
+inoremap <expr> <C-E> pumvisible() ? "\<C-E>" : "\<End>"
+inoremap <C-B> <C-E>
+" ^- map the unused C-B to the old C-E, even the mnemonic makes more sense
+"
+" strip trailing whitespace
+cabbrev stws %s/\s\+$//e
 
 if exists('g:vscode')
     " Visual Studio Code neovim integration
@@ -178,34 +198,13 @@ else
     set switchbuf=useopen,split
     silent! set switchbuf+=usetab
 
-    " alt backspace
-    inoremap <Esc><C-H> <C-U>
-    inoremap <Esc><C-?> <C-U>
-
-    " Map some keys to be more like other programs
-    inoremap <C-BS> <C-W>
+    noremap! <C-BS> <C-W>
     inoremap <C-Del> <C-O>dw
-    inoremap <M-Left> <Home>
-    inoremap <M-Right> <End>
-
-    inoremap <C-A> <Home>
-    inoremap <expr> <C-E> pumvisible() ? "\<C-E>" : "\<End>"
-    inoremap <C-B> <C-E>
-    " ^- map the unused C-B to the old C-E, even the mnemonic makes more sense
-
-    cnoremap <C-A> <Home>
-    cnoremap <C-B> <C-A>
-
-    " Map the unused C-Q to the old C-A
-    inoremap <C-Q> <C-A>
 
     " open a new buffer and edit a file in it with 'open'
     cabbrev open enew\|e
     cabbrev vopen vnew\|e
     cabbrev hopen new\|e
-
-    " strip trailing whitespace
-    cabbrev stws %s/\s\+$//e
 
     " \1 to \0 switch buffers (vim-buffet)
     nmap <Leader>1 <Plug>BuffetSwitch(1)
@@ -245,6 +244,10 @@ else
     nnoremap <LocalLeader>x <Esc>:tabclose!<CR>
     nnoremap <LocalLeader><Tab> gt
     nnoremap <LocalLeader><S-Tab> gT
+
+    " Shortcuts to open a split terminal
+    nnoremap <Leader>t <Esc>:split term://$SHELL
+    nnoremap <Leader>T <Esc>:split term://
 
     " Esc to exit terminal (with some delay), Esc Esc to send Esc
     tnoremap <Esc> <C-\><C-N>

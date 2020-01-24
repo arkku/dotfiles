@@ -1,13 +1,17 @@
 unset HISTFILE
 export HISTFILE
 
-EDITOR=vi
-export EDITOR
-VISUAL=vi
-export VISUAL
+for editor in nvim vim vi; do
+    if which -s "$editor" >/dev/null 2>&1; then
+        EDITOR="$editor"
+        VISUAL="$editor"
+        break
+    fi
+done
+
 EXINIT='set autoindent'
 export EXINIT
-PAGER=less
+PAGER='less -XRF'
 export PAGER
 PAPERSIZE=a4
 export PAPERSIZE
@@ -45,4 +49,3 @@ if [ -z "$ENVONLY" ]; then
         stty -ixon -ixoff stop '' start ''
     fi
 fi
-
