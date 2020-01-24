@@ -225,6 +225,21 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
         alias -g :VL='| viless'
     fi
 
+    # fzf
+    if which -s fzf >/dev/null 2>&1; then
+        fzo() {
+            sels=( "${(@f)$(fd "${fd_default[@]}" "${@:2}"| fzf)}" )
+            test -n "$sels" && print -z -- "$1 ${sels[@]:q:q}"
+        }
+
+        # fuzzy-find in nearby directories, e.g., `fz vi`
+        # can also take a path, such as `fz vi /usr/include`
+        fz() fzo "$@" --max-depth 3
+
+        # current directory only, e.g., `f. mv`
+        f.() fzo "$@" --max-depth 1
+    fi
+
     # Pipe shortcuts
     alias -g :L='| less -XRF'
     alias -g :LE='|& less -XRF'
@@ -450,7 +465,7 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
     expand-global-alias() {
         if [[ $LBUFFER =~ ' [:][A-Z0-9]+$' ]]; then # Only expand uppercase aliases
          zle _expand_alias
-         zle expand-word
+         #zle expand-word
        fi
        zle self-insert
     }
@@ -477,14 +492,14 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
 
     if [ -n "$TITLE_SET_HEAD" ]; then
         set_title_exec() {
-            local line="${2/#(exec|nice|nohup|time|sudo) /}"
+            local line="${1/#(exec|nice|nohup|time|sudo) /}"
             local cmd="${line%% *}"
             line="${line:0:30}"
             local title="$line"
             if [[ ${#cmd} -gt ${#line} ]]; then
                 title="$cmd" # If the command is longer than the truncated line, show it anyway
-            elif [[ ${#2} -lt 26 ]]; then
-                title="$2" # If the untruncated line is short enough, show it all
+            elif [[ ${#1} -lt 26 ]]; then
+                title="$1" # If the untruncated line is short enough, show it all
             fi
             if [[ ${#title} -gt 25 ]]; then
                 title="${title:0:25}$ELLIPSIS"

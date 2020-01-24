@@ -55,9 +55,9 @@ hi Operator term=none cterm=none gui=none guifg=#000000
 hi Keyword term=bold cterm=bold gui=bold guifg=#000000
 
 hi clear PreCondit
-hi PreProc term=none cterm=bold ctermfg=darkgreen gui=bold guifg=#006633
+hi PreProc term=none cterm=bold ctermfg=green gui=bold guifg=#009933
 hi Include term=none cterm=bold ctermfg=darkgreen gui=none guifg=#006633
-hi Macro term=none cterm=bold ctermfg=green gui=none guifg=#009933
+hi Macro term=none cterm=bold ctermfg=darkgreen gui=none guifg=#006633
 
 hi clear Structure
 hi clear Typedef
@@ -175,7 +175,7 @@ if &background == "dark"
     hi Keyword term=bold cterm=bold gui=bold guifg=#f0f0ff
 
     hi PreProc term=none cterm=bold ctermfg=green gui=bold guifg=#00aa33
-    hi Include term=none cterm=bold ctermfg=green gui=none guifg=#00aa33
+    hi Include term=none cterm=bold ctermfg=lightgreen gui=none guifg=#00ff66
     hi Macro term=none cterm=bold ctermfg=lightgreen gui=none guifg=#00ff66
 
     hi Type term=none cterm=bold gui=bold guifg=#f0f0ff
