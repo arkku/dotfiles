@@ -49,3 +49,5 @@ endif
 
 " \ u to open function search
 nnoremap <Leader>u <Esc>:CtrlPFunky<CR>
+
+colorscheme arkku

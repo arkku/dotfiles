@@ -112,3 +112,5 @@ set pastetoggle=<F10>
 if empty(mapcheck('<C-B>', 'i'))
     inoremap <C-B> <F10><C-R>+<F10>
 endif
+
+colorscheme arkku

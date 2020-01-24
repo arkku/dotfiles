@@ -9,7 +9,6 @@ endif
 silent! set encoding=utf-8
 
 syntax on
-colorscheme arkku
 
 set belloff=all
 set backspace=indent,eol,start
