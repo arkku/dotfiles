@@ -171,7 +171,7 @@ Autocompletion is set to be case-, hyphen-, and underscore-insensitive. If
 
 * `.inputrc` has bindings for a large selection of terminals
 * arrow keys with alt are bound as per macOS defaults
-* <kbd>Ctrl<kbd>–<kbd>A</kbd> and <kbd>Ctrl</kbd>–<kbd>E</kbd> go to the
+* <kbd>Ctrl</kbd>–<kbd>A</kbd> and <kbd>Ctrl</kbd>–<kbd>E</kbd> go to the
   beginning/end of the line
 * <kbd>Ctrl</kbd>-<kbd>Space</kbd> – opens the current command line in an
   editor
