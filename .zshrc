@@ -98,7 +98,7 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
     export CLIPCOPY
 
     if [ -n "$CLIPCOPY" ]; then
-        alias -g CL="| $CLIPCOPY"
+        alias -g :CL="| $CLIPCOPY"
         eval 'clipcopy() { echo -n "$*" | '"$CLIPCOPY"' }'
 
         # Bind ^X to copy the current input to system clipboard
@@ -250,14 +250,18 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
     alias -g :FGR='|& grep -F --color=auto'
     alias -g :H1='| head -1'
     alias -g :T1='| tail -1'
-    alias -g :H='|& head -n $(( LINES / 2 + 1 ))'
-    alias -g :T='|& tail -n $(( LINES / 2 + 1 ))'
+    alias -g :H='| head'
+    alias -g :T='| tail'
     alias -g :S='| sort'
     alias -g :SN='| sort -n'
     alias -g :SU='| sort -u'
     alias -g :N='>/dev/null'
     alias -g :NUL='>/dev/null 2>&1'
     alias -g :WC='| wc -l'
+
+    if which -s ag >/dev/null 2>&1; then
+        alias -g :AG='| ag'
+    fi
 
     # System-specific variations
     case `uname`; in
@@ -382,6 +386,7 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
     zle -N smart-backward-kill-word
 
     local mode
+
     # Key bindings
     bindkey '\C-P' history-beginning-search-backward
     bindkey '\C-N' history-beginning-search-forward
@@ -440,26 +445,28 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
     autoload -U edit-command-line
     zle -N edit-command-line
     bindkey '\C- ' edit-command-line
-    bindkey -M vicmd v edit-command-line
+    bindkey -a '\C- ' edit-command-line
 
     # Vim-like surround
     autoload -Uz surround
     zle -N delete-surround surround
     zle -N add-surround surround
     zle -N change-surround surround
-    bindkey -a 'cs' change-surround
-    bindkey -a 'ds' delete-surround
-    bindkey -a 'ys' add-surround
-    bindkey -M visual 'S' add-surround
+    bindkey -a cs change-surround
+    bindkey -a ds delete-surround
+    bindkey -a ys add-surround
+    bindkey -M visual S add-surround
 
     # In vi-mode, type vi" to select quoted text
     autoload -U select-quoted
     zle -N select-quoted
+    local m c
     for m in visual viopp; do
         for c in {a,i}{\',\",\`}; do
             bindkey -M $m $c select-quoted
         done
     done
+    unset m c
 
     # Expand uppercase aliases as we type (credit: Pat Regan)
     expand-global-alias() {
@@ -492,7 +499,8 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
 
     if [ -n "$TITLE_SET_HEAD" ]; then
         set_title_exec() {
-            local line="${1/#(exec|nice|nohup|time|sudo) /}"
+            setopt localoptions extendedglob
+            local line="${1/#(exec|nice|nohup|time) /}"
             local cmd="${line%% *}"
             line="${line:0:30}"
             local title="$line"

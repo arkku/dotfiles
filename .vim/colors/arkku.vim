@@ -153,7 +153,7 @@ if &background == "dark"
     hi LineNr term=reverse cterm=none ctermbg=black ctermfg=darkgray gui=none guibg=#222222 guifg=#666666
 
     hi SpecialKey term=reverse cterm=bold ctermfg=cyan gui=bold guibg=#0066cc guifg=#f0f0ff
-    hi WhiteSpace term=standout cterm=none ctermfg=darkblue gui=none guifg=#000044
+    hi WhiteSpace term=standout cterm=none ctermfg=darkblue gui=none guifg=#330066
     hi Conceal term=underline cterm=none ctermfg=darkgray gui=none guifg=#333333
 
     hi Comment term=underline cterm=none ctermfg=darkgray gui=none guifg=#666666

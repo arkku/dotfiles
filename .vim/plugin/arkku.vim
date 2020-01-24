@@ -166,9 +166,6 @@ inoremap <expr> <C-E> pumvisible() ? "\<C-E>" : "\<End>"
 inoremap <C-B> <C-E>
 " ^- map the unused C-B to the old C-E, even the mnemonic makes more sense
 "
-" strip trailing whitespace
-cabbrev stws %s/\s\+$//e
-
 " Make p in visual mode paste over the selection without yanking it
 vnoremap p "_dP
 
@@ -184,19 +181,13 @@ if !exists('g:vscode')
     set switchbuf=useopen,split
     silent! set switchbuf+=usetab
 
+    nnoremap [oa <Esc>:set formatoptions +=a<CR>
+    nnoremap ]oa <Esc>:set formatoptions -=a<CR>
+    nnoremap [ot <Esc>:set formatoptions +=t<CR>
+    nnoremap ]ot <Esc>:set formatoptions -=t<CR>
+
     noremap! <C-BS> <C-W>
     inoremap <C-Del> <C-O>dw
-
-    " Make vb to be like sb but for vertical splits
-    cabbrev vb vert sb
-
-    " open a new buffer and edit a file in it with 'open'
-    cabbrev open enew\|e
-    cabbrev vopen vnew\|e
-    cabbrev hopen new\|e
-
-    " Strip trailing whitespace abbreviation
-    cabbrev stws %s/\s\+$//e
 
     " \1 to \0 switch buffers (vim-buffet)
     nmap <Leader>1 <Plug>BuffetSwitch(1)
@@ -238,7 +229,7 @@ if !exists('g:vscode')
     nnoremap <LocalLeader><S-Tab> gT
 
     " Shortcuts to open a split terminal
-    nnoremap <Leader>t <Esc>:split term://$SHELL
+    nnoremap <Leader>t <Esc>:split term://$SHELL<CR>A
     nnoremap <Leader>T <Esc>:split term://
 
     " Esc to exit terminal (with some delay), Esc Esc to send Esc
@@ -269,10 +260,16 @@ if !exists('g:vscode')
 endif
 
 if executable('ag')
-  " Use Ag over Grep
-  set grepprg=ag\ --nogroup\ --nocolor
+    " Use Ag over Grep
+    set grepprg=ag\ --nogroup\ --nocolor
 
-  " Use ag in CtrlP for listing files. Lightning fast and respects .gitignore
-  let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
-  let g:ctrlp_use_caching = 0
+    " Use Ag in CtrlP for listing files
+    let g:ctrlp_user_command = 'ag %s -l --nocolor --depth 3 -g ""'
+    let g:ctrlp_use_caching = 0
+
+    " Space z to open FZF with Ag
+    nnoremap <LocalLeader>z <Esc>:silent! NERDTREEClose<CR>:call fzf#run(fzf#wrap({'source': 'ag -l --nocolor --depth 3 -g ""'}))<CR>
+else
+    " Space z to open FZF
+    nnoremap <LocalLeader>z <Esc>:silent! NERDTREEClose<CR>:FZF<CR>
 endif

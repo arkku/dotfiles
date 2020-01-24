@@ -1,6 +1,3 @@
-unset HISTFILE
-export HISTFILE
-
 for editor in nvim vim vi; do
     if which -s "$editor" >/dev/null 2>&1; then
         EDITOR="$editor"
@@ -41,7 +38,7 @@ if [ -z "$TMPDIR" -a -n "$TMP" ]; then
     export TMPDIR TMP
 fi
 
-if [ -z "$ENVONLY" ]; then
+if [ -n "$PS1" -a -z "$ENVONLY" ]; then
     if [ -t 0 ]; then
         # Set the interrupt character to Ctrl-c and do clean backspacing.
         stty intr '^C' echoe 
