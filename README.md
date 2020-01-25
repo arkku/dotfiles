@@ -16,12 +16,13 @@ directory, while allowing platform-specific files and local overrides. See
 This is a checklist for me when I set up a new machine.
 
 * [ArkkuDvorak](https://arkku.com/dvorak/)
-* [XCode](https://developer.apple.com/download/)
-* [Homebrew](https://brew.sh)
-* [rvm](https://rvm.io) (remember `readline`!)
-* zsh-syntax-highlighting (`brew` or `apt-get`)
 * [vim plugins](https://github.com/arkku/vim-plugin-collection/)
+* [Homebrew](https://brew.sh)
+* [XCode](https://developer.apple.com/download/)
 * [VS Code](https://code.visualstudio.com)
+* [mosh](https://mosh.org)
+* [zsh-syntax-highlighting](https://github.com/zsh-users/zsh-syntax-highlighting)
+* [rvm](https://rvm.io) (remember `readline`!)
 * [ag](https://github.com/ggreer/the_silver_searcher)
 * [fzf](https://github.com/junegunn/fzf)
 * [gpg](https://gnupg.org/download/) (also keys and passphrase input utility)
@@ -32,7 +33,7 @@ This is a checklist for me when I set up a new machine.
 ## Features
 
 This is an incomplete set of features, mainly as a reminder for myself when
-some years later I have forgetten what I set up. =)
+some years later I have forgotten what I set up. =)
 
 ### Vim
 
@@ -278,7 +279,7 @@ Unless otherwise noted, the following bindings are all after the prefix
   directory
 * `V` – split the window horizontally and select another pane to place in the
   split
-* `H` – split the window vertically and select another pane to plaec in the
+* `H` – split the window vertically and select another pane to place in the
   split
 * `M` – choose a window to move to (swap with) the current
 * `<` – swap the pane left
@@ -301,7 +302,7 @@ the master if it doesn't exit.
 
 A master session name can be given as the argument, e.g., `tmx foo` uses the
 session `foo` instead of the default (`0`), and creates the `foo` master if it
-doesn't already exist, and attaches a new slave to it. If the master ssesion
+doesn't already exist, and attaches a new slave to it. If the master session
 name is given, a slave session name may be given as the second argument. This
 will detach and recycle any existing slave session of that name, e.g.,
 a network connection can use the same slave session to detach any hanging old
