@@ -46,6 +46,7 @@ as the default.
 Some other general settings done:
 
 * if `ag` is installed, use it instead of `grep` (also in plugins)
+* if `fzf` is installed (via `brew`, `apt`, or in `~./fzf`), load its plugin
 * the Neovim configuration tries to detect the background colour from the
   environment variables `$BACKGROUND` (`dark` or `light`) and `$COLORFGBG`
   (`<fgcolor>;<bgcolor>`, e.g., `7;0` is gray on black)
@@ -311,7 +312,7 @@ connections on reconnect.
 As a special case, `tmx ls` simply does `tmux ls` and exits. Also, if the first
 argument is `prefix`, the prefix is set to the second argument, and then the
 two first arguments are discarded. For example, `tmx prefix '^a' foo` would use
-`foo` as the master session name and set the prefix to `^a`.
+`foo` as the master session name and set the prefix to <kbd>Ctrl</kbd>-<kbd>A</kbd>.
 
 ### Git
 

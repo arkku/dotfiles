@@ -258,17 +258,38 @@ if !exists('g:vscode')
     let g:Tlist_Compact_Format = 1
 endif
 
+" Fallback if there is no fzf
+nmap <LocalLeader>z <C-P>
+
+if executable('fzf')
+    " Add fzf if installed
+    if !empty(glob(expand("~/.fzf")))
+        set runtimepath+=~/.fzf
+    elseif !empty(glob("/usr/local/opt/fzf"))
+        set runtimepath+=/usr/local/opt/fzf
+    elseif !exits('g:loaded_fzf') && !empty(glob("/usr/share/doc/fzf/examples/plugin/fzf.vim"))
+        set runtimepath+=/usr/share/doc/fzf/examples
+    endif
+
+    runtime! plugin/fzf.vim
+
+    if exists('g:loaded_fzf')
+        if executable('ag')
+            " Space z to open FZF with Ag
+            nnoremap <LocalLeader>z <Esc>:silent! NERDTREEClose<CR>:call fzf#run(fzf#wrap({'source': 'ag -l --nocolor --depth 5 -g 2>/dev/null ""'}))<CR>
+        else
+            " Space z to open FZF
+            nnoremap <LocalLeader>z <Esc>:silent! NERDTREEClose<CR>:FZF<CR>
+        endif
+    endif
+endif
+
 if executable('ag')
     " Use Ag over Grep
     set grepprg=ag\ --nogroup\ --nocolor
+    let g:ackprg = 'ag --vimgrep'
 
     " Use Ag in CtrlP for listing files
-    let g:ctrlp_user_command = 'ag %s -l --nocolor --depth 3 -g ""'
+    let g:ctrlp_user_command = 'ag %s -l --nocolor --depth 3 -g 2>/dev/null ""'
     let g:ctrlp_use_caching = 0
-
-    " Space z to open FZF with Ag
-    nnoremap <LocalLeader>z <Esc>:silent! NERDTREEClose<CR>:call fzf#run(fzf#wrap({'source': 'ag -l --nocolor --depth 3 -g ""'}))<CR>
-else
-    " Space z to open FZF
-    nnoremap <LocalLeader>z <Esc>:silent! NERDTREEClose<CR>:FZF<CR>
 endif

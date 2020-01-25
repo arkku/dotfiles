@@ -38,16 +38,4 @@ au FocusGained * :checktime
 nnoremap <Space> <Nop>
 let maplocalleader=" "
 
-" Add fzf if installed
-if !empty(glob(expand("~/.fzf")))
-    set runtimepath+=~/.fzf
-elseif !empty(glob("/usr/local/opt/fzf"))
-    set runtimepath+=/usr/local/opt/fzf
-elseif !exits('g:loaded_fzf') && !empty(glob("/usr/share/doc/fzf/examples/plugin/fzf.vim"))
-    set runtimepath+=/usr/share/doc/fzf/examples
-endif
-
-" \ u to open function search
-nnoremap <Leader>u <Esc>:CtrlPFunky<CR>
-
 colorscheme arkku
