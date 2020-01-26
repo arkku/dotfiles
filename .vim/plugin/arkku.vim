@@ -112,8 +112,9 @@ if has("autocmd")
     au FileType c,swift,cc,cs,cxx,cpp,h,hpp,java,python,sh,bash,zsh,eiffel,elixir,erlang,awk,javascript,dart,kotlin,rust,d,vim setlocal ai sw=4 sts=4 et
 
     " Fix formatting of lists in markdown
-    au FileType text,markdown setlocal formatlistpat=^\\s*\\d\\+[.\)]\\s\\+\\\|^\\s*[*+~-]\\s\\+\\\|^\\(\\\|[*#]\\)\\[^[^\\]]\\+\\]:\\s | setlocal comments=n:> | setlocal formatoptions+=tcn
-    au FileType liquid if exists('b:liquid_subtype') && b:liquid_subtype == 'markdown' | setlocal formatlistpat=^\\s*\\d\\+[.\)]\\s\\+\\\|^\\s*[*+~-]\\s\\+\\\|^\\(\\\|[*#]\\)\\[^[^\\]]\\+\\]:\\s | setlocal comments=n:> | setlocal formatoptions+=tcn | endif
+    au FileType text,markdown setlocal formatlistpat=^\\s*\\d\\+[.\)]\\s\\+\\\|^\\s*[*+~-]\\s\\+\\\|^\\(\\\|[*#]\\)\\[^[^\\]]\\+\\]:\\s | setlocal comments=n:> | setlocal formatoptions+=tcn | setlocal indentexpr= autoindent smartindent
+
+    au FileType liquid if exists('b:liquid_subtype') && b:liquid_subtype == 'markdown' | setlocal formatlistpat=^\\s*\\d\\+[.\)]\\s\\+\\\|^\\s*[*+~-]\\s\\+\\\|^\\(\\\|[*#]\\)\\[^[^\\]]\\+\\]:\\s | setlocal comments=n:> | setlocal formatoptions+=tcn | setlocal indentexpr= autoindent smartindent | endif
 
     au BufNewFile,BufRead *.pde set filetype=cpp
     au BufNewFile,BufRead *.swift set filetype=swift
