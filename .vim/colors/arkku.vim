@@ -134,16 +134,28 @@ hi DiffDelete term=reverse ctermfg=darkred ctermbg=lightgray guibg=#d9f0ff
 hi DiffChange term=bold ctermfg=brown ctermbg=lightgray guibg=#eaeaea
 hi DiffText term=reverse cterm=underline ctermbg=gray gui=none guibg=#f7f3d6
 
+" Quickfix
+hi QuickFixLine term=reverse cterm=none ctermfg=black ctermbg=lightcyan gui=none guibg=#99ffff guifg=#000000
+hi clear qfLineNr
+hi clear qfError
+hi qfLineNr term=none cterm=none ctermfg=darkmagenta gui=none guifg=#660066
+hi qfError term=bold cterm=bold ctermfg=red gui=bold guifg=#990000
+
 " Git Gutter
 let g:gitgutter_override_sign_column_highlight = 0
 hi GitGutterAdd term=standout ctermfg=lightgreen ctermbg=black guibg=#222222 guifg=#00cc33
 hi GitGutterChange term=standout ctermfg=cyan ctermbg=black guibg=#222222 guifg=#0099ff
 hi GitGutterDelete term=standout ctermfg=lightred ctermbg=black guibg=#222222 guifg=#ff3300
-hi GitGutterChangeDelete term=standout ctermfg=magenta ctermbg=black guibg=#222222 guifg=#ff0066
+hi GitGutterChangeDelete term=standout ctermfg=lightmagenta ctermbg=black guibg=#222222 guifg=#ff0066
 hi GitGutterChangeDeleteInvisible ctermfg=black ctermbg=black guibg=#222222 guifg=#000000
 hi GitGutterChangeInvisible ctermfg=black ctermbg=black guibg=#222222 guifg=#000000
 hi GitGutterDeleteInvisible ctermfg=black ctermbg=black guibg=#222222 guifg=#000000
 hi GitGutterAddInvisible ctermfg=black ctermbg=black guibg=#222222 guifg=#000000
+
+hi link SyntasticErrorSign GitGutterChangeDelete
+hi link SyntasticWarningSign GitGutterDelete
+hi SyntasticStyleErrorSign term=standout ctermfg=darkyellow ctermbg=black guibg=#222222 guifg=#cccc00
+hi SyntasticStyleWarningSign term=standout ctermfg=darkmagenta ctermbg=black guibg=#222222 guifg=#996633
 
 if &background == "dark"
     hi Normal term=none cterm=none gui=none guifg=#aaaaaa guibg=#080811
@@ -216,6 +228,9 @@ if &background == "dark"
     hi PMenuSel term=bold cterm=bold ctermfg=black ctermbg=gray gui=bold guifg=#000066 guibg=#cccccc
     hi PMenuSBar term=reverse cterm=none ctermfg=gray ctermbg=darkblue gui=none guibg=#000099 guifg=#00cccc
     hi PMenuThumb term=reverse,bold cterm=none ctermfg=gray ctermbg=darkred gui=none guibg=#660000 guifg=#ff6600
+
+    hi qfLineNr term=none cterm=none ctermfg=lightmagenta gui=none guifg=#cc00cc
+    hi qfError term=bold cterm=bold ctermfg=lightred gui=bold guifg=#cc0000
 
     let g:terminal_color_0 = '#000000'
     let g:terminal_color_1 = '#cc0000'

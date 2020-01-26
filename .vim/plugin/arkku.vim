@@ -67,15 +67,60 @@ set cino+=Ws            " Indent arguments in: func(\narg1,\narg2);
 set cino+=j1            " Indent Java anonymous classes
 set cino+=J1            " Indent JavaScript object declarations
 
+function! GitStatuslineBranch()
+    if exists('g:loaded_fugitive')
+        let l:branch = split(fugitive#statusline(),'[()]')
+        if len(l:branch) > 2
+            return '[' . join(l:branch[1:-2], '/') . '] '
+        elseif len(l:branch) == 2
+            return '[' . l:branch[1] . '] '
+        elseif len(l:branch) == 1
+            return l:branch[0] . ' '
+        endif
+    endif
+    return ''
+endfunction
+
+function! SyntasticStatuslineIfPresent()
+    if exists('g:loaded_syntastic_plugin')
+        let synstatus = SyntasticStatuslineFlag()
+        if !empty(synstatus)
+            return ' ' . synstatus . ' '
+        endif
+    endif
+    return ''
+endfunction
+
+" Show the file encoding if it is not the same as internal (UTF-8)
+function! EncodingStatusline()
+    if &fileencoding != &encoding
+        return '[' . &fileencoding . '] '
+    endif
+    return ''
+endfunction
+
+function! FilenameMiddleTruncated(maxlen)
+    let str = expand('%:t')
+    if len(str) <= a:maxlen || a:maxlen < 2
+        return str
+    endif
+    let halflen = a:maxlen / 2
+    if halflen * 2 < a:maxlen
+        return str[0:halflen] . '…' . str[-halflen:]
+    else
+        return str[0:halflen - 1] . '…' . str[-halflen:]
+    endif
+endfunction
+
 " statusline:
-set statusline=%n\ %<%t         " buffer number + filename (can be truncated)
+set statusline=%n\ %{FilenameMiddleTruncated(36)}
 set statusline+=%h%m%r%w        " flags
-"set statusline+=\ %<%y
+set statusline+=\ %{EncodingStatusline()}
+silent! set statusline+=%<%{GitStatuslineBranch()}
 set statusline+=%=              " left/right separator
-silent! set statusline+=\ %<%{exists('g:loaded_fugitive')?FugitiveStatusline():''}
-set statusline+=\ %<%y\ [%{&fenc}] " file encoding
+silent! set statusline+=%<%{SyntasticStatuslineIfPresent()}
 set statusline+=%15(%c,%l/%L%)  " cursor position
-set statusline+=\ %<%6(0x%02B%) " hex value of character under cursor
+set statusline+=\ %6(0x%02B%) " hex value of character under cursor
 set laststatus=2                " always show status line
 
 set sessionoptions-=options
@@ -121,6 +166,7 @@ if has("autocmd")
     au BufNewFile,BufRead *.pde set filetype=cpp
     au BufNewFile,BufRead *.swift set filetype=swift
     au BufNewFile,BufRead *.inc set filetype=asm
+
 endif
 
 let g:markdown_minlines=100
@@ -159,6 +205,19 @@ let g:vim_markdown_no_extensions_in_markdown=1
 
 let g:vim_markdown_new_list_item_indent=0
 let g:vim_markdown_auto_insert_bullets=0
+
+let g:syntastic_mode_map = {
+    \ "mode": "active",
+    \ "active_filetypes": ["ruby","c","swift"],
+    \ "passive_filetypes": [] }
+
+let g:syntastic_always_populate_loc_list = 0
+let g:syntastic_auto_loc_list = 0
+let g:syntastic_check_on_open = 0
+let g:syntastic_check_on_wq = 0
+let g:syntastic_enable_signs = 1
+let g:syntastic_aggregate_errors = 1
+let g:syntastic_swift_checkers = [ 'swiftpm', 'swiftlint' ]
 
 let g:rubycomplete_classes_in_global=1
 let g:rubycomplete_buffer_loading=1
@@ -214,6 +273,8 @@ inoremap <C-_> <C-R>=
 "if empty(mapcheck('<C-S>', 'i'))
 "endif
 
+nnoremap [oy <Esc>:
+
 if !exists('g:vscode')
     set timeoutlen=400
     set guioptions-=e
@@ -244,9 +305,16 @@ if !exists('g:vscode')
     nnoremap <Leader>x <Esc>:bw!<CR>
 
     " Quickfix
-    nnoremap <Leader>f <Esc>:copen<CR>
+    nnoremap <Leader>f <Esc>:cw<CR>
     nnoremap <Leader>F <Esc>:ccl<CR>
-    nnoremap <Leader>w <Esc>:cw<CR>
+
+    " Location List
+    nnoremap <Leader>l <Esc>:lopen<CR>
+    nnoremap <Leader>L <Esc>:lclose<CR>
+
+    " Syntastic
+    nnoremap <Leader>s <Esc>:silent! SyntasticCheck<CR>:silent! SyntasticSetLoclist<CR>:silent! Errors<CR>
+    nnoremap <Leader>S <Esc>:silent! SyntasticReset<CR>
 
     " Space tab to open a new tab
     nnoremap <Leader><Tab> <Esc>:tabnew<CR>

@@ -84,6 +84,11 @@ different terminals (not in Neovim)
 * <kbd>Ctrl</kbd>-<kbd>\_</kbd> – in insert mode, open a prompt for an
   expression, and insert the result (e.g., `0x10 * 2` inserts `32`, `$HOME`
   inserts the home directory path, etc.)
+
+##### Unimpaired-style Bindings
+
+Some additional bindings in the style of the "unimpaired" plugin:
+
 * `[oa` / `]oa` – turn auto-formatting (`formatoptions+=a`) on/off
 * `[ot` / `]ot` – turn text formatting (`formatoptions+=t`) on/off
 
@@ -92,16 +97,20 @@ different terminals (not in Neovim)
 These bindings are for the normal mode, preceded by the leader (<kbd>\\</kbd>):
 
 * `1` – `0` – switch to vim-buffet buffer 1–10
+* `f` – open quickfix if there are warnings/errors
+* `F` – close quickfix
+* `l` – open location list
+* `L` – close location list
 * `q` – delete buffer
 * `x` – wipeout buffer
-* `f` – open quickfix
-* `w` – open quickfix if there are warnings/errors
-* `F` – close quickfix
-* <kbd>Tab</kbd> – create a new tab
-* <kbd>Shift</kbd> + <kbd>Tab</kbd> – close tab
+* `s` – run [Syntastic](https://github.com/vim-syntastic/syntastic) check, and
+  open the location list if there are errors
+* `S` – reset Syntastic, clearing all errors
 * `t` – split and open a terminal (for Neovim)
 * `T` – split and open a terminal with the given command
 * `u` – open function search
+* <kbd>Tab</kbd> – create a new tab
+* <kbd>Shift</kbd> + <kbd>Tab</kbd> – close tab
 
 #### Local Leader Bindings
 
