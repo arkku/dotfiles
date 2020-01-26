@@ -116,6 +116,7 @@ if has("autocmd")
     au FileType markdown setlocal commentstring=<!--%s-->
 
     au FileType liquid if exists('b:liquid_subtype') && b:liquid_subtype == 'markdown' | setlocal formatlistpat=^\\s*\\d\\+[.\)]\\s\\+\\\|^\\s*[*+~-]\\s\\+\\\|^\\(\\\|[*#]\\)\\[^[^\\]]\\+\\]:\\s | setlocal comments=n:> | setlocal formatoptions+=tcn | setlocal indentexpr= autoindent smartindent | endif
+    au FileType liquid setlocal commentstring={%\ comment\ %}%s{%\ endcomment\ %}
 
     au BufNewFile,BufRead *.pde set filetype=cpp
     au BufNewFile,BufRead *.swift set filetype=swift
