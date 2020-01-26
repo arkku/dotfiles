@@ -3,7 +3,7 @@
 if exists('g:loaded_arkku_shared')
     finish
 else
-    let g:loaded_arkku_shared = 'yes'
+    let g:loaded_arkku_shared='yes'
 endif
 
 silent! set encoding=utf-8
@@ -111,18 +111,56 @@ if has("autocmd")
     au FileType ruby,eruby,yaml setlocal ai sw=2 sts=2 et
     au FileType c,swift,cc,cs,cxx,cpp,h,hpp,java,python,sh,bash,zsh,eiffel,elixir,erlang,awk,javascript,dart,kotlin,rust,d,vim setlocal ai sw=4 sts=4 et
 
-    " Wrap text only in text files
-    au FileType text,markdown,textile setlocal formatoptions+=t
+    " Fix formatting of lists in markdown
+    au FileType text,markdown setlocal formatlistpat=^\\s*\\d\\+[.\)]\\s\\+\\\|^\\s*[*+~-]\\s\\+\\\|^\\(\\\|[*#]\\)\\[^[^\\]]\\+\\]:\\s | setlocal comments=n:> | setlocal formatoptions+=tcn
+    au FileType liquid if exists('b:liquid_subtype') && b:liquid_subtype == 'markdown' | setlocal formatlistpat=^\\s*\\d\\+[.\)]\\s\\+\\\|^\\s*[*+~-]\\s\\+\\\|^\\(\\\|[*#]\\)\\[^[^\\]]\\+\\]:\\s | setlocal comments=n:> | setlocal formatoptions+=tcn | endif
 
     au BufNewFile,BufRead *.pde set filetype=cpp
     au BufNewFile,BufRead *.swift set filetype=swift
     au BufNewFile,BufRead *.inc set filetype=asm
 endif
 
-let g:rubycomplete_classes_in_global = 1
-let g:rubycomplete_buffer_loading = 1
-let g:rubycomplete_rails = 0
-let g:ruby_minlines = 100
+let g:markdown_minlines=100
+
+if !exists('g:markdown_fenced_languages')
+    if exists('*getcompletion')
+        let g:markdown_fenced_languages=[]
+
+        if index(getcompletion('zsh', 'filetype'), 'zsh') >= 0
+            call add(g:markdown_fenced_languages, 'zsh=sh')
+        else
+            call add(g:markdown_fenced_languages, 'bash=sh')
+        endif
+
+        for pl in [ 'c', 'ruby', 'swift', 'html', 'javascript', 'python', 'make', 'yaml', 'json', 'cs', 'css', 'cpp', 'rust', 'kotlin', 'dart', 'haskell', 'scheme', 'lisp', 'ada', 'eiffel', 'clojure', 'latex' ]
+            if index(getcompletion(pl, 'filetype'), pl) >= 0
+                call add(g:markdown_fenced_languages, pl)
+            endif
+        endfor
+    else
+        let g:markdown_fenced_languages=[ 'c', 'bash=sh' ]
+    endif
+endif
+
+" Allow YAML frontmatter (e.g., Jekyll)
+let g:vim_markdown_frontmatter=1
+
+" Enable ~~ strikethrough
+let g:vim_markdown_strikethrough=1
+
+" Allow LaTeX match with $ and $$
+let g:vim_markdown_math=1
+
+" Allow links to markdown files work without extensions
+let g:vim_markdown_no_extensions_in_markdown=1
+
+let g:vim_markdown_new_list_item_indent=0
+let g:vim_markdown_auto_insert_bullets=0
+
+let g:rubycomplete_classes_in_global=1
+let g:rubycomplete_buffer_loading=1
+let g:rubycomplete_rails=0
+let g:ruby_minlines=100
 
 silent! set virtualedit=onemore,block
 
@@ -238,24 +276,32 @@ if !exists('g:vscode')
     " I use ^T as the tmux prefix, so let's appropriate ^B for the terminal
     tnoremap <C-B> <C-T>
 
+    " Paste from system clipboard in insert mode with C-B (mnemonic: Baste)
+    if !has('nvim') && empty(mapcheck('<C-B>', 'i'))
+        " Note that currently the mapcheck fails since we map C-B above, but
+        " I'm just leaving this here for future reference
+        set pastetoggle=<F10>
+        inoremap <C-B> <F10><C-R>+<F10>
+    endif
+
     " Tab to cycle buffers (with a hack to get rid of NERDTree)
     nnoremap <Tab> <Esc>:silent! NERDTreeClose<CR><Esc>:silent! bn<CR><Esc>
     nnoremap <S-Tab> <Esc>:silent! NERDTreeClose<CR><Esc>:silent! bp<CR><Esc>
 
-    let g:buffet_show_index = 1
-    let g:buffet_always_show_tabline = 0
-    let g:NERDTreeQuitOnOpen = 1
-    let g:ctrlp_by_filename = 0
-    let g:ctrlp_working_path_mode = 'ra'
+    let g:buffet_show_index=1
+    let g:buffet_always_show_tabline=0
+    let g:NERDTreeQuitOnOpen=1
+    let g:ctrlp_by_filename=0
+    let g:ctrlp_working_path_mode='ra'
 
     " taglist.vim:
-    let g:Tlist_Close_On_Select = 1
-    let g:Tlist_GainFocus_On_ToggleOpen = 1
-    let g:Tlist_Exit_OnlyWindow = 1
-    let g:Tlist_Use_Right_Window = 1
-    let g:Tlist_File_Fold_Auto_Close = 0
-    let g:Tlist_Enable_Fold_Column = 0
-    let g:Tlist_Compact_Format = 1
+    let g:Tlist_Close_On_Select=1
+    let g:Tlist_GainFocus_On_ToggleOpen=1
+    let g:Tlist_Exit_OnlyWindow=1
+    let g:Tlist_Use_Right_Window=1
+    let g:Tlist_File_Fold_Auto_Close=0
+    let g:Tlist_Enable_Fold_Column=0
+    let g:Tlist_Compact_Format=1
 endif
 
 " Fallback if there is no fzf
@@ -287,9 +333,9 @@ endif
 if executable('ag')
     " Use Ag over Grep
     set grepprg=ag\ --nogroup\ --nocolor
-    let g:ackprg = 'ag --vimgrep'
+    let g:ackprg='ag --vimgrep'
 
     " Use Ag in CtrlP for listing files
-    let g:ctrlp_user_command = 'ag %s -l --nocolor --depth 3 -g 2>/dev/null ""'
-    let g:ctrlp_use_caching = 0
+    let g:ctrlp_user_command='ag %s -l --nocolor --depth 3 -g 2>/dev/null ""'
+    let g:ctrlp_use_caching=0
 endif

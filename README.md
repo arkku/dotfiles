@@ -47,12 +47,19 @@ Some other general settings done:
 
 * if `ag` is installed, use it instead of `grep` (also in plugins)
 * if `fzf` is installed (via `brew`, `apt`, or in `~./fzf`), load its plugin
+* `g:markdown_fenced_languages` is set to contain a variety of popular
+  languages but only if the filetype is known (e.g., `swift` is not currently
+  shipped with Vim, so it would cause an error if added without the plugin
+  installed)
+* formatting of markdown lists is fixed
 * the Neovim configuration tries to detect the background colour from the
   environment variables `$BACKGROUND` (`dark` or `light`) and `$COLORFGBG`
   (`<fgcolor>;<bgcolor>`, e.g., `7;0` is gray on black)
 
-Many settings assume that my [plugin collection](https://github.com/arkku/vim-plugin-collection/) is installed, and some plugin-related settings are in that
-collection (and not duplicated here anymore).
+Many settings assume that my [plugin
+collection](https://github.com/arkku/vim-plugin-collection/) is installed, and
+some plugin-related settings are in that collection (and not duplicated here
+anymore).
 
 ##### General Bindings
 
