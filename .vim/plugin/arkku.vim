@@ -354,26 +354,35 @@ if !exists('g:vscode')
         set pastetoggle=<F10>
         inoremap <C-B> <F10><C-R>+<F10>
     endif
-
-    " Tab to cycle buffers (with a hack to get rid of NERDTree)
-    nnoremap <Tab> <Esc>:silent! NERDTreeClose<CR><Esc>:silent! bn<CR><Esc>
-    nnoremap <S-Tab> <Esc>:silent! NERDTreeClose<CR><Esc>:silent! bp<CR><Esc>
-
-    let g:buffet_show_index=1
-    let g:buffet_always_show_tabline=0
-    let g:NERDTreeQuitOnOpen=1
-    let g:ctrlp_by_filename=0
-    let g:ctrlp_working_path_mode='ra'
-
-    " taglist.vim:
-    let g:Tlist_Close_On_Select=1
-    let g:Tlist_GainFocus_On_ToggleOpen=1
-    let g:Tlist_Exit_OnlyWindow=1
-    let g:Tlist_Use_Right_Window=1
-    let g:Tlist_File_Fold_Auto_Close=0
-    let g:Tlist_Enable_Fold_Column=0
-    let g:Tlist_Compact_Format=1
 endif
+
+let g:netrw_liststyle=3
+let g:netrw_browse_split=0
+let g:netrw_preview=1
+let g:netrw_winsize=25
+let g:netrw_altv=1
+"let g:netrw_altfile=1
+let g:netrw_banner=0
+let g:netrw_sizestyle='H'
+"let g:netrw_usetab=1
+let g:netrw_special_syntax=1
+
+let g:buffet_show_index=1
+let g:buffet_always_show_tabline=0
+
+let g:NERDTreeQuitOnOpen=1
+
+let g:ctrlp_by_filename=0
+let g:ctrlp_working_path_mode='ra'
+
+" taglist.vim:
+let g:Tlist_Close_On_Select=1
+let g:Tlist_GainFocus_On_ToggleOpen=1
+let g:Tlist_Exit_OnlyWindow=1
+let g:Tlist_Use_Right_Window=1
+let g:Tlist_File_Fold_Auto_Close=0
+let g:Tlist_Enable_Fold_Column=0
+let g:Tlist_Compact_Format=1
 
 " Fallback if there is no fzf
 nmap <LocalLeader>z <C-P>

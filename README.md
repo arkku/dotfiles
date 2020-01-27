@@ -66,18 +66,19 @@ anymore).
 * `p` – in visual mode, put (paste) over the selection without yanking the
   replaced text
 * arrows (with Ctrl and Alt) escape sequences explicitly bound for various
-different terminals (not in Neovim)
+  different terminals (not in Neovim)
 * alt-arrows mapped the same way as in macOS, i.e., alt-left and alt-right skip
   between words whereas alt-up and alt-down go to the beginning/end of line
 * <kbd>Ctrl</kbd>-<kbd>A</kbd> – go to the beginning of line
-* <kbd>Ctrl</kbd>-<kbd>E</kbd> – go to the end of line (unless pop-up completion
-  menu is open, in which case close it)
+* <kbd>Ctrl</kbd>-<kbd>E</kbd> – go to the end of line (unless pop-up
+  completion menu is open, in which case close it)
 * <kbd>Ctrl</kbd>–<kbd>B</kbd> – in insert mode, insert the character below the
   cursor (the default mapping for <kbd>Ctrl</kbd>–<kbd>E</kbd>, but even the
   mnemonic makes more sense now)
-* <kbd>Ctrl</kbd>–<kbd>B</kbd> – toggle paste mode, paste, and toggle paste mode again
-  (Vim only)
-* <kbd>Ctrl</kbd>-<kbd>B</kbd> – terminal command (replacement for <kbd>Ctrl</kbd>–<kbd>T</kbd>, which is my tmux prefix)
+* <kbd>Ctrl</kbd>–<kbd>B</kbd> – toggle paste mode, paste, and toggle paste
+  mode again (Vim only)
+* <kbd>Ctrl</kbd>-<kbd>B</kbd> – terminal command (replacement for
+  <kbd>Ctrl</kbd>–<kbd>T</kbd>, which is my tmux prefix)
 * <kbd>Esc</kbd> – exit integrated terminal (press twice quickly to send to
 * <kbd>Esc</kbd> <kbd>Esc</kbd> – in insert mode, clear highlighting of
   previous search
