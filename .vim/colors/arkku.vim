@@ -109,8 +109,8 @@ hi Title term=bold cterm=bold ctermfg=yellow gui=bold guifg=#ff9933
 
 hi LineNr term=reverse cterm=none ctermbg=black ctermfg=gray gui=none guibg=#222222 guifg=#666666
 hi CursorLineNr term=reverse cterm=none ctermbg=black ctermfg=white gui=none guibg=#222222 guifg=#bbbbbb
-hi CursorLine guibg=#f5f5f5
-hi CursorColumn guibg=#fefefe
+hi CursorLine guibg=#ccffff
+hi CursorColumn guibg=#f0fefe
 hi NonText term=bold cterm=none ctermfg=gray gui=none guifg=#666666 guibg=#f0f0f0
 
 hi Folded term=reverse cterm=none ctermfg=blue ctermbg=gray gui=none guifg=#0099cc guibg=#f0f0f0
@@ -205,7 +205,7 @@ if &background == "dark"
 
     hi WarningMsg term=standout cterm=bold ctermfg=yellow gui=bold guifg=#ff9900
 
-    hi CursorLine guibg=#000000
+    hi CursorLine guibg=#333333
     hi CursorColumn guibg=#030303
     hi NonText term=bold cterm=none ctermfg=darkgray gui=none guifg=#666666 guibg=#222222
 
