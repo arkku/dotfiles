@@ -403,8 +403,11 @@ if executable('fzf')
     runtime! plugin/fzf.vim
 
     if exists('g:loaded_fzf')
+        " TODO: Use fd if installed
         if executable('ag')
             " Space z to open FZF with Ag
+            nnoremap <LocalLeader>z <Esc>:silent! NERDTREEClose<CR>:call fzf#run(fzf#wrap({'source': 'ag -l --nocolor --depth 5 -g 2>/dev/null ""'}))<CR>
+        elseif executable('fd')
             nnoremap <LocalLeader>z <Esc>:silent! NERDTREEClose<CR>:call fzf#run(fzf#wrap({'source': 'ag -l --nocolor --depth 5 -g 2>/dev/null ""'}))<CR>
         else
             " Space z to open FZF
@@ -417,7 +420,13 @@ if executable('ag')
     " Use Ag over Grep
     set grepprg=ag\ --nogroup\ --nocolor
     let g:ackprg='ag --vimgrep'
+endif
 
+if executable('fd')
+    " Use fd in CtrlP for listing files
+    let g:ctrlp_user_command='fd -c never -d 5 "" %s'
+    let g:ctrlp_use_caching=0
+elseif executable('ag')
     " Use Ag in CtrlP for listing files
     let g:ctrlp_user_command='ag %s -l --nocolor --depth 3 -g 2>/dev/null ""'
     let g:ctrlp_use_caching=0

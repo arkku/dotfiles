@@ -227,17 +227,31 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
 
     # fzf
     if which -s fzf >/dev/null 2>&1; then
-        fzo() {
-            sels=( "${(@f)$(fd "${fd_default[@]}" "${@:2}"| fzf)}" )
-            test -n "$sels" && print -z -- "$1 ${sels[@]:q:q}"
-        }
+        if which -s fd >/dev/null 2>&1; then
+            fzo() {
+                sels=( "${(@f)$(fd "${fd_default[@]}" "${@:2}"| fzf)}" )
+                test -n "$sels" && print -z -- "$1 ${sels[@]:q:q}"
+            }
 
-        # fuzzy-find in nearby directories, e.g., `fz vi`
-        # can also take a path, such as `fz vi /usr/include`
-        fz() fzo "$@" --max-depth 3
+            # fuzzy-find in nearby directories, e.g., `fz vi`
+            # can also take a path, such as `fz vi /usr/include`
+            fz() fzo "$@" --max-depth 3
 
-        # current directory only, e.g., `f. mv`
-        f.() fzo "$@" --max-depth 1
+            # current directory only, e.g., `f. mv`
+            f.() fzo "$@" --max-depth 1
+        else
+            # TODO: Implement directory argument
+            fzo() {
+                sels=( "${(@f)$(ag -l "${@:2}" | fzf)}" )
+                test -n "$sels" && print -z -- "$1 ${sels[@]:q:q}"
+            }
+
+            # fuzzy-find in nearby directories, e.g., `fz vi`
+            fz() fzo "$@" --depth 3
+
+            # current directory only, e.g., `f. mv`
+            f.() fzo "$@" --depth 1
+        fi
     fi
 
     # Pipe shortcuts

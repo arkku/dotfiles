@@ -24,6 +24,7 @@ This is a checklist for me when I set up a new machine.
 * [zsh-syntax-highlighting](https://github.com/zsh-users/zsh-syntax-highlighting)
 * [rvm](https://rvm.io) (remember `readline`!)
 * [ag](https://github.com/ggreer/the_silver_searcher)
+* [fd](https://github.com/sharkdp/fd)
 * [fzf](https://github.com/junegunn/fzf)
 * [gpg](https://gnupg.org/download/) (also keys and passphrase input utility)
 * `~/.ssh` (keys, permissions, authorized keys, include shared config)
