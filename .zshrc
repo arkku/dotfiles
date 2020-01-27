@@ -227,31 +227,40 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
 
     # fzf
     if which -s fzf >/dev/null 2>&1; then
+        # use fd, rg, ag or find (in that order) to implement fuzzy search with fzf
+
         if which -s fd >/dev/null 2>&1; then
             fzo() {
-                sels=( "${(@f)$(fd "${fd_default[@]}" "${@:2}"| fzf)}" )
-                test -n "$sels" && print -z -- "$1 ${sels[@]:q:q}"
+                [ -n "$2" ] || return 1
+                sels=( "${(@f)$(fd "${fd_default[@]}" --max-depth "$1" --color=always "${@:3}"| fzf -0 --ansi)}" )
+                test -n "$sels" && print -z -- "$2 ${sels[@]:q:q}"
             }
-
-            # fuzzy-find in nearby directories, e.g., `fz vi`
-            # can also take a path, such as `fz vi /usr/include`
-            fz() fzo "$@" --max-depth 3
-
-            # current directory only, e.g., `f. mv`
-            f.() fzo "$@" --max-depth 1
-        else
-            # TODO: Implement directory argument
+        elif which -s rg >/dev/null 2>&1; then
             fzo() {
-                sels=( "${(@f)$(ag -l "${@:2}" | fzf)}" )
-                test -n "$sels" && print -z -- "$1 ${sels[@]:q:q}"
+                [ -n "$2" ] || return 1
+                sels=( "${(@f)$(rg -l --max-depth "$(( ${1} - 1 ))" -- '' "${@:3}" | fzf)}" )
+                [ -n "$sels" ] && print -z -- "$2 ${sels[@]:q:q}"
             }
-
-            # fuzzy-find in nearby directories, e.g., `fz vi`
-            fz() fzo "$@" --depth 3
-
-            # current directory only, e.g., `f. mv`
-            f.() fzo "$@" --depth 1
+        elif which -s ag >/dev/null 2>&1; then
+            fzo() {
+                [ -n "$2" ] || return 1
+                sels=( "${(@f)$(ag --nocolor -l --depth "$(( ${1} - 1 ))" -- '' "${@:3}" 2>/dev/null | fzf)}" )
+                [ -n "$sels" ] && print -z -- "$2 ${sels[@]:q:q}"
+            }
+        else
+            fzo() {
+                [ -n "$2" ] || return 1
+                sels=( "${(@f)$(find "${3:-.}" -maxdepth "$1" 2>/dev/null | fzf)}" )
+                [ -n "$sels" ] && print -z -- "$2 ${sels[@]:q:q}"
+            }
         fi
+
+        # fuzzy-find in nearby directories, e.g., `fz vi`
+        # can also take a path, such as `fz vi /usr/include`
+        fz() fzo 4 "$@"
+
+        # current directory only, e.g., `f. mv`
+        f.() fzo 1 "$@"
     fi
 
     # Pipe shortcuts
@@ -275,6 +284,9 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
 
     if which -s ag >/dev/null 2>&1; then
         alias -g :AG='| ag'
+    fi
+    if which -s rg >/dev/null 2>&1; then
+        alias -g :RG='| rg --smart-case'
     fi
 
     # System-specific variations

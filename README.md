@@ -23,7 +23,7 @@ This is a checklist for me when I set up a new machine.
 * [mosh](https://mosh.org)
 * [zsh-syntax-highlighting](https://github.com/zsh-users/zsh-syntax-highlighting)
 * [rvm](https://rvm.io) (remember `readline`!)
-* [ag](https://github.com/ggreer/the_silver_searcher)
+* [ripgrep](https://github.com/BurntSushi/ripgrep)
 * [fd](https://github.com/sharkdp/fd)
 * [fzf](https://github.com/junegunn/fzf)
 * [gpg](https://gnupg.org/download/) (also keys and passphrase input utility)
@@ -46,8 +46,10 @@ as the default.
 
 Some other general settings done:
 
-* if `ag` is installed, use it instead of `grep` (also in plugins)
-* if `fzf` is installed (via `brew`, `apt`, or in `~./fzf`), load its plugin
+* if `rg` is installed, use it instead of `grep` (also in plugins), otherwise
+  use `ag` if that is installed
+* if `fzf` is installed (via `brew`, `apt`, or in `~./fzf`), load its plugin,
+  and use the first of `fd`, `rg` or `ag` that is installd to power the search
 * `g:markdown_fenced_languages` is set to contain a variety of popular
   languages but only if the filetype is known (e.g., `swift` is not currently
   shipped with Vim, so it would cause an error if added without the plugin
@@ -123,7 +125,7 @@ These bindings are for the normal mode, preceded by the local leader (<kbd>Space
 * `x` – force close tab
 * <kbd>Tab</kbd> – go to next tab
 * <kbd>Shift</kbd> + <kbd>Tab</kbd> – go to previous tab
-* `z` – open `fzf` fuzzy search for files (powered by `ag` if installed)
+* `z` – open `fzf` fuzzy search for files (powered by `fd` if installed)
 
 ### Shell
 
@@ -223,7 +225,7 @@ Autocompletion is set to be case-, hyphen-, and underscore-insensitive. If
   _not_ just putting `sudo ` in front of the command, but rather the entire
   command is executed under `sudo` so any pipes and redirections also gain
   privileges)
-* `psg` – `grep` the output `of `ps`
+* `psg` – `grep` the output of `ps`
 * `hgrep` – `grep` history
 * `agrep` – `grep` aliases
 * `fz` – open `fzf` to fuzzily search for file arguments for the following

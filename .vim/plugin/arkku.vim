@@ -403,12 +403,13 @@ if executable('fzf')
     runtime! plugin/fzf.vim
 
     if exists('g:loaded_fzf')
-        " TODO: Use fd if installed
-        if executable('ag')
-            " Space z to open FZF with Ag
-            nnoremap <LocalLeader>z <Esc>:silent! NERDTREEClose<CR>:call fzf#run(fzf#wrap({'source': 'ag -l --nocolor --depth 5 -g 2>/dev/null ""'}))<CR>
-        elseif executable('fd')
-            nnoremap <LocalLeader>z <Esc>:silent! NERDTREEClose<CR>:call fzf#run(fzf#wrap({'source': 'ag -l --nocolor --depth 5 -g 2>/dev/null ""'}))<CR>
+        " Space z to open fuzzy file finder
+        if executable('fd')
+            nnoremap <LocalLeader>z <Esc>:silent! NERDTREEClose<CR>:call fzf#run(fzf#wrap({'source': 'fd -c never -d 5 2>/dev/null -- ""'}))<CR>
+        elseif executable('rg')
+            nnoremap <LocalLeader>z <Esc>:silent! NERDTREEClose<CR>:call fzf#run(fzf#wrap({'source': 'rg --color never --max-depth 4 -l -- ""'}))<CR>
+        elseif executable('ag')
+            nnoremap <LocalLeader>z <Esc>:silent! NERDTREEClose<CR>:call fzf#run(fzf#wrap({'source': 'ag -l --nocolor --depth 4 -- "" 2>/dev/null'}))<CR>
         else
             " Space z to open FZF
             nnoremap <LocalLeader>z <Esc>:silent! NERDTREEClose<CR>:FZF<CR>
@@ -416,18 +417,28 @@ if executable('fzf')
     endif
 endif
 
-if executable('ag')
-    " Use Ag over Grep
-    set grepprg=ag\ --nogroup\ --nocolor
-    let g:ackprg='ag --vimgrep'
-endif
-
 if executable('fd')
     " Use fd in CtrlP for listing files
-    let g:ctrlp_user_command='fd -c never -d 5 "" %s'
+    let g:ctrlp_user_command='fd -c never -d 5 -- "" %s 2>/dev/null'
+    let g:ctrlp_use_caching=0
+elseif executable('rg')
+    " Use ripgrep in CtrlP for listing files
+    let g:ctrlp_user_command='rg --color never -l --max-depth 3 -- "" %s'
     let g:ctrlp_use_caching=0
 elseif executable('ag')
     " Use Ag in CtrlP for listing files
-    let g:ctrlp_user_command='ag %s -l --nocolor --depth 3 -g 2>/dev/null ""'
+    let g:ctrlp_user_command='ag --nocolor -l --depth 3 -- "" %s 2>/dev/null'
     let g:ctrlp_use_caching=0
+endif
+
+if executable('rg')
+    " Use ripgrep over grep
+    set grepprg=rg\ --vimgrep\ --no-heading\ --smart-case\ --multiline-dotall\ --hidden
+    set grepformat=%f:%l:%c:%m,%f:%l:%m
+    let g:ackprg='rg --vimgrep --no-heading'
+elseif executable('ag')
+    " Use Ag over grep
+    set grepprg=ag\ --vimgrep
+    set grepformat=%f:%l:%c:%m
+    let g:ackprg='ag --vimgrep'
 endif
