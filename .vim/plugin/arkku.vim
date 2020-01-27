@@ -356,16 +356,19 @@ if !exists('g:vscode')
     endif
 endif
 
+" Always reset the chgwin to accommodate both :Lexplore and :Explore
+au FileType netrw au BufCreate <buffer> let g:netrw_chgwin=-1
+
 let g:netrw_liststyle=3
-let g:netrw_browse_split=0
-let g:netrw_preview=1
-let g:netrw_winsize=25
+let g:netrw_winsize=30
 let g:netrw_altv=1
 "let g:netrw_altfile=1
 let g:netrw_banner=0
 let g:netrw_sizestyle='H'
 "let g:netrw_usetab=1
 let g:netrw_special_syntax=1
+"let g:netrw_browse_split=0
+"let g:netrw_preview=1
 
 let g:buffet_show_index=1
 let g:buffet_always_show_tabline=0
