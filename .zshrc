@@ -286,7 +286,13 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
     if ls --version 2>/dev/null | grep -q GNU; then
         alias ls='ls -F --color=auto --group-directories-first'
     elif [ "$CLICOLOR" = 1 ]; then
-        export LSCOLORS='AxfxHehecxegehBDBDAhaD'
+        if [[ $BACKGROUND == 'light' ]]; then
+            # ls on macOS does not support X for bold, and the bold
+            # black would be invisible on dark background
+            export LSCOLORS='AxfxHehecxegehBDBDAhaD'
+        else
+            export LSCOLORS='ExfxHehecxegehBDBDAhaD'
+        fi
         alias ls='ls -F -G'
     else
         alias ls='ls -F'
