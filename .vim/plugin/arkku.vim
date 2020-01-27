@@ -393,7 +393,7 @@ if executable('fzf')
         set runtimepath+=~/.fzf
     elseif !empty(glob("/usr/local/opt/fzf"))
         set runtimepath+=/usr/local/opt/fzf
-    elseif !exits('g:loaded_fzf') && !empty(glob("/usr/share/doc/fzf/examples/plugin/fzf.vim"))
+    elseif !exists('g:loaded_fzf') && !empty(glob("/usr/share/doc/fzf/examples/plugin/fzf.vim"))
         set runtimepath+=/usr/share/doc/fzf/examples
     endif
 
