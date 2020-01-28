@@ -238,13 +238,20 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
             else
                 local batargs
                 batargs=()
-                [ "$BACKGROUND" = 'dark' ] && batargs+=( "--theme=Arkku Dark" )
                 local batstyle=''
-                if [ -f "$1" -o -f "$2" ]; then
+
+                [ "$BACKGROUND" = 'dark' ] && batargs+=( "--theme=Arkku Dark" )
+
+                local filecount=0
+                for arg in "$@"; do
+                    [ -f "$arg" ] && filecount=$(( filecount + 1 ))
+                done
+
+                if [ "$filecount" -ge 1 ]; then
                     # In git repo with changes, show changes
                     [ -n "$REPO" -a -n "$vcs_info_msg_4_" ] && batstyle=',changes'
                     # Multiple files, show grid
-                    [ -f "$1" -a -f "$2" ] && batstyle+=',header,grid'
+                    [ "$filecount" -ge 2 ] && batstyle+=',header,grid'
                 fi
                 [ -n "$batstyle" ] && batargs+=( "--style=${batstyle/#,}" )
                 command bat "${batargs[@]}" "$@"
@@ -340,7 +347,7 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
     fi
 
     # System-specific variations
-    case `uname`; in
+    case `uname` in
         IRIX)
             alias psg='ps -efa | grep'
             ;;
