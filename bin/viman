@@ -4,13 +4,13 @@ if [ -n "$1" ]; then
     exec man -P "$0" "$@"
 fi
 VIM=vim
-if which -s nvim 2>/dev/null; then
+if [ -x "`command -v nvim`" ]; then
     COL='cat'
     VIM='nvim'
 else
     COL='col -bpx'
 fi
-$COL | $VIM -R -c 'set ft=man nomod nolist' \
+$COL | $VIM -R -c 'set ft=man nomod nolist nonumber' \
     -c 'noremap q :quit<CR>' \
     -c 'noremap <SPACE> <C-D><C-G>' \
     -c 'noremap b <C-U><C-G>' \

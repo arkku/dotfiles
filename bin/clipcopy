@@ -1,16 +1,16 @@
 #!/usr/bin/env bash
-if [ -n "$CLIPCOPY" ] && which -s "${CLIPCOPY/% *}" >/dev/null 2>&1; then
+if [ -n "$CLIPCOPY" -a -n "$(command -v "${CLIPCOPY/% *}")" ]; then
     exec $CLIPCOPY
-elif [ -z "$SSH_CONNECTION" ] && which -s pbcopy >/dev/null 2>&1; then
+elif [ -z "$SSH_CONNECTION" -a -n "$(command -v pbcopy)" ]; then
     exec pbcopy
 elif [ -n "$DISPLAY" ]; then
-    if which -s xclip >/dev/null 2>&1; then
+    if [ -n "$(command -v xclip)" ]; then
         exec xclip -selection c
-    elif which -s xsel >/dev/null 2>&1; then
+    elif [ -n "$(command -v xsel)" ]; then
         exec xsel -i -b
     fi
 elif [ -z "$SSH_CONNECTION" ]; then
-    if which -s clip >/dev/null 2>&1; then
+    if [ -n "$(command -v clip)" ]; then
         exec clip
     elif [ -w '/dev/clipboard' ]; then
         exec cat >/dev/clipboard

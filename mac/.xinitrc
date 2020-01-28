@@ -9,7 +9,7 @@ xset b 0 0 0
 # Load .Xresources and .Xmodmap.
 
 nocpp=''
-[ ! -x "`which cpp 2>/dev/null`" ] && nocpp='-nocpp'
+[ ! -x "`command -v cpp`" ] && nocpp='-nocpp'
 
 for d in "$xinitd" "$HOME"; do
     if [ -r "$d/.Xresources" ]; then

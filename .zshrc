@@ -77,16 +77,16 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
 
     if [ -n "$CLIPCOPY" ]; then
         CLIPCOPY="$CLIPCOPY"
-    elif [ -z "$SSH_CONNECTION" ] && which -s pbcopy >/dev/null 2>&1; then
+    elif [ -z "$SSH_CONNECTION" -a -n "$(command -v pbcopy)" ]; then
         CLIPCOPY='pbcopy'
     elif [ -n "$DISPLAY" ]; then
-        if which -s xclip >/dev/null 2>&1; then
+        if [ -n "$(command -v xclip)" ]; then
             CLIPCOPY='xclip -selection c'
-        elif which -s xsel >/dev/null 2>&1; then
+        elif [ -n "$(command -v xsel)" ]; then
             CLIPCOPY='xsel -i -b'
         fi
     elif [ -z "$SSH_CONNECTION" ]; then
-        if which -s clip >/dev/null 2>&1; then
+        if [ -n "$(command -v clip)" ]; then
             CLIPCOPY='clip'
         elif [ -w '/dev/clipboard' ]; then
             CLIPCOPY='cat >/dev/clipboard'
@@ -113,12 +113,12 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
 
     if [ -n "$CLIPPASTE" ]; then
         CLIPPASTE="$CLIPPASTE"
-    elif [ -z "$SSH_CONNECTION" ] && which -s pbpaste >/dev/null 2>&1; then
+    elif [ -z "$SSH_CONNECTION" -a -n "$(command -v pbpaste)" ]; then
         CLIPPASTE='pbpaste'
     elif [ -n "$DISPLAY" ]; then
-        if which -s xclip >/dev/null 2>&1; then
+        if [ -n "$(command -v xclip)" ]; then
             CLIPPASTE='xclip -o -selection c'
-        elif which -s xsel >/dev/null 2>&1; then
+        elif [ -n "$(command -v xsel)" ]; then
             CLIPPASTE='xsel -o -b'
         fi
     elif [ -z "$SSH_CONNECTION" -a -r '/dev/clipboard' ]; then
@@ -215,39 +215,39 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
     alias cpath='( cd -P "$PWD" && clipcopy "$PWD" && echo "$PWD" )'
 
     # Neovim
-    if which -s nvim >/dev/null 2>&1; then
+    if [ -n "$(command -v nvim)" ]; then
         alias vi='nvim'
         alias nvimdiff='nvim -d'
         alias -g :VI='| nvim -R -'
         alias -g :VIM='|& nvim -R -'
-        if which -s viman >/dev/null 2>&1; then
+        if [ -n "$(command -v viman)" ]; then
             [ -z "$MANPAGER" ] && export MANPAGER='viman'
         fi
     else
         alias -g :VI='| vim -R -'
         alias -g :VIM='|& vim -R -'
     fi
-    if which -s viless >/dev/null 2>&1; then
+    if [ -n "$(command -v viless)" ]; then
         alias -g :VL='| viless'
     fi
 
     # fzf
-    if which -s fzf >/dev/null 2>&1; then
+    if [ -n "$(command -v fzf)" ]; then
         # use fd, rg, ag or find (in that order) to implement fuzzy search with fzf
 
-        if which -s fd >/dev/null 2>&1; then
+        if [ -n "$(command -v fd)" ]; then
             fzo() {
                 [ -n "$2" ] || return 1
                 local sels=( "${(@f)$(fd --max-depth "$1" --color=always . "${@:3}" 2>/dev/null | fzf -m --ansi)}" )
                 [ -n "$sels" ] && print -z -- "$2 ${sels[@]:q:q}"
             }
-        elif which -s rg >/dev/null 2>&1; then
+        elif [ -n "$(command -v rg)" ]; then
             fzo() {
                 [ -n "$2" ] || return 1
                 local sels=( "${(@f)$(rg -l --max-depth "$(( ${1} - 1 ))" -- '' "${@:3}" 2>/dev/null | fzf -m)}" )
                 [ -n "$sels" ] && print -z -- "$2 ${sels[@]:q:q}"
             }
-        elif which -s ag >/dev/null 2>&1; then
+        elif [ -n "$(command -v ag)" ]; then
             fzo() {
                 [ -n "$2" ] || return 1
                 local sels=( "${(@f)$(ag --nocolor -l --depth "$(( ${1} - 1 ))" -- '' "${@:3}" 2>/dev/null | fzf -m)}" )
@@ -311,10 +311,10 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
     alias -g :NUL='>/dev/null 2>&1'
     alias -g :WC='| wc -l'
 
-    if which -s ag >/dev/null 2>&1; then
+    if [ -n "$(command -v ag)" ]; then
         alias -g :AG='| ag'
     fi
-    if which -s rg >/dev/null 2>&1; then
+    if [ -n "$(command -v rg)" ]; then
         alias -g :RG='| rg --smart-case'
     fi
 
@@ -334,8 +334,8 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
 
     [ -n "$COLORTERM" -a -z "$CLICOLOR" ] && export CLICOLOR=1
 
-    if [ -r "$HOME/.dir_colors" ]; then
-        which -s dircolors >/dev/null 2>&1 && eval `dircolors -b "$HOME/.dir_colors"`
+    if [ -r "$HOME/.dir_colors" -a -n "$(command -v dircolors)" ]; then
+        eval `dircolors -b "$HOME/.dir_colors"`
     fi
 
     if ls --version 2>/dev/null | grep -q GNU; then
@@ -741,7 +741,7 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
 
     # Load fasd if it is installed and ~/.fasd-init-zsh exists (touch it!)
     local fasd_cache="$HOME/.fasd-init-zsh"
-    if [ -e "$fasd_cache" ] && which -s fasd >/dev/null 2>&1; then
+    if [ -w "$fasd_cache" -a -n "$(command -v fasd )" ]; then
         if [ "$(command -v fasd)" -nt "$fasd_cache" -o ! -s "$fasd_cache" ]; then
             fasd --init posix-alias zsh-hook zsh-ccomp zsh-ccomp-install zsh-wcomp zsh-wcomp-install >| "$fasd_cache"
         fi
@@ -751,7 +751,7 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
         alias v='f -e vi'
         alias sv='sf -e vi'
 
-        if which -s fzf >/dev/null 2>&1; then
+        if [ -n "$(command -v fzf)" ]; then
             fasd_fzf() {
                 local fargs="$1"
                 shift

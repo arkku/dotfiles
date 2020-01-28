@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-if [ -n "$CLIPPASTE" ] && which -s "${CLIPPASTE/% *}" >/dev/null 2>&1; then
+if [ -n "$CLIPPASTE" -a -n "$(command -v "${CLIPPASTE/% *}")" ]; then
     exec $CLIPPASTE
-elif [ -z "$SSH_CONNECTION" ] && which -s pbpaste >/dev/null 2>&1; then
+elif [ -z "$SSH_CONNECTION" -a -n "$(command -v pbpaste)" ]; then
     exec pbpaste
 elif [ -n "$DISPLAY" ]; then
-    if which -s xclip >/dev/null 2>&1; then
+    if [ -n "$(command -v xclip)" ]; then
         exec xclip -o -selection c
-    elif which -s xsel >/dev/null 2>&1; then
+    elif [ -n "$(command -v xsel)" ]; then
         exec xsel -o -b
     fi
 elif [ -z "$SSH_CONNECTION" ]; then

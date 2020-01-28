@@ -14,7 +14,7 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
     alias irbb='command irb'
 
     # Obtain fzf if installed
-    if which -s fzf >/dev/null 2>&1; then
+    if [ -n "$(command -v fzf)" ]; then
         local fzfpath
         for fzfpath in "$HOME/.profile.d" "$HOME/opt/fzf/shell" "$HOME/.fzf/shell" '/usr/local/opt/fzf/shell' '/usr/share/doc/fzf/examples'; do
             if [[ -r "$fzfpath/completion.zsh" ]]; then

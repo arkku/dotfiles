@@ -1,5 +1,5 @@
 for editor in nvim vim vi; do
-    if which -s "$editor" >/dev/null 2>&1; then
+    if [ -n "`command -v $editor`" ]; then
         EDITOR="$editor"
         VISUAL="$editor"
         break

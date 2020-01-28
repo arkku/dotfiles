@@ -5,10 +5,10 @@ if [ -r "$1" ]; then
     shift
 fi
 VIM=vim
-if which -s nvim 2>/dev/null; then
+if [ -x "`command -v nvim`" ]; then
     VIM=nvim
 fi
-"$VIM" -R -c 'set nomod nolist' \
+"$VIM" -R -c 'set nomod nolist nonumber' \
     -c 'noremap q :quit<CR>' \
     -c 'noremap <SPACE> <C-D><C-G>' \
     -c 'noremap b <C-U><C-G>' \

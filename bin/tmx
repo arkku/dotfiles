@@ -13,7 +13,6 @@
 # Distribute freely, use at your own risk only.
 
 tmux=tmux
-[ -n "`which tmux-next 2>/dev/null`" ] && tmux=tmux-next
 
 [ "$1" = "ls" ] && exec $tmux ls
 

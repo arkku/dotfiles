@@ -106,7 +106,7 @@ if [ -n "$PS1" -a -z "$ENVONLY" ]; then
     alias cpath='( cd -P "$PWD" && echo -n "$PWD" | clipcopy "$PWD" ) && echo "$PWD"'
 
     # Neovim
-    if which -s nvim >/dev/null 2>&1; then
+    if [ -n "$(command -v nvim)" ]; then
         alias vi='nvim'
         alias nvimdiff='nvim -d'
     fi
@@ -122,8 +122,8 @@ if [ -n "$PS1" -a -z "$ENVONLY" ]; then
     alias la='ls -kla'
     alias l.='ls -d .*'
 
-    if which -s fzf >/dev/null 2>&1; then
-        if which -s fd >/dev/null 2>&1; then
+    if [ -n "$(command -v fzf)" ]; then
+        if [ -n "$(command -v fd)" ]; then
             fzo() {
                 [ -n "$2" ] || return 1
                 local depth="$1"
@@ -212,8 +212,8 @@ if [ -n "$PS1" -a -z "$ENVONLY" ]; then
 
     [ -n "$COLORTERM" -a -z "$CLICOLOR" ] && export CLICOLOR=1
 
-    if [ -r "$HOME/.dir_colors" ]; then
-        which -s dircolors >/dev/null 2>&1 && eval `dircolors -b "$HOME/.dir_colors"`
+    if [ -r "$HOME/.dir_colors" -a -n "$(command -v dircolors)" ]; then
+        eval `dircolors -b "$HOME/.dir_colors"`
     fi
 
     if ls --version 2>/dev/null | grep -q GNU; then
@@ -231,7 +231,7 @@ if [ -n "$PS1" -a -z "$ENVONLY" ]; then
 
     # Load fasd if it is installed and ~/.fasd-init-bash exists (touch it!)
     fasd_cache="$HOME/.fasd-init-bash"
-    if [ -e "$fasd_cache" ] && which -s fasd >/dev/null 2>&1; then
+    if [ -e "$fasd_cache" -a -n "$(command -v fasd)" ]; then
         if [ "$(command -v fasd)" -nt "$fasd_cache" -o ! -s "$fasd_cache" ]; then
             fasd --init posix-alias bash-hook bash-ccomp bash-ccomp-install >| "$fasd_cache"
         fi
@@ -241,7 +241,7 @@ if [ -n "$PS1" -a -z "$ENVONLY" ]; then
         alias v='f -e vi'
         alias sv='sf -e vi'
 
-        if which -s fzf >/dev/null 2>&1; then
+        if [ -n "$(command -v fzf)" ]; then
             fasd_fzf() {
                 local fargs="$1"
                 shift
