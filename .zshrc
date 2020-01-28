@@ -468,7 +468,6 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
     bindkey '\C-L' clear-screen
     for mode in vicmd viins; do
         bindkey -M "$mode" '\C-R' redo
-        bindkey -M "$mode" '\C-Z' undo
     done
     for mode in '-M vicmd' '-M viins' ''; do
         # Make navigation the same for vi mode
@@ -507,6 +506,19 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
     zle -N edit-command-line
     bindkey '\C- ' edit-command-line
     bindkey -a '\C- ' edit-command-line
+
+    zle-insmode-ctrlz() {
+        if [ -z "$BUFFER" ]; then
+            if zle push-line-or-edit && [ -z "$BUFFER" ]; then
+                LBUFFER=' fg'
+                zle accept-line
+            fi
+        else
+            zle self-insert
+        fi
+    }
+    zle -N zle-insmode-ctrlz
+    bindkey -M viins '\C-Z' zle-insmode-ctrlz
 
     # Vim-like surround
     autoload -Uz surround

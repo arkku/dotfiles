@@ -231,6 +231,10 @@ For `fasd`, the set of aliases is:
   kills the line and pastes it back on the next empty prompt (e.g., use this to
   get rid of an unfinished command while you look at `man`, then it comes back
   automatically on the next prompt)
+* <kbd>Ctrl</kbd>-<kbd>Z</kbd> on an empty prompt in insert mode – if the
+  on the first line, execute `fg` (i.e., bring suspended process to
+  foreground, allowing to toggle suspend/resume with the same keystroke),
+  otherwise make previous lines of the multiline prompt editable again
 * <kbd>Ctrl</kbd>-<kbd>U</kbd> – kills the whole line (not just backwards from
   the cursor, as is the default)
 * <kbd>Ctrl</kbd>-<kbd>Y</kbd> – yanks (or, more accurately, puts) the
