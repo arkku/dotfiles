@@ -71,6 +71,8 @@ if [ -n "$PS1" -a -z "$ENVONLY" ]; then
     # Aliases
     alias gr='grep --color=auto --exclude-dir={.git,.hg,.svn,.bzr}'
     alias gs='git status --show-stash'
+    alias gsu='git submodule update --init --recursive'
+    alias gsur='git submodule update --remote --recursive'
     alias cdr='[ -n "$REPO" ] && cd "$REPO"'
 
     # Make a directory (including parent diretory) and cd to it
@@ -120,6 +122,44 @@ if [ -n "$PS1" -a -z "$ENVONLY" ]; then
     alias la='ls -kla'
     alias l.='ls -d .*'
 
+    if which -s fzf >/dev/null 2>&1; then
+        if which -s fd >/dev/null 2>&1; then
+            fzo() {
+                [ -n "$2" ] || return 1
+                local depth="$1"
+                shift
+                local prog="$1"
+                shift
+                sels=( $(fd "${fd_default[@]}" --max-depth "$depth" --color=always . "$@" | fzf -m -0 --ansi) )
+                [ -n "$sels" ] && "$prog" "${sels[@]}"
+            }
+        fi
+
+        # fuzzy-find in nearby directories, e.g., `fz vi`
+        # can also take a path, such as `fz vi /usr/include`
+        fz() {
+            fzo 4 "$@"
+        }
+
+        # current directory only, e.g., `f. mv`
+        f.() {
+            fzo 1 "$@"
+        }
+
+        # kill process selected with fzf
+        fzk() {
+            local showall=''
+            [[ $EUID = 0 ]] && showall=e
+            ps "${showall}xu" \
+                | sed 1d \
+                | eval "fzf ${FZF_DEFAULT_OPTS} -m --header='[kill ${@:-process}]'" \
+                | tee /dev/stderr \
+                | awk '{ print $2 }' \
+                | xargs kill "$@"
+        }
+
+        alias kp='fzk'
+    fi
     # set a fancy prompt
     PS1='\u@$SHORT_HOSTNAME:$SHORT_PWD\$ '
     PROMPT_COMMAND='short_pwd'

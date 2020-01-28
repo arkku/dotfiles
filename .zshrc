@@ -178,6 +178,8 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
     # Aliases
     alias gr='grep --color=auto --exclude-dir={.git,.hg,.svn,.bzr}'
     alias gs='git status --show-stash'
+    alias gsu='git submodule update --init --recursive'
+    alias gsur='git submodule update --remote --recursive'
     alias cdr='[ -n "$REPO" ] && cd "$REPO"'
 
     # Make a directory (including parent diretory) and cd to it
@@ -201,6 +203,10 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
     # Copy last command
     alias clc='clipcopy "$(fc -ln -1)"'
     alias clct='tmuxcopy "$(fc -ln -1)"'
+
+    # Paste command-line (mnemonic to match `clc`)
+    alias plc='print -z -- "$(clippaste)"'
+    alias plct='print -z -- "$(tmuxpaste)"'
 
     # Copy current directory
     alias cpwd='clipcopy "$PWD" && echo "$PWD"'
@@ -232,35 +238,58 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
         if which -s fd >/dev/null 2>&1; then
             fzo() {
                 [ -n "$2" ] || return 1
-                sels=( "${(@f)$(fd "${fd_default[@]}" --max-depth "$1" --color=always "${@:3}"| fzf -0 --ansi)}" )
-                test -n "$sels" && print -z -- "$2 ${sels[@]:q:q}"
+                local sels=( "${(@f)$(fd --max-depth "$1" --color=always . "${@:3}" 2>/dev/null | fzf -m --ansi)}" )
+                [ -n "$sels" ] && print -z -- "$2 ${sels[@]:q:q}"
             }
         elif which -s rg >/dev/null 2>&1; then
             fzo() {
                 [ -n "$2" ] || return 1
-                sels=( "${(@f)$(rg -l --max-depth "$(( ${1} - 1 ))" -- '' "${@:3}" | fzf)}" )
+                local sels=( "${(@f)$(rg -l --max-depth "$(( ${1} - 1 ))" -- '' "${@:3}" 2>/dev/null | fzf -m)}" )
                 [ -n "$sels" ] && print -z -- "$2 ${sels[@]:q:q}"
             }
         elif which -s ag >/dev/null 2>&1; then
             fzo() {
                 [ -n "$2" ] || return 1
-                sels=( "${(@f)$(ag --nocolor -l --depth "$(( ${1} - 1 ))" -- '' "${@:3}" 2>/dev/null | fzf)}" )
+                local sels=( "${(@f)$(ag --nocolor -l --depth "$(( ${1} - 1 ))" -- '' "${@:3}" 2>/dev/null | fzf -m)}" )
                 [ -n "$sels" ] && print -z -- "$2 ${sels[@]:q:q}"
             }
         else
             fzo() {
                 [ -n "$2" ] || return 1
-                sels=( "${(@f)$(find "${3:-.}" -maxdepth "$1" 2>/dev/null | fzf)}" )
+                local sels=( "${(@f)$(find -H "${3:-.}" "${@:4}" -maxdepth "$1" 2>/dev/null | fzf -m)}" )
                 [ -n "$sels" ] && print -z -- "$2 ${sels[@]:q:q}"
             }
         fi
 
         # fuzzy-find in nearby directories, e.g., `fz vi`
         # can also take a path, such as `fz vi /usr/include`
-        fz() fzo 4 "$@"
+        fz() {
+            fzo 4 "$@"
+        }
 
         # current directory only, e.g., `f. mv`
-        f.() fzo 1 "$@"
+        f.() {
+            fzo 1 "$@"
+        }
+
+        # fuzzy-find in history and paste to command-line
+        fzh() {
+            print -z -- "$(history 1 | fzf -n 2.. | awk '{ $1=""; sub(/^ */, ""); sub(/ *$/, ""); print }')"
+        }
+
+        # kill process selected with fzf
+        fzk() {
+            local showall=''
+            [[ $EUID = 0 ]] && showall=e
+            ps "${showall}xu" \
+                | sed 1d \
+                | eval "fzf ${FZF_DEFAULT_OPTS} -m --header='[kill ${@:-process}]'" \
+                | tee /dev/stderr \
+                | awk '{ print $2 }' \
+                | xargs kill "$@"
+        }
+
+        alias kp='fzk'
     fi
 
     # Pipe shortcuts

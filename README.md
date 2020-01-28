@@ -229,14 +229,23 @@ Autocompletion is set to be case-, hyphen-, and underscore-insensitive. If
 * `hgrep` – `grep` history
 * `agrep` – `grep` aliases
 * `fz` – open `fzf` to fuzzily search for file arguments for the following
-  command, e.g. `fzf vi` (the command is not executed immediately afterwards,
-  so you can type in more arguments, e.g., `fz mv` works)
+  command, e.g. `fzf vi` (in zsh the command is not executed immediately
+  afterwards, so you can type in more arguments, e.g., `fz mv` works)
 * `f.` – like `fz` but only select files in the current directory
+* `fzh` – use `fzf` to fuzzily search command history, and paste the selection
+  on the command-line (but do not execute it)
+* `fzk` – use `fzf` to fuzzily search running processes, and pass them (and any
+  arguments) to `kill`
+* `kp` – alias for `fzk` (kill process)
 * `clc` – copy the last command to system clipboard
 * `clct` – copy the last command to tmux buffer
+* `plc` – paste command-line from system clipboard (but do not execute it)
+* `plct` – paste command-line from tmux buffer (but do not execute it)
 * `cpwd` – copy the current working directory to system clipboard
 * `cpath` – copy the current path, with symlinks expanded, to system clipboard
 * `gs` – `git status`
+* `gsu` – `git submodule update --init --recursive`
+* `gsur` – `git submodule update --remote --recursive`
 * `cdr` – `cd` to the root of the current git repository (if any)
 * `gr` – `grep`, excluding `.git` (but prefer `ag`)
 * `vi` – `nvim` (if installed)
