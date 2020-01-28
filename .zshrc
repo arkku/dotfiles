@@ -739,6 +739,75 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
     }
     precmd_functions+=( format_pwd )
 
+    # Load fasd if it is installed and ~/.fasd-init-zsh exists (touch it!)
+    local fasd_cache="$HOME/.fasd-init-zsh"
+    if [ -e "$fasd_cache" ] && which -s fasd >/dev/null 2>&1; then
+        if [ "$(command -v fasd)" -nt "$fasd_cache" -o ! -s "$fasd_cache" ]; then
+            fasd --init posix-alias zsh-hook zsh-ccomp zsh-ccomp-install zsh-wcomp zsh-wcomp-install >| "$fasd_cache"
+        fi
+        source "$fasd_cache"
+        unset fasd_cache
+
+        alias v='f -e vi'
+        alias sv='sf -e vi'
+
+        if which -s fzf >/dev/null 2>&1; then
+            fasd_fzf() {
+                local fargs="$1"
+                shift
+                local cmd=''
+                if [ "$1" = '-e' ]; then
+                    shift
+                    cmd="$1"
+                    shift
+                fi
+                local sel="$(fasd "$fargs" -- "$@" | fzf -1)"
+                [ -z "$sel" ] && return
+                if [ -n "$cmd" ]; then
+                    "$cmd" "$sel"
+                else
+                    echo "$sel"
+                fi
+            }
+
+            # fzf select a directory from fasd list
+            unalias sd 2>/dev/null
+            sd() {
+                fasd_fzf -ld "$@"
+            }
+
+            # fzf select a file from fasd list
+            unalias sf 2>/dev/null
+            sf() {
+                fasd_fzf -lf "$@"
+            }
+
+            # fzf select a file or directory from fasd list
+            unalias s 2>/dev/null
+            s() {
+                fasd_fzf -la "$@"
+            }
+
+            # replace the fasd interactive selection with fzf
+            unalias zz 2>/dev/null
+            zz() {
+                local dir="$(sd "$@")"
+                [ -n "$dir" ] && cd "$dir"
+            }
+        fi
+    elif [ -e "$HOME/.z" ]; then
+        # If fasd didn't exist, then load z.sh if both it and ~/.z exist
+        local zdir
+        for zdir in "$HOME/.profile.d" '/usr/local/etc/profile.d' '/etc/profile.d'; do
+            if [ -r "$zdir/z.sh" ]; then
+                source "$zdir/z.sh"
+                break
+            fi
+        done
+        unset zdir
+    fi
+    unset fasd_cache
+
     zle_highlight=( 'isearch:underline' 'special:fg=cyan' 'paste:bold,fg=red' 'suffix:fg=white' 'region:standout' )
 
     # Left prompt:

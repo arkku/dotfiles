@@ -26,6 +26,7 @@ This is a checklist for me when I set up a new machine.
 * [ripgrep](https://github.com/BurntSushi/ripgrep)
 * [fd](https://github.com/sharkdp/fd)
 * [fzf](https://github.com/junegunn/fzf)
+* [fasd](https://github.com/clvv/fasd)
 * [gpg](https://gnupg.org/download/) (also keys and passphrase input utility)
 * `~/.ssh` (keys, permissions, authorized keys, include shared config)
 * `~/.gitconfig` (account, signing, editor, merge tool, shared config)
@@ -191,6 +192,31 @@ Autocompletion is set to be case-, hyphen-, and underscore-insensitive. If
   session
 * the file URL for `Terminal.app` is set if not in tmux and `$TERM_PROGRAM` is
   `Apple_Terminal`
+
+#### Directory Jumping
+
+If `fasd` or `z.sh` is installed (in that order) _and_ the initially empty file
+`~/.fasd-init-zsh` (or `~/.z` for `z.sh`) exists, then it is loaded and its
+aliases setup. Both include at least `z`, which jumps to a directory matching
+the partial name, e.g., `z dot` probably jumps to `~/.dotfiles` if you have
+been using that directory.
+
+If `fasd` and `fzf` are both enabled, then all interactive selections in `fzf`
+are replaced by `fzf`.
+
+For `fasd`, the set of aliases is:
+
+* `z dir` – jump from anywhere to directory matching the partial name `dir`
+* `zz dir` – as `z`, but interactively select the directory if there are
+  multiple matches
+* `d dir` – print the directory matching the partial name `dir`
+* `sd dir` – as above, but interactively disambiguate
+* `f file` – print the file matching the partial name `file`
+* `sf dir` – as above, but interactively disambiguate
+* `a any` – print the directory or file matching the partial name `any`
+* `sa any` – print the directory or file matching the partial name `any`
+* `v file` – edit the file in vi
+* `sv file` – as above, but interactively disambiguate
 
 #### Key Bindings
 
