@@ -68,7 +68,6 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
     setopt hist_reduce_blanks
 
     # Clipboard
-
     if [ -n "$TMUX" ]; then
         export TMUXCOPY='tmux load-buffer -'
         export TMUXPASTE='tmux save-buffer -'
@@ -229,6 +228,17 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
     fi
     if [ -n "$(command -v viless)" ]; then
         alias -g :VL='| viless'
+    fi
+
+    # bat
+    if [ -n "$(command -v bat)" ]; then
+        bat() {
+            if [ "$BACKGROUND" != 'dark' -o "$1" = 'cache' ]; then
+                command bat "$@"
+            else
+                command bat --theme="Arkku Dark" "$@"
+            fi
+        }
     fi
 
     # fzf
