@@ -233,10 +233,14 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
     # bat
     if [ -n "$(command -v bat)" ]; then
         bat() {
-            if [ "$BACKGROUND" != 'dark' -o "$1" = 'cache' ]; then
+            if [ "$1" = 'cache' ]; then
                 command bat "$@"
             else
-                command bat --theme="Arkku Dark" "$@"
+                local batargs
+                batargs=()
+                [ "$BACKGROUND" = 'dark' ] && batargs+=( "--theme=Arkku Dark" )
+                [ -n "$REPO" -a -n "$vcs_info_msg_4_" ] && batargs+=( "--style=changes" )
+                command bat "${batargs[@]}" "$@"
             fi
         }
     fi
