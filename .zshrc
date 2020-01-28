@@ -239,7 +239,14 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
                 local batargs
                 batargs=()
                 [ "$BACKGROUND" = 'dark' ] && batargs+=( "--theme=Arkku Dark" )
-                [ -n "$REPO" -a -n "$vcs_info_msg_4_" ] && batargs+=( "--style=changes" )
+                local batstyle=''
+                if [ -f "$1" -o -f "$2" ]; then
+                    # In git repo with changes, show changes
+                    [ -n "$REPO" -a -n "$vcs_info_msg_4_" ] && batstyle=',changes'
+                    # Multiple files, show grid
+                    [ -f "$1" -a -f "$2" ] && batstyle+=',header,grid'
+                fi
+                [ -n "$batstyle" ] && batargs+=( "--style=${batstyle/#,}" )
                 command bat "${batargs[@]}" "$@"
             fi
         }
