@@ -405,7 +405,7 @@ if executable('fzf')
     if exists('g:loaded_fzf')
         " Space z to open fuzzy file finder
         if executable('fd')
-            nnoremap <LocalLeader>z <Esc>:silent! NERDTREEClose<CR>:call fzf#run(fzf#wrap({'source': 'fd -c never -d 5 2>/dev/null -- ""'}))<CR>
+            nnoremap <LocalLeader>z <Esc>:silent! NERDTREEClose<CR>:call fzf#run(fzf#wrap({'source': 'fd -c never -d 5 -- . 2>/dev/null'}))<CR>
         elseif executable('rg')
             nnoremap <LocalLeader>z <Esc>:silent! NERDTREEClose<CR>:call fzf#run(fzf#wrap({'source': 'rg --color never --max-depth 4 -l -- ""'}))<CR>
         elseif executable('ag')
@@ -419,7 +419,7 @@ endif
 
 if executable('fd')
     " Use fd in CtrlP for listing files
-    let g:ctrlp_user_command='fd -c never -d 5 -- "" %s 2>/dev/null'
+    let g:ctrlp_user_command='fd -c never -d 5 -- . %s 2>/dev/null'
     let g:ctrlp_use_caching=0
 elseif executable('rg')
     " Use ripgrep in CtrlP for listing files
