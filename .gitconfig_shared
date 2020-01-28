@@ -7,5 +7,15 @@
 	last = log -1 -p HEAD
         ll = log --abbrev-commit --pretty=\"format:%h - %an, %ar:\t%s\"
         l = log --abbrev-commit --pretty=\"format:%C(yellow)%h %C(white)%G?%Creset %an %C(white)(%ar)%Creset\t%s\"
+        subu = submodule update --init --recursive
+        subr = submodule update --remote --recursive
+        dt = difftool
+        mt = mergetool
 [push]
 	default = simple
+[mergetool "nvimfugitive"]
+	cmd = nvim -f -c \"Gdiff\" \"$MERGED\"
+[mergetool "nvim"]
+	cmd = nvim -d \"$BASE\" \"$LOCAL\" \"$REMOTE\" \"$MERGED\" -c '$wincmd w' -c 'wincmd J'
+[difftool "nvim"]
+	cmd = nvim -d \"$LOCAL\" \"$REMOTE\"

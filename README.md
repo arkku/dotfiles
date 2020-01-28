@@ -380,7 +380,7 @@ The included `.gitconfig_shared` is not used by default, it needs to be
 included by copying this to `.gitconfig`:
 
     [include]
-            path = .gitconfig_shared
+    	path = .gitconfig_shared
 
 The shared configuration enables a global ignorefile `~/.gitignore_global`
 (which ignores some common rubbish). The following aliases are added:
@@ -389,6 +389,20 @@ The shared configuration enables a global ignorefile `~/.gitignore_global`
 * `last` – show the last commit
 * `l` – pretty-print the log with colors
 * `ll` – pretty-print the log
+* `dt` – difftool
+* `mt` – mergetool
+* `subu` – `submodule update --init --recursive`
+* `subr` – `submodule update --remote --recursive`
+
+The `.gitconfig_shared` also contains a difftool and mergetool definitions for
+`nvim`, as well as an additional mergetool definition for `nvimfugitive` for
+`nvim` using the `fugitive.vim` plugin. The tools are not enabled in this
+configuration, rather copy the following to your `.gitconfig`:
+
+    [diff]
+    	tool = nvim
+    [merge]
+    	tool = nvimfugitive
 
 ### ssh
 
