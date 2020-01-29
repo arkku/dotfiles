@@ -269,6 +269,8 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
                 local sels=( "${(@f)$(fd --max-depth "$1" --color=always . "${@:3}" 2>/dev/null | fzf -m --ansi)}" )
                 [ -n "$sels" ] && print -z -- "$2 ${sels[@]:q:q}"
             }
+
+            export FZF_DEFAULT_COMMAND='fd --type f'
         elif [ -n "$(command -v rg)" ]; then
             fzo() {
                 [ -n "$2" ] || return 1
@@ -788,8 +790,13 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
         source "$fasd_cache"
         unset fasd_cache
 
-        alias v='f -e vi'
-        alias sv='sf -e vi'
+        if [ -n "$(command -v nvim)" ]; then
+            alias v='f -e nvim'
+            alias sv='sf -e nvim'
+        else
+            alias v='f -e vim'
+            alias sv='sf -e vim'
+        fi
 
         if [ -n "$(command -v fzf)" ]; then
             fasd_fzf() {

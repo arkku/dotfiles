@@ -18,4 +18,4 @@
 [mergetool "nvim"]
 	cmd = nvim -d \"$BASE\" \"$LOCAL\" \"$REMOTE\" \"$MERGED\" -c '$wincmd w' -c 'wincmd J'
 [difftool "nvim"]
-	cmd = nvim -d \"$LOCAL\" \"$REMOTE\"
+	cmd = nvim -d \"$REMOTE\" \"$LOCAL\"

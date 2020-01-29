@@ -53,7 +53,6 @@ set formatoptions+=n    " Recognize numbered lists
 silent! set formatoptions+=p    " Don't break one word alone on a line
 set formatoptions+=j    " Join comment lines
 set formatoptions+=r    " Auto-insert comment leader on return
-"set formatoptions+=a    " Automatically reformat paragraphs
 set formatoptions-=t
 set splitbelow          " Split new windows below current
 set noerrorbells
@@ -66,6 +65,18 @@ set cino+=m0            " Do not line up closing parentheses at SOL
 set cino+=Ws            " Indent arguments in: func(\narg1,\narg2);
 set cino+=j1            " Indent Java anonymous classes
 set cino+=J1            " Indent JavaScript object declarations
+
+set updatetime=521      " Update swap file more often
+set hidden              " Hide, rather than unload, abandoned buffers
+set shortmess+=c        " Don't show completion menu info messages
+set signcolumn=yes      " Always show the sign column
+
+" Return in insert mode: accept autocompletion (endwise-compatible)
+let g:endwise_no_mappings=1
+imap <silent><expr> <Plug>DiscretionaryEnd ""
+imap <silent><expr> <Plug>AlwaysEnd ""
+imap <C-X><CR> <CR><Plug>AlwaysEnd
+imap <silent><expr> <CR> (pumvisible() ? "\<C-Y>" : "\<CR>\<Plug>DiscretionaryEnd")
 
 function! GitStatuslineBranch()
     if exists('g:loaded_fugitive')
@@ -119,7 +130,7 @@ set statusline+=\ %{EncodingStatusline()}
 silent! set statusline+=%<%{GitStatuslineBranch()}
 set statusline+=%=              " left/right separator
 silent! set statusline+=%<%{SyntasticStatuslineIfPresent()}
-set statusline+=%15(%c,%l/%L%)  " cursor position
+set statusline+=%20(%c,%l/%L\ %P%)  " cursor position
 set statusline+=\ %6(0x%02B%) " hex value of character under cursor
 set laststatus=2                " always show status line
 
@@ -137,14 +148,15 @@ if &compatible
     finish
 endif
 
-"set ttyfast
+silent! set ttyfast
 
 set wildmenu
-set wildmode=longest:full,longest
+set wildmode=longest:full,full
 set wildignore+=*.o,*~,*.bin,*.exe,*.com,*.a,*.so,*.dll
 set wildignore+=*/.git/*,*/.hg/*,*/.svn/*
 set wildignore+=*\\.git\\*,*\\.hg\\*,*\\.svn\\*
 silent! set wildoptions=pum
+silent! set wildignorecase
 
 if has("autocmd")
     " Recognize file types and apply the relevant plugins and settings
@@ -415,6 +427,9 @@ if executable('fzf')
             nnoremap <LocalLeader>z <Esc>:silent! NERDTREEClose<CR>:FZF<CR>
         endif
     endif
+
+    nnoremap <Leader>/ <Esc>:Lines<CR>
+    nnoremap <LocalLeader>/ <Esc>:BLines<CR>
 endif
 
 if executable('fd')
