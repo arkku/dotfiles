@@ -152,8 +152,11 @@ hi GitGutterChangeInvisible ctermfg=black ctermbg=black guibg=#222222 guifg=#000
 hi GitGutterDeleteInvisible ctermfg=black ctermbg=black guibg=#222222 guifg=#000000
 hi GitGutterAddInvisible ctermfg=black ctermbg=black guibg=#222222 guifg=#000000
 
-hi link SyntasticErrorSign GitGutterChangeDelete
-hi link SyntasticWarningSign GitGutterDelete
+hi ALEWarningSign term=standout cterm=bold ctermfg=yellow ctermbg=black gui=bold guibg=#222222 guifg=#ffcc00
+hi ALEErrorSign term=standout cterm=bold ctermfg=lightred ctermbg=black gui=bold guibg=#222222 guifg=#ff0033
+
+hi link SyntasticErrorSign ALEErrorSign
+hi link SyntasticWarningSign ALEWarningSign
 hi SyntasticStyleErrorSign term=standout ctermfg=darkyellow ctermbg=black guibg=#222222 guifg=#cccc00
 hi SyntasticStyleWarningSign term=standout ctermfg=darkmagenta ctermbg=black guibg=#222222 guifg=#996633
 

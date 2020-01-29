@@ -1,5 +1,7 @@
 " Configuration file for Neovim
 
+"let g:ale_completion_enabled = 1
+
 " Use the normal Vim installation path since we have it anyway
 set runtimepath+=~/.vim,~/.vim/after
 set packpath+=~/.vim

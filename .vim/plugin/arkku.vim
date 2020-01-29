@@ -92,14 +92,33 @@ function! GitStatuslineBranch()
     return ''
 endfunction
 
-function! SyntasticStatuslineIfPresent()
+function! SyntaxErrorsStatus()
+    let status = ''
     if exists('g:loaded_syntastic_plugin')
         let synstatus = SyntasticStatuslineFlag()
         if !empty(synstatus)
-            return ' ' . synstatus . ' '
+            let status = ' ' . synstatus . ' '
         endif
     endif
-    return ''
+    if exists('g:loaded_ale_dont_use_this_in_other_plugins_please')
+        let counts = ale#statusline#Count(bufnr(''))
+        let errcount = counts.error + counts.style_error
+        let warncount = counts.total - errcount
+        let alestatus = ''
+
+        if errcount > 0
+            let alestatus = printf("Err: %d", errcount)
+        endif
+
+        if warncount > 0
+            let alestatus = alestatus . printf("%sWarn: %d", empty(alestatus) ? "" : " ", warncount)
+        endif
+
+        if !empty(alestatus)
+            let status = " [" . alestatus . "]" . status
+        endif
+    endif
+    return status
 endfunction
 
 " Show the file encoding if it is not the same as internal (UTF-8)
@@ -129,7 +148,7 @@ set statusline+=%h%m%r%w        " flags
 set statusline+=\ %{EncodingStatusline()}
 silent! set statusline+=%<%{GitStatuslineBranch()}
 set statusline+=%=              " left/right separator
-silent! set statusline+=%<%{SyntasticStatuslineIfPresent()}
+silent! set statusline+=%<%{SyntaxErrorsStatus()}
 set statusline+=%20(%c,%l/%L\ %P%)  " cursor position
 set statusline+=\ %6(0x%02B%) " hex value of character under cursor
 set laststatus=2                " always show status line
@@ -249,12 +268,14 @@ noremap! <Esc><C-?> <C-U>
 " ctrl arrows
 noremap <C-Left> <Home>
 noremap <C-Right> <End>
-noremap <C-Up> <C-U>
-noremap <C-Down> <C-D>
+noremap <C-Up> g<Up>
+noremap <C-Down> g<Down>
 noremap! <C-Left> <Home>
 noremap! <C-Right> <End>
-noremap! <C-Up> <Home>
-noremap! <C-Down> <End>
+inoremap <C-Up> <C-O>g<Up>
+inoremap <C-Down> <C-O>g<Down>
+cnoremap <C-Up> <C-U>
+cnoremap <C-Down> <C-D>
 
 " alt arrows
 noremap <A-Left> b
@@ -285,7 +306,8 @@ inoremap <C-B> <C-E>
 " Make p in visual mode paste over the selection without yanking it
 vnoremap p "_dP
 
-inoremap <C-_> <C-R>=
+inoremap <C-_> <C-R>=printf("%",)<Left><Left><Left>
+cnoremap <C-_> <C-R>=findfile("",";")<Left><Left><Left><Left><Left><Left>
 
 "if empty(mapcheck('<C-S>', 'i'))
 "endif
@@ -396,6 +418,12 @@ if !exists('g:vscode')
 
         nnoremap <Leader>t :call OpenTerminal('console')<CR>
     endif
+
+    "let g:ale_completion_enabled = 1
+    let g:ale_sign_error = '!!'
+    let g:ale_sign_warning = '??'
+    nmap <silent> [w <Plug>(ale_previous_wrap)
+    nmap <silent> ]w <Plug>(ale_next_wrap)
 
     " Esc to exit terminal (with some delay), Esc Esc to send Esc
     tnoremap <Esc> <C-\><C-N>

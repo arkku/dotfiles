@@ -65,8 +65,8 @@ noremap <Esc>[1;5D <Home>
 noremap <Esc>[1;5C <End>
 noremap <Esc>[5A <Home>
 noremap <Esc>[5B <End>
-noremap <Esc>[1;5A <C-U>
-noremap <Esc>[1;5B <C-D>
+noremap <Esc>[1;5A g<Up>
+noremap <Esc>[1;5B g<Down>
 inoremap <Esc>[5D <C-O>b
 inoremap <Esc>[5C <C-O>w
 cnoremap <Esc>[5D <S-Left>
@@ -75,8 +75,10 @@ noremap! <Esc>[1;5D <Home>
 noremap! <Esc>[1;5C <End>
 noremap! <Esc>[5A <Home>
 noremap! <Esc>[5B <End>
-noremap! <Esc>[1;5A <Home>
-noremap! <Esc>[1;5B <End>
+inoremap <Esc>[1;5A <C-O>g<Up>
+inoremap <Esc>[1;5B <C-O>g<Down>
+cnoremap <Esc>[1;5A <S-Up>
+cnoremap <Esc>[1;5B <S-Down>
 
 " alt arrows
 noremap <Esc>[1;3D b

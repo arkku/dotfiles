@@ -88,8 +88,8 @@ anymore).
 * <kbd>Esc</kbd> <kbd>Esc</kbd> – in insert mode, clear highlighting of
   previous search
 * <kbd>Ctrl</kbd>-<kbd>\_</kbd> – in insert mode, open a prompt for an
-  expression, and insert the result (e.g., `0x10 * 2` inserts `32`, `$HOME`
-  inserts the home directory path, etc.)
+  expression (i.e., like <kbd>Ctrl</kbd>–<kbd>R</kbd> <kbd>=</kbd>)
+  pre-populated with `printf("%`
 
 ##### Unimpaired-style Bindings
 
@@ -97,6 +97,7 @@ Some additional bindings in the style of the "unimpaired" plugin:
 
 * `[oa` / `]oa` – turn auto-formatting (`formatoptions+=a`) on/off
 * `[ot` / `]ot` – turn text formatting (`formatoptions+=t`) on/off
+* `]w`, `[w` – jump to next/previous warning/error from ALE (if installed)
 
 ##### Leader Bindings
 
@@ -311,6 +312,16 @@ so that it may be edited or followed by more pipes.
 * `:VI` – `| vim -R -`
 * `:VIM` – `|& vim -R -`
 * `:AG` – `| ag`
+
+#### Additional Plugins
+
+Plugins that need extensive external utilities or configuration are not
+included in [my plugin collection](https://github.com/arkku/vim-plugin-collection/).
+Some that I may use include:
+
+* [coc](https://github.com/neoclide/coc.nvim) – intellisense engine
+* [ale](https://github.com/dense-analysis/ale) – automatic linting and syntax
+  checking on the fly
 
 ### Clipboard
 
