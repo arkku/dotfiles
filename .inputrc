@@ -63,24 +63,24 @@ set bell-style none
 "\e\C-?": backward-kill-line
 
 # arrows
-"\eOA": previous-history
-"\eOB": next-history
-"\e[A": previous-history
-"\e[B": next-history
-"\eOC": forward-char
-"\eOD": backward-char
+# "\e[B": next-history
+# "\e[A": previous-history
 "\e[C": forward-char
 "\e[D": backward-char
+"\eOB": next-history
+"\eOA": previous-history
+"\eOC": forward-char
+"\eOD": backward-char
 
 #  ctrl arrows
-"\e[5B": history-search-forward
-"\e[5A": history-search-backward
-"\e[1;5B": history-search-forward
-"\e[1;5A": history-search-backward
-"\eO5B": history-search-forward
-"\eO5A": history-search-backward
-"\e0b": history-search-forward
-"\e0a": history-search-backward
+"\e[5B": next-screen-line
+"\e[5A": previous-screen-line
+"\e[1;5B": next-screen-line
+"\e[1;5A": previous-screen-line
+"\eO5B": next-screen-line
+"\eO5A": previous-screen-line
+"\e0b": next-screen-line
+"\e0a": previous-screen-line
 "\e[5C": forward-word
 "\e[5D": backward-word
 "\e[1;5C": end-of-line
