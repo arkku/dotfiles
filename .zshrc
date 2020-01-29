@@ -7,6 +7,11 @@ setopt combiningchars
 [ -e "$HOME/.zsh/functions" ] && fpath=( "$HOME/.zsh/functions" "${fpath[@]}" )
 
 if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
+    # Vi-mode
+    bindkey -v
+
+    export KEYTIMEOUT=1
+
     local is_root=`print -nP '%(!_1_)'`
     local is_sudo="${is_root:-$SUDO_USER}"
 
@@ -152,23 +157,21 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
         done
         LBUFFER="${LBUFFER/% }"
     }
+    zle -N escape-and-paste-input
 
     if [ -n "$CLIPPASTE" ]; then
         eval 'clippaste() { '"$CLIPPASTE"' }'
 
         # Bind ^B to paste ("Baste"?) and escape from system clipboard
-        paste-input() {
-            escape-and-paste-input
-        }
-        zle -N paste-input
-        bindkey '\C-B' paste-input
+        zle -N escape-and-paste-input
+        bindkey '\C-B' escape-and-paste-input
     fi
 
     if [ -n "$TMUX" -a -n "$TMUXPASTE" ]; then
         eval 'tmuxpaste() { '"$TMUXPASTE"' }'
 
         paste-tmux-input() {
-            escape-and-paste-input "$(tmuxpaste)"
+            zle escape-and-paste-input "$(tmuxpaste)"
         }
         zle -N paste-tmux-input
         bindkey '\C-T' paste-tmux-input
@@ -465,10 +468,6 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
     }
     zsh-check-changes true
 
-    # Vi-mode
-    bindkey -v
-    export KEYTIMEOUT=1
-
     # Smarter kill word
     smart-backward-kill-word() {
         local WORDCHARS='-_'
@@ -483,8 +482,6 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
     bindkey '\C-N' history-beginning-search-forward
     bindkey '\e[5~' history-search-backward
     bindkey '\e[6~' history-search-forward
-    bindkey '\e[1;3C' beginning-of-line
-    bindkey '\e[1;3D' end-of-line
     bindkey '\C-W' smart-backward-kill-word
     bindkey '\C-K' kill-word
     bindkey '\C-U' kill-whole-line
@@ -509,10 +506,14 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
         bindkey ${=mode} '\e[4~' end-of-line
         bindkey ${=mode} '\e[5C' forward-word
         bindkey ${=mode} '\e[5D' backward-word
-        bindkey ${=mode} '\e[1;5C' forward-word
-        bindkey ${=mode} '\e[1;5D' backward-word
+        bindkey ${=mode} '\e[1;5C' end-of-line
+        bindkey ${=mode} '\e[1;5D' beginning-of-line
         bindkey ${=mode} '\e[3~' delete-char
         bindkey ${=mode} '\C-E' end-of-line
+        bindkey ${=mode} '\e[1;3A' beginning-of-line
+        bindkey ${=mode} '\e[1;3B' end-of-line
+        bindkey ${=mode} '\e[1;3C' forward-word
+        bindkey ${=mode} '\e[1;3D' backward-word
         if [[ "$mode" = '-M vicmd' ]]; then
             bindkey ${=mode} '\C-?' backward-char
             bindkey ${=mode} '\C-H' backward-char

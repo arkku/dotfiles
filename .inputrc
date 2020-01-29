@@ -73,39 +73,39 @@ set bell-style none
 "\e[D": backward-char
 
 #  ctrl arrows
-"\e[5A": history-search-backward
 "\e[5B": history-search-forward
-"\e[1;5A": history-search-backward
+"\e[5A": history-search-backward
 "\e[1;5B": history-search-forward
-"\eO5A": history-search-backward
+"\e[1;5A": history-search-backward
 "\eO5B": history-search-forward
-"\e0a": history-search-backward
+"\eO5A": history-search-backward
 "\e0b": history-search-forward
+"\e0a": history-search-backward
 "\e[5C": forward-word
 "\e[5D": backward-word
-"\e[1;5C": forward-word
-"\e[1;5D": backward-word
+"\e[1;5C": end-of-line
+"\e[1;5D": beginning-of-line
 "\eO5C": forward-word
 "\eO5D": backward-word
 "\e0c": forward-word
 "\e0d": backward-word
 
 # cmd arrows
-"\e\e[A": history-search-backward
 "\e\e[B": history-search-forward
+"\e\e[A": history-search-backward
 "\e\e[C": end-of-line
 "\e\e[D": beginning-of-line
-"\e[1;4A": history-search-backward
 "\e[1;4B": history-search-forward
+"\e[1;4A": history-search-backward
 "\e[1;4C": end-of-line
 "\e[1;4D": beginning-of-line
 
 # alt arrows
-"\e0A": previous-history
-"\e0B": next-history
-"\e[1;3A": previous-history
-"\e[1;3B": next-history
-"\e0C": end-of-line
-"\e0D": beginning-of-line
-"\e[1;3C": end-of-line
-"\e[1;3D": beginning-of-line
+"\e0B": end-of-line
+"\e0A": beginning-of-line
+"\e[1;3B": end-of-line
+"\e[1;3A": beginning-of-line
+"\e0C": forward-word
+"\e0D": backward-word
+"\e[1;3C": forward-word
+"\e[1;3D": backward-word

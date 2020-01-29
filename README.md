@@ -112,7 +112,8 @@ These bindings are for the normal mode, preceded by the leader (<kbd>\\</kbd>):
 * `s` – run [Syntastic](https://github.com/vim-syntastic/syntastic) check, and
   open the location list if there are errors
 * `S` – reset Syntastic, clearing all errors
-* `t` – split and open a terminal (for Neovim)
+* `t` – toggle a split terminal console (the session remains even if toggled
+  away from view) – Neovim only
 * `T` – split and open a terminal with the given command
 * `u` – open function search
 * <kbd>Tab</kbd> – create a new tab

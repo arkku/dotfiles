@@ -39,5 +39,14 @@ echo '. "\$HOME/$profile"' >>~/.profile
 
 EOFPROFILE
     fi
+    if ! grep -F '. "$HOME/'"$profile"'"' -q "$HOME/.zprofile" &&
+       ! grep -F '. "$HOME/.profile"' -q "$HOME/.zprofile"; then
+        cat <<EOFPROFILE
+# $profile
+
+echo '. "\$HOME/.profile"' >>~/.zprofile
+
+EOFPROFILE
+    fi
 fi
 

@@ -4,3 +4,6 @@ Thumbs.db
 *~
 *.swp
 *.swo
+*.tmp
+/.tags
+/doc/tags

@@ -61,20 +61,22 @@ inoremap <Esc>OB <Down>
 " ctrl arrows
 noremap <Esc>[5D B
 noremap <Esc>[5C W
-noremap <Esc>[1;5D B
-noremap <Esc>[1;5C W
+noremap <Esc>[1;5D <Home>
+noremap <Esc>[1;5C <End>
 noremap <Esc>[5A <Home>
 noremap <Esc>[5B <End>
-noremap <Esc>[1;5A <Home>
-noremap <Esc>[1;5B <End>
+noremap <Esc>[1;5A <C-U>
+noremap <Esc>[1;5B <C-D>
 inoremap <Esc>[5D <C-O>b
 inoremap <Esc>[5C <C-O>w
-inoremap <Esc>[1;5D <C-O>b
-inoremap <Esc>[1;5C <C-O>w
-inoremap <Esc>[5A <Home>
-inoremap <Esc>[5B <End>
-inoremap <Esc>[1;5A <Home>
-inoremap <Esc>[1;5B <End>
+cnoremap <Esc>[5D <S-Left>
+cnoremap <Esc>[5C <S-Right>
+noremap! <Esc>[1;5D <Home>
+noremap! <Esc>[1;5C <End>
+noremap! <Esc>[5A <Home>
+noremap! <Esc>[5B <End>
+noremap! <Esc>[1;5A <Home>
+noremap! <Esc>[1;5B <End>
 
 " alt arrows
 noremap <Esc>[1;3D b
@@ -89,20 +91,24 @@ inoremap <Esc>[1;3D <C-O>b
 inoremap <Esc>[1;3C <C-O>w
 inoremap <Esc><Esc>[D <C-O>b
 inoremap <Esc><Esc>[C <C-O>w
-inoremap <Esc>[1;3A <Home>
-inoremap <Esc>[1;3B <End>
-inoremap <Esc><Esc>[A <Home>
-inoremap <Esc><Esc>[B <End>
+noremap! <Esc>[1;3A <Home>
+noremap! <Esc>[1;3B <End>
+noremap! <Esc><Esc>[A <Home>
+noremap! <Esc><Esc>[B <End>
+cnoremap <Esc>[1;3D <S-Left>
+cnoremap <Esc>[1;3C <S-Right>
+cnoremap <Esc><Esc>[D <S-Left>
+cnoremap <Esc><Esc>[C <S-Right>
 
 " cmd arrows
 noremap <Esc>[1;4D <Home>
 noremap <Esc>[1;4C <End>
 noremap <Esc>[1;4A <PageUp>
 noremap <Esc>[1;4B <PageDown>
-inoremap <Esc>[1;4D <Home>
-inoremap <Esc>[1;4C <End>
-inoremap <Esc>[1;4A <PageUp>
-inoremap <Esc>[1;4B <PageDown>
+noremap! <Esc>[1;4D <Home>
+noremap! <Esc>[1;4C <End>
+noremap! <Esc>[1;4A <PageUp>
+noremap! <Esc>[1;4B <PageDown>
 
 set ttimeout
 set ttimeoutlen=100

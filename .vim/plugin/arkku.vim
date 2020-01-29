@@ -170,15 +170,19 @@ if has("autocmd")
 
     " Fix formatting of lists in markdown
     au FileType text,markdown setlocal formatlistpat=^\\s*\\d\\+[.\)]\\s\\+\\\|^\\s*[*+~-]\\s\\+\\\|^\\(\\\|[*#]\\)\\[^[^\\]]\\+\\]:\\s | setlocal comments=n:> | setlocal formatoptions+=tcn | setlocal indentexpr= autoindent smartindent
-    au FileType markdown setlocal commentstring=<!--%s-->
 
-    au FileType liquid if exists('b:liquid_subtype') && b:liquid_subtype == 'markdown' | setlocal formatlistpat=^\\s*\\d\\+[.\)]\\s\\+\\\|^\\s*[*+~-]\\s\\+\\\|^\\(\\\|[*#]\\)\\[^[^\\]]\\+\\]:\\s | setlocal comments=n:> | setlocal formatoptions+=tcn | setlocal indentexpr= autoindent smartindent | endif
+    " Set markdown comments to HTML and use headers for dlist
+    au FileType markdown setlocal commentstring=<!--%s--> | setlocal define=^#\\+\\s*
+
+    au FileType liquid if exists('b:liquid_subtype') && b:liquid_subtype == 'markdown' | setlocal formatlistpat=^\\s*\\d\\+[.\)]\\s\\+\\\|^\\s*[*+~-]\\s\\+\\\|^\\(\\\|[*#]\\)\\[^[^\\]]\\+\\]:\\s | setlocal comments=n:> | setlocal formatoptions+=tcn | setlocal indentexpr= autoindent smartindent | setlocal define=^#\\+\\s* | endif
     au FileType liquid setlocal commentstring={%\ comment\ %}%s{%\ endcomment\ %}
 
     au BufNewFile,BufRead *.pde set filetype=cpp
     au BufNewFile,BufRead *.swift set filetype=swift
     au BufNewFile,BufRead *.inc set filetype=asm
 
+    " Might as well use the MARK: comments for dlist
+    au FileType swift setlocal define=^\s*/[/*]*\\s*MARK:[\ -]*
 endif
 
 let g:markdown_minlines=100
@@ -243,12 +247,12 @@ noremap! <Esc><C-H> <C-U>
 noremap! <Esc><C-?> <C-U>
 
 " ctrl arrows
-noremap <C-Left> B
-noremap <C-Right> W
-noremap <C-Up> <Home>
-noremap <C-Down> <End>
-inoremap <C-Left> <C-O>b
-inoremap <C-Right> <C-O>w
+noremap <C-Left> <Home>
+noremap <C-Right> <End>
+noremap <C-Up> <C-U>
+noremap <C-Down> <C-D>
+noremap! <C-Left> <Home>
+noremap! <C-Right> <End>
 noremap! <C-Up> <Home>
 noremap! <C-Down> <End>
 
@@ -257,12 +261,13 @@ noremap <A-Left> b
 noremap <A-Right> w
 noremap <A-Up> <Home>
 noremap <A-Down> <End>
-inoremap <A-Left> <C-O>b
-inoremap <A-Right> <C-O>w
 cnoremap <A-Left> <S-Left>
 cnoremap <A-Right> <S-Right>
+inoremap <A-Left> <C-O>b
+inoremap <A-Right> <C-O>w
 noremap! <A-Up> <Home>
 noremap! <A-Down> <End>
+
 inoremap <M-Left> <C-O>b
 inoremap <M-Right> <C-O>w
 cnoremap <M-Left> <S-Left>
@@ -352,6 +357,46 @@ if !exists('g:vscode')
     nnoremap <Leader>t <Esc>:split term://$SHELL<CR>A
     nnoremap <Leader>T <Esc>:split term://
 
+    if has('nvim')
+        au TermOpen * setlocal nonumber norelativenumber nospell nofoldenable nolist signcolumn=no
+
+        function! BDeleteBang(...)
+            bdelete!
+        endfunction
+
+        " On nvim, replace the \t terminal with a toggleable one
+        function! OpenTerminal(identifier)
+            let identifier = 't_' . a:identifier
+
+            let window = bufwinnr(identifier)
+            if window > 0
+                " Already visible, close it
+                :exe window . "wincmd c"
+                return
+            endif
+
+            keepalt bo new
+            setlocal filetype=terminal
+            setlocal bufhidden=hide
+            setlocal noswapfile nobuflisted nomodified signcolumn=no
+            setlocal nolist nospell nonumber norelativenumber nofoldenable
+
+            let buffer = bufexists(identifier)
+            if buffer > 0
+                " Open the existing buffer in the new split
+                :exe "buffer " identifier
+            else
+                " Create the terminal
+                let options = {'on_exit': 'BDeleteBang'}
+                call termopen($SHELL, options)
+                :exe "f " identifier
+            endif
+            startinsert
+        endfunction
+
+        nnoremap <Leader>t :call OpenTerminal('console')<CR>
+    endif
+
     " Esc to exit terminal (with some delay), Esc Esc to send Esc
     tnoremap <Esc> <C-\><C-N>
     tnoremap <Esc><Esc> <Esc>
@@ -389,6 +434,20 @@ let g:NERDTreeQuitOnOpen=1
 
 let g:ctrlp_by_filename=0
 let g:ctrlp_working_path_mode='ra'
+
+" Open tag search with space+t
+nnoremap <LocalLeader>t <Esc>:CtrlPTag<CR>
+nnoremap <LocalLeader>T <Esc>:CtrlPTag<CR>
+
+" Use '.tags' instead of 'tags' as the tagfile default name
+set tags^=./.git/tags;
+set tags^=./.tags;
+set tags^=.tags
+let g:gutentags_ctags_tagfile='.tags'
+
+" gutentags.vim
+let g:gutentags_generate_on_missing=0
+let g:gutentags_generate_on_new=0
 
 " taglist.vim:
 let g:Tlist_Close_On_Select=1
@@ -430,6 +489,10 @@ if executable('fzf')
 
     nnoremap <Leader>/ <Esc>:Lines<CR>
     nnoremap <LocalLeader>/ <Esc>:BLines<CR>
+    nnoremap <LocalLeader>h <Esc>:History<CR>
+
+    " If fzf is installed, override space+t (defined above) for fzf tag search
+    nnoremap <LocalLeader>t <Esc>:Tags<CR>
 endif
 
 if executable('fd')
