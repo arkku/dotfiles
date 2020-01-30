@@ -103,7 +103,7 @@ find . -type f -print0 | while read -d '' file; do
         $platform/*)    # Platform-specific file for the current platform
             dst="${src/#$platform\//}"
             ;;
-        .git/*|.gitignore|.gitmodules)             # Ignore git directory
+        .git/*|.gitignore|.gitmodules|.tags)    # Ignore git directory
             continue
             ;;
         .*|bin/*|share/*|man/*)          # Dotfiles and whitelisted paths
