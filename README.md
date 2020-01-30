@@ -87,9 +87,8 @@ anymore).
 * <kbd>Esc</kbd> – exit integrated terminal (press twice quickly to send to
 * <kbd>Esc</kbd> <kbd>Esc</kbd> – in insert mode, clear highlighting of
   previous search
-* <kbd>Ctrl</kbd>-<kbd>\_</kbd> – in insert mode, open a prompt for an
-  expression (i.e., like <kbd>Ctrl</kbd>–<kbd>R</kbd> <kbd>=</kbd>)
-  pre-populated with `printf("%`
+* <kbd>Ctrl</kbd>-<kbd>\_</kbd> – various bindings in different modes, not
+  settled on a final choice yet
 
 ##### Unimpaired-style Bindings
 
@@ -97,7 +96,8 @@ Some additional bindings in the style of the "unimpaired" plugin:
 
 * `[oa` / `]oa` – turn auto-formatting (`formatoptions+=a`) on/off
 * `[ot` / `]ot` – turn text formatting (`formatoptions+=t`) on/off
-* `]w`, `[w` – jump to next/previous warning/error from ALE (if installed)
+* `]w`, `[w` – jump to next/previous warning/error (using coc, ale, or the
+  location list, in that order)
 
 ##### Leader Bindings
 
@@ -117,6 +117,7 @@ These bindings are for the normal mode, preceded by the leader (<kbd>\\</kbd>):
   away from view) – Neovim only
 * `T` – split and open a terminal with the given command
 * `u` – open function search
+* `/` – open `fzf` search for lines in open buffers (if plugin installed)
 * <kbd>Tab</kbd> – create a new tab
 * <kbd>Shift</kbd> + <kbd>Tab</kbd> – close tab
 
@@ -129,6 +130,11 @@ These bindings are for the normal mode, preceded by the local leader (<kbd>Space
 * `x` – force close tab
 * <kbd>Tab</kbd> – go to next tab
 * <kbd>Shift</kbd> + <kbd>Tab</kbd> – go to previous tab
+* `w` – open warnings/errors list (coc, or location list)
+* `h` – open `fzf` fuzzy search for "recently opened files" (if plugin installed)
+* `/` – open `fzf` search for lines in this buffer
+* `t` – open tag search (if fzf plugin is installed)
+* `T` – open tag search (if CtrlP plugin is installed)
 * `z` – open `fzf` fuzzy search for files (powered by `fd` if installed)
 
 ### Shell
@@ -323,6 +329,13 @@ Some that I may use include:
 * [ale](https://github.com/dense-analysis/ale) – automatic linting and syntax
   checking on the fly
 
+Also note that coc has various extensions that it can install by itself, e.g.:
+
+``` vim
+:CocInstall coc-tag
+:CocInstall coc-emoji
+```
+
 ### Clipboard
 
 The scripts `clipcopy` and `clippaste` copy and paste to/from the system
@@ -459,3 +472,27 @@ to enable fancy UTF-8.
 
 Colour schemes and key bindings are included for XCode. They need to be
 selected from preferences to be active.
+
+* [Swift development snapshots](https://swift.org/download/#snapshots)
+
+To use the Swift development toolchain:
+
+``` sh
+export PATH="/Library/Developer/Toolchains/swift-latest.xctoolchain/usr/bin:$PATH"
+```
+
+### Additional Development Tools
+
+* [sourcekit-lsp](https://github.com/apple/sourcekit-lsp)
+* [ccls](https://github.com/MaskRay/ccls)
+* [solargraph](https://github.com/castwide/solargraph) (gem)
+
+``` vim
+:CocInstall coc-json
+:CocInstall coc-html
+:CocInstall coc-css
+:CocInstall coc-yaml
+:CocInstall coc-sourcekit
+:CocInstall coc-tsserver
+:CocInstall coc-solargraph
+```

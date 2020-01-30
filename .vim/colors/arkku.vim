@@ -155,6 +155,22 @@ hi GitGutterAddInvisible ctermfg=black ctermbg=black guibg=#222222 guifg=#000000
 hi ALEWarningSign term=standout cterm=bold ctermfg=yellow ctermbg=black gui=bold guibg=#222222 guifg=#ffcc00
 hi ALEErrorSign term=standout cterm=bold ctermfg=lightred ctermbg=black gui=bold guibg=#222222 guifg=#ff0033
 
+hi link CocWarningSign ALEWarningSign
+hi link CocErrorSign ALEErrorSign
+hi link CocInfoSign GitGutterAdd
+hi link CocInfoSign GitGutterChange
+
+hi CocFloating term=standout cterm=none ctermfg=white ctermbg=blue gui=none guibg=#ddddff
+hi CocErrorFloat term=standout cterm=none ctermfg=white ctermbg=red gui=none guifg=#ffffff guibg=#cc0000
+hi CocWarningFloat term=standout cterm=none ctermfg=white ctermbg=darkyellow gui=none guifg=#ffffff guibg=#cc6600
+hi CocInfoFloat term=standout cterm=none ctermfg=white ctermbg=green gui=none guifg=#ffffff guibg=#00aa99
+hi CocHintFloat term=standout cterm=none ctermfg=white ctermbg=green gui=none guifg=#ffffff guibg=#339999
+hi link CocErrorHighlight SpellBad
+hi link CocWarningHighlight SpellCap
+hi link CocInfoHighlight SpellLocal
+hi link CocHintHighlight SpellRare
+hi link CocHighlightText CursorLine
+
 hi link SyntasticErrorSign ALEErrorSign
 hi link SyntasticWarningSign ALEWarningSign
 hi SyntasticStyleErrorSign term=standout ctermfg=darkyellow ctermbg=black guibg=#222222 guifg=#cccc00
@@ -269,6 +285,8 @@ if &background == "dark"
         hi SpellRare gui=none
         hi SpellLocal gui=none
     endif
+
+    hi CocFloating term=standout cterm=none ctermfg=white ctermbg=blue gui=none guibg=#001144
 
     " Only set the fg white if we are very sure that the bg is dark:
     " a false positive means important text will be potentially invisible,

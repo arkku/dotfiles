@@ -23,6 +23,7 @@ set whichwrap=b,s,[,]   " Allow arrows to wrap over lines in insert mode
 set secure              " Secure external vimrcs
 
 set showcmd             " Show (partial) command in status line.
+set cmdheight=2         " Increase the command-line height
 set showmatch           " Show matching brackets.
 set ignorecase          " Do case insensitive matching
 
@@ -78,6 +79,10 @@ imap <silent><expr> <Plug>AlwaysEnd ""
 imap <C-X><CR> <CR><Plug>AlwaysEnd
 imap <silent><expr> <CR> (pumvisible() ? "\<C-Y>" : "\<CR>\<Plug>DiscretionaryEnd")
 
+let g:SuperTabDefaultCompletionType="<C-N>"
+let g:SuperTabContextDefaultCompletionType="<C-N>"
+let g:SuperTabLongestEnhanced=1
+
 function! GitStatuslineBranch()
     if exists('g:loaded_fugitive')
         let l:branch = split(fugitive#statusline(),'[()]')
@@ -100,7 +105,7 @@ function! SyntaxErrorsStatus()
             let status = ' ' . synstatus . ' '
         endif
     endif
-    if exists('g:loaded_ale_dont_use_this_in_other_plugins_please')
+    if exists('g:ale_enabled') && g:ale_enabled
         let counts = ale#statusline#Count(bufnr(''))
         let errcount = counts.error + counts.style_error
         let warncount = counts.total - errcount
@@ -252,7 +257,6 @@ let g:syntastic_check_on_open = 0
 let g:syntastic_check_on_wq = 0
 let g:syntastic_enable_signs = 1
 let g:syntastic_aggregate_errors = 1
-let g:syntastic_swift_checkers = [ 'swiftpm', 'swiftlint' ]
 
 let g:rubycomplete_classes_in_global=1
 let g:rubycomplete_buffer_loading=1
@@ -305,6 +309,9 @@ inoremap <C-B> <C-E>
 "
 " Make p in visual mode paste over the selection without yanking it
 vnoremap p "_dP
+
+noremap <C-[> :call CocAction('jumpDefinition')<CR>
+nmap <C-_> <Plug>(coc-references)
 
 inoremap <C-_> <C-R>=printf("%",)<Left><Left><Left>
 cnoremap <C-_> <C-R>=findfile("",";")<Left><Left><Left><Left><Left><Left>
@@ -419,11 +426,29 @@ if !exists('g:vscode')
         nnoremap <Leader>t :call OpenTerminal('console')<CR>
     endif
 
-    "let g:ale_completion_enabled = 1
+    " ]w and [w to jump to next/prev warning/error (coc, ale, llist)
+    nmap <silent><expr> [w (exists('coc_enabled') && coc_enabled) ? "\<Plug>(coc-diagnostic-prev)" : (exists('ale_enabled') && ale_enabled) ? "\<Plug>(ale_previous_wrap)" : ":lprevious\<CR>"
+    nmap <silent><expr> ]w (exists('coc_enabled') && coc_enabled) ? "\<Plug>(coc-diagnostic-next)" : (exists('ale_enabled') && ale_enabled) ? "\<Plug>(ale_next_wrap)" : ":lnext\<CR>"
+
+    nmap <silent><expr> <LocalLeader>w (exists('coc_enabled') && coc_enabled) ? ":CocList diagnostics<CR>" : ":lopen\<CR>"
+    nmap <silent><expr> <LocalLeader>W (exists('coc_enabled') && coc_enabled) ? ":CocList diagnostics<CR>" : ":lclose\<CR>"
+
+    function! ShowDocumentationForWordUnderCursor()
+        if exists('coc_enabled') && coc_enabled
+            call CocAction('doHover')
+        elseif exists('ale_enabled') && ale_enabled
+            execute "ALEHover"
+        else
+            "execute 'h '.expand('<cword>')
+            execute "normal! K"
+        endif
+    endfunction
+
+    " show documentation for word under the cursor
+    nnoremap <silent> K :call ShowDocumentationForWordUnderCursor()<CR>
+
     let g:ale_sign_error = '!!'
     let g:ale_sign_warning = '??'
-    nmap <silent> [w <Plug>(ale_previous_wrap)
-    nmap <silent> ]w <Plug>(ale_next_wrap)
 
     " Esc to exit terminal (with some delay), Esc Esc to send Esc
     tnoremap <Esc> <C-\><C-N>
