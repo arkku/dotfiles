@@ -294,6 +294,7 @@ For `fasd`, the set of aliases is:
 * `cdr` – `cd` to the root of the current git repository (if any)
 * `gr` – `grep`, excluding `.git` (but prefer `ag`)
 * `vi` – `nvim` (if installed)
+* `nvis` – `nvim -S Session.vim` (if installed and the file exists)
 
 #### Global Aliases
 
@@ -378,7 +379,9 @@ Unless otherwise noted, the following bindings are all after the prefix
 * `>` – swap the pane right
 * `!` – break the current pane into a new window (tab)
 * `A` – rename the current window
+* `O` – toggle mouse on/off
 * `R` – refresh the screen
+* `S` – toggle synchronize panes (i.e., all panes get the same keyboard input)
 * `x` – kill the current pane
 * `X` – kill the current window
 * `y` – in copy mode, copies to the system clipboard

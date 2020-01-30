@@ -222,6 +222,13 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
         if [ -n "$(command -v viman)" ]; then
             [ -z "$MANPAGER" ] && export MANPAGER='viman'
         fi
+        nvis() {
+            if [ -e "Session.vim" ]; then
+                nvim -S Session.vim "$@"
+            else
+                nvim "$@"
+            fi
+        }
     else
         alias -g :VI='| vim -R -'
         alias -g :VIM='|& vim -R -'
