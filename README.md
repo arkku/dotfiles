@@ -484,6 +484,7 @@ export PATH="/Library/Developer/Toolchains/swift-latest.xctoolchain/usr/bin:$PAT
 ### Additional Development Tools
 
 * [sourcekit-lsp](https://github.com/apple/sourcekit-lsp)
+* [universal-ctags](https://github.com/universal-ctags/ctags)
 * [ccls](https://github.com/MaskRay/ccls)
 * [solargraph](https://github.com/castwide/solargraph) (gem)
 
