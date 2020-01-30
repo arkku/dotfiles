@@ -22,7 +22,9 @@
 # where customdir is a _subdirectory of the source directory_ containing custom
 # overrides that take precedence over files in either the source directory or
 # the platform directory. (The directory `local` is in gitignore so you can put
-# or symlink your custom configurations there.)
+# or symlink your custom configurations there.) Empty files (size 0) in the
+# custom directory will not be linked, but will prevent the corresponding file
+# from being linked otherwise.
 #
 # For example: ./link-files -f -c local/myconfig
 #
@@ -110,7 +112,7 @@ done
 cd "$src_dir"
 
 if [ -n "$custom" ]; then
-    if [ ! -d "$custom/." ]; then
+    if [ "$custom" = 'custom' -o ! -d "$custom/." ]; then
         if [ -d "local/$custom/." ]; then
             custom="local/$custom"
         elif [ -d "custom/$custom/." ]; then
@@ -121,6 +123,8 @@ if [ -n "$custom" ]; then
         fi
     fi
     [ -n "$verbose" ] && echo "Custom configuration: $custom" >&2
+else
+    custom=nonexistent
 fi
 
 platform="$(uname -s | tr '[A-Z]' '[a-z]')"
@@ -128,6 +132,7 @@ platform="$(uname -s | tr '[A-Z]' '[a-z]')"
 
 find . -type f -print0 | while read -d '' file; do
     src="${file/#.\//}"
+    dst=''
 
     case "$src" in
         *DS_Store|*.swp)
@@ -135,9 +140,22 @@ find . -type f -print0 | while read -d '' file; do
             ;;
         $platform/*)    # Platform-specific file for the current platform
             dst="${src/#$platform\//}"
+
+            # Ignore custom version if it exists
+            [ -d "$custom/." -a -e "$custom/$file" ] && continue
+
+            if [ ! -s "$src" -a -e "$file" ]; then
+                [ -n "$verbose" ] && echo "$src: Not linking empty platform file" >&2
+                continue
+            fi
             ;;
         $custom/*)
             dst="${src/#$custom\//}"
+
+            if [ ! -s "$src" ]; then
+                [ -n "$verbose" ] && echo "$src: Not linking empty custom file" >&2
+                continue
+            fi
             ;;
         .git/*|.gitignore|.gitmodules|.tags)    # Ignore git directory
             continue
@@ -148,7 +166,7 @@ find . -type f -print0 | while read -d '' file; do
             [ -e "$platform/$file" ] && continue
 
             # Ignore custom version if it exists
-            [ -n "$custom" -a -e "$custom/$file" ] && continue
+            [ -d "$custom/." -a -e "$custom/$file" ] && continue
 
             dst="$src"
             ;;
