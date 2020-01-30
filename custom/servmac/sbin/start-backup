@@ -1,0 +1,6 @@
+#!/bin/sh
+running="$(tmutil status | awk '$1 == "Running" { sub(/;$/, ""); print $NF }')"
+if [ -z "$running" -o "$running" = "0" ]; then
+    exec tmutil startbackup
+fi
+exit 0

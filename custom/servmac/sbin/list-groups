@@ -1,0 +1,2 @@
+#!/bin/sh
+dscl /Local/Default -ls Groups gid | sort -n -k2,2

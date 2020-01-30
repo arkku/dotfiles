@@ -1,0 +1,6 @@
+#!/bin/sh
+if [ "$#" -ne 2 ]; then
+    echo "Usage: $0 <user> <group>" >&2
+    exit 1
+fi
+exec dseditgroup -o edit -a "$1" -t user "$2"

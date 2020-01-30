@@ -1,0 +1,40 @@
+#!/bin/bash
+username="$1"
+uid="$2"
+if [ -z "$1" -o -z "$2" ]; then
+    echo "Usage: $(basename "$0") _name uid/gid" >&2
+    exit 1
+fi
+if ! echo "$uid" | grep -q '^[1-9][0-9]*$'; then
+    echo "Error: Invalid user id $uid!" >&2
+    exit 1
+fi
+if ! echo "$username" | grep -q '^[a-zA-Z][a-zA-Z0-9_]*$'; then
+    echo "Error: Invalid user name $username!" >&2
+    exit 1
+fi
+if id -u "$uid" &>/dev/null; then
+    echo "Error: User id $uid exists!" >&2
+    exit 1
+fi
+if dscl /Local/Default -ls Groups gid | grep -q '[^0-9]'"$uid"'$'; then
+    echo "Error: Group id $uid exists!" >&2
+    exit 1
+fi
+set -e
+set -o pipefail
+CREATE="dscl /Local/Default -create"
+set -x
+
+$CREATE "Groups/_$username"
+$CREATE "Groups/_$username" PrimaryGroupID "$uid"
+$CREATE "Groups/_$username" RecordName "_$username" "$username"
+$CREATE "Groups/_$username" RealName "$username"
+$CREATE "Users/_$username"
+$CREATE "Users/_$username" UniqueID "$uid"
+$CREATE "Users/_$username" PrimaryGroupID "$uid"
+$CREATE "Users/_$username" Password '*'
+$CREATE "Users/_$username" NFSHomeDirectory /var/empty
+$CREATE "Users/_$username" UserShell /usr/bin/false
+$CREATE "Users/_$username" RecordName "_$username" "$username" 
+$CREATE "Users/_$username" RealName "$username" 

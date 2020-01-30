@@ -1,0 +1,11 @@
+#!/bin/bash
+for (( uid=500; --uid; )); do
+    if ! id -u "$uid" &>/dev/null; then
+        if ! dscl /Local/Default -ls Groups gid | grep -q '[^0-9]'"$uid"'$'
+        then
+            echo "$uid"
+            exit 0
+        fi
+    fi
+done
+exit 1

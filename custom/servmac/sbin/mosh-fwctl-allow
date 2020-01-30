@@ -1,0 +1,16 @@
+#!/bin/bash
+FWCTL='/usr/libexec/ApplicationFirewall/socketfilterfw'
+
+set -x
+
+"$FWCTL" --setglobalstate off
+
+"$FWCTL" --add "$(which mosh-server)"
+"$FWCTL" --unblockapp "$(which mosh-server)"
+
+for file in "$(brew --prefix)/Cellar/mosh/"*/bin/mosh-server; do
+    "$FWCTL" --add "$file"
+    "$FWCTL" --unblockapp "$file"
+done
+
+exec "$FWCTL" --setglobalstate on

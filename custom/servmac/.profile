@@ -21,20 +21,23 @@ if [ -n "$PS1" -a -z "$ENVONLY" -a -t 0 ]; then
     tabs -4
 fi
 
-if [ -d "/Library/Developer/Toolchains/swift-latest.xctoolchain/usr/bin" ]; then
-    export PATH="$PATH:/Library/Developer/Toolchains/swift-latest.xctoolchain/usr/bin"
+SSL_CERT_FILE=/usr/local/etc/openssl/cert.pem
+if [ -r "$SSL_CERT_FILE" ]; then
+    export SSL_CERT_FILE
+else
+    unset SSL_CERT_FILE
 fi
 
-for vscpath in "$HOME/" '/'; do
-    if [ -d "${vscpath}Application/Visual Studio Code.app/Contents/Resources/app/bin" ]; then
-        export PATH="$PATH:${vscpath}Applications/Visual Studio Code.app/Contents/Resources/app/bin"
-    fi
-done
+if [ -d "/ServerRoot/usr/bin" ]; then
+    PATH="$PATH:/ServerRoot/usr/bin:/ServerRoot/usr/sbin"
+    MANPATH="$MANPATH:/ServerRoot/usr/share/man"
+fi
 
 [ -e "$HOME/.profile_private" ] && . "$HOME/.profile_private"
 
 for rvmpath in "$HOME/.rvm" '/usr/local/rvm'; do
     if [ -s "$rvmpath/scripts/rvm" ]; then
+        export rvmsudo_secure_path=0
         source "$rvmpath/scripts/rvm"
         break
     fi
