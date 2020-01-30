@@ -72,12 +72,13 @@ set hidden              " Hide, rather than unload, abandoned buffers
 set shortmess+=c        " Don't show completion menu info messages
 set signcolumn=yes      " Always show the sign column
 
-" Return in insert mode: accept autocompletion (endwise-compatible)
+" Return in insert mode: accept autocompletion (endwise- and closer-compatible)
 let g:endwise_no_mappings=1
+imap <silent><expr> <Plug>CloserClose ""
 imap <silent><expr> <Plug>DiscretionaryEnd ""
 imap <silent><expr> <Plug>AlwaysEnd ""
 imap <C-X><CR> <CR><Plug>AlwaysEnd
-imap <silent><expr> <CR> (pumvisible() ? "\<C-Y>" : "\<CR>\<Plug>DiscretionaryEnd")
+imap <silent><expr> <CR> (pumvisible() ? "\<C-Y>" : "\<CR>\<Plug>DiscretionaryEnd\<Plug>CloserClose")
 
 let g:SuperTabDefaultCompletionType="<C-N>"
 let g:SuperTabContextDefaultCompletionType="<C-N>"
@@ -102,8 +103,11 @@ function! SyntaxErrorsStatus()
     if exists('g:loaded_syntastic_plugin')
         let synstatus = SyntasticStatuslineFlag()
         if !empty(synstatus)
-            let status = ' ' . synstatus . ' '
+            let status = ' ' . synstatus
         endif
+    endif
+    if exists('g:coc_enabled') && g:coc_enabled
+        let status = ' ' . coc#status()
     endif
     if exists('g:ale_enabled') && g:ale_enabled
         let counts = ale#statusline#Count(bufnr(''))
@@ -123,7 +127,7 @@ function! SyntaxErrorsStatus()
             let status = " [" . alestatus . "]" . status
         endif
     endif
-    return status
+    return status . " "
 endfunction
 
 " Show the file encoding if it is not the same as internal (UTF-8)
@@ -190,7 +194,8 @@ if has("autocmd")
 
     " Use my settings for various programming languages instead of filetype
     au FileType ruby,eruby,yaml setlocal ai sw=2 sts=2 et
-    au FileType c,swift,cc,cs,cxx,cpp,h,hpp,java,python,sh,bash,zsh,eiffel,elixir,erlang,awk,javascript,dart,kotlin,rust,d,vim setlocal ai sw=4 sts=4 et
+    au FileType c,swift,cc,cs,cxx,cpp,h,hpp,java,python,sh,bash,zsh,eiffel,elixir,erlang,awk,javascript,dart,kotlin,rust,d,vim,typescript setlocal ai sw=4 sts=4 et
+    au FileType swift,objcpp,kotlin,dart,haskell let b:closer = 1 | let b:closer_flags = '([{'
 
     " Fix formatting of lists in markdown
     au FileType text,markdown setlocal formatlistpat=^\\s*\\d\\+[.\)]\\s\\+\\\|^\\s*[*+~-]\\s\\+\\\|^\\(\\\|[*#]\\)\\[^[^\\]]\\+\\]:\\s | setlocal comments=n:> | setlocal formatoptions+=tcn | setlocal indentexpr= autoindent smartindent
@@ -310,9 +315,6 @@ inoremap <C-B> <C-E>
 " Make p in visual mode paste over the selection without yanking it
 vnoremap p "_dP
 
-noremap <C-[> :call CocAction('jumpDefinition')<CR>
-nmap <C-_> <Plug>(coc-references)
-
 inoremap <C-_> <C-R>=printf("%",)<Left><Left><Left>
 cnoremap <C-_> <C-R>=findfile("",";")<Left><Left><Left><Left><Left><Left>
 
@@ -427,19 +429,19 @@ if !exists('g:vscode')
     endif
 
     " ]w and [w to jump to next/prev warning/error (coc, ale, llist)
-    nmap <silent><expr> [w (exists('coc_enabled') && coc_enabled) ? "\<Plug>(coc-diagnostic-prev)" : (exists('ale_enabled') && ale_enabled) ? "\<Plug>(ale_previous_wrap)" : ":lprevious\<CR>"
-    nmap <silent><expr> ]w (exists('coc_enabled') && coc_enabled) ? "\<Plug>(coc-diagnostic-next)" : (exists('ale_enabled') && ale_enabled) ? "\<Plug>(ale_next_wrap)" : ":lnext\<CR>"
+    nmap <silent><expr> ]w (exists('coc_enabled') && coc_enabled && !(exists('b:coc_enabled') && !b:coc_enabled)) ? "\<Plug>(coc-diagnostic-next)" : (exists('ale_enabled') && ale_enabled) ? "\<Plug>(ale_next_wrap)" : ":lnext\<CR>"
+    nmap <silent><expr> [w (exists('coc_enabled') && coc_enabled && !(exists('b:coc_enabled') && !b:coc_enabled)) ? "\<Plug>(coc-diagnostic-prev)" : (exists('ale_enabled') && ale_enabled) ? "\<Plug>(ale_previous_wrap)" : ":lprevious\<CR>"
 
+    " space + w and space + W to open/close list of diagnostics (or location list)
     nmap <silent><expr> <LocalLeader>w (exists('coc_enabled') && coc_enabled) ? ":CocList diagnostics<CR>" : ":lopen\<CR>"
     nmap <silent><expr> <LocalLeader>W (exists('coc_enabled') && coc_enabled) ? ":CocList diagnostics<CR>" : ":lclose\<CR>"
 
     function! ShowDocumentationForWordUnderCursor()
-        if exists('coc_enabled') && coc_enabled
-            call CocAction('doHover')
-        elseif exists('ale_enabled') && ale_enabled
+        if exists('g:coc_enabled') && g:coc_enabled && (!exists('b:coc_enabled') || b:coc_enabled) && CocAction('doHover')
+            return
+        elseif exists('g:ale_enabled') && g:ale_enabled && (!exists('b:ale_enabled') || b:ale_enabled)
             execute "ALEHover"
         else
-            "execute 'h '.expand('<cword>')
             execute "normal! K"
         endif
     endfunction
@@ -467,7 +469,7 @@ if !exists('g:vscode')
 endif
 
 " Always reset the chgwin to accommodate both :Lexplore and :Explore
-au FileType netrw au BufCreate <buffer> let g:netrw_chgwin=-1
+au FileType netrw au BufCreate <buffer> let g:netrw_chgwin=-1 | setlocal nobuflisted bufhidden=wipe
 
 let g:netrw_liststyle=3
 let g:netrw_winsize=30

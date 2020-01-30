@@ -301,3 +301,8 @@ if [ -n "$PS1" -a -z "$ENVONLY" ]; then
 else
     echo "$PATH" | grep -qE '(^|:)/usr/local/bin(:|$)' || export PATH="/usr/local/bin:$PATH"
 fi
+
+[ -e "$HOME/.bashrc_private" ] && . "$HOME/.bashrc_private"
+
+# Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
+export PATH="$PATH:$HOME/.rvm/bin"

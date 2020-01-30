@@ -1,6 +1,12 @@
 export LANG=en_US.UTF-8
 export LC_CTYPE=en_US.UTF-8
 export LC_MESSAGES=en_US.UTF-8
+export LC_TIME=C
+export LC_PAPER=fi_FI.UTF-8
+export LC_MONETARY=fi_FI.UTF-8
+export LC_TELEPHONE=fi_FI.UTF-8
+export LC_ADDRESS=fi_FI.UTF-8
+export LC_MEASUREMENT=fi_FI.UTF-8
 
 export MOSH_TITLE_NOPREFIX=1
 
@@ -39,3 +45,6 @@ for rvmpath in "$HOME/.rvm" '/usr/local/rvm'; do
         break
     fi
 done
+
+# Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
+export PATH="$PATH:$HOME/.rvm/bin"

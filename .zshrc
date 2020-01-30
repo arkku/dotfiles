@@ -1,8 +1,5 @@
 disable log
 
-# UTF-8 combining characters
-setopt combiningchars
-
 # Add custom functions directory to fpath
 [ -e "$HOME/.zsh/functions" ] && fpath=( "$HOME/.zsh/functions" "${fpath[@]}" )
 
@@ -929,11 +926,15 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
 
     unset is_root
     unset is_sudo
-else
-    echo "$PATH" | grep -qE '(^|:)/usr/local/bin(:|$)' || export PATH="/usr/local/bin:$PATH"
 fi
 
-[ -d "$HOME/.rvm/bin" ] && export PATH="$PATH:$HOME/.rvm/bin"
+[ -e "$HOME/.zshrc_private" ] && . "$HOME/.zshrc_private"
+
+if [ -d "$HOME/.rvm/bin" ]; then
+    export PATH="$PATH:$HOME/.rvm/bin"
+elif [ -d "/usr/local/rvm/bin" ]; then
+    export PATH="$PATH:/usr/local/rvm/bin"
+fi
 
 # Make path unique
 typeset -aU path

@@ -110,6 +110,11 @@ These bindings are for the normal mode, preceded by the leader (<kbd>\\</kbd>):
 * `L` – close location list
 * `q` – delete buffer
 * `x` – wipeout buffer
+* `d` – jump to definition of thing under cursor (if coc installed)
+* `r` – show references to the thing under cursor (if coc installed)
+* `c` – coc code action (if installed)
+* `cf` – coc autofix (if installed)
+* `R` or `cr` – coc rename (if installed)
 * `s` – run [Syntastic](https://github.com/vim-syntastic/syntastic) check, and
   open the location list if there are errors
 * `S` – reset Syntastic, clearing all errors
@@ -131,6 +136,7 @@ These bindings are for the normal mode, preceded by the local leader (<kbd>Space
 * <kbd>Tab</kbd> – go to next tab
 * <kbd>Shift</kbd> + <kbd>Tab</kbd> – go to previous tab
 * `w` – open warnings/errors list (coc, or location list)
+* `W` – close warnings/errors list
 * `h` – open `fzf` fuzzy search for "recently opened files" (if plugin installed)
 * `/` – open `fzf` search for lines in this buffer
 * `t` – open tag search (if fzf plugin is installed)

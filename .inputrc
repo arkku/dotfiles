@@ -14,7 +14,7 @@ set bind-tty-special-chars on
 set colored-stats on
 set colored-completion-prefix on
 set blink-matching-paren on
-set skip-completed-text on
+#set skip-completed-text on
 set completion-prefix-display-length 6
 set show-all-if-unmodified on
 set show-mode-in-prompt on
