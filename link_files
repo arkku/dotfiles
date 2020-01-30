@@ -18,7 +18,17 @@
 # the shared dotfiles, create a local file with "_local" appended to its
 # name, e.g., ".bashrc_local" prevents ".bashrc" from being linked.
 #
-# By Kimmo Kulovesi <http://arkku.com/>
+# Alternatively, you can now specify the command-line option `-c customdir`
+# where customdir is a _subdirectory of the source directory_ containing custom
+# overrides that take precedence over files in either the source directory or
+# the platform directory. (The directory `local` is in gitignore so you can put
+# or symlink your custom configurations there.)
+#
+# directory containing your custom files that will be
+# linked. A file in the custom directory takes precedence over a file with the
+# same name in the source directory.
+#
+# By Kimmo Kulovesi <https://arkku.dev/>
 # Distribute freely, use at your own risk only!
 
 set -e
@@ -28,6 +38,7 @@ dst_dir="$HOME"
 cmd_prefix=''
 verbose=''
 force=''
+custom=''
 
 while [ -n "$1" ]; do
     case "$1" in
@@ -46,6 +57,15 @@ while [ -n "$1" ]; do
         -d)
             shift
             dst_dir="$1"
+            ;;
+        -c)
+            shift
+            custom="$1"
+            ;;
+        --custom=*)
+            custom="$1"
+            custom="${custom/#--custom=/}"
+            custom="${custom/#$src_dir\//}"
             ;;
         --dry-run|-n)
             cmd_prefix='echo'
@@ -88,7 +108,22 @@ EOF
 done
 
 [ -n "$verbose" ] && echo "Linking from: $src_dir" >&2
+
 cd "$src_dir"
+
+if [ -n "$custom" ]; then
+    if [ ! -d "$custom/." ]; then
+        if [ -d "local/$custom/." ]; then
+            custom="local/$custom"
+        elif [ -d "custom/$custom/." ]; then
+            custom="custom/$custom"
+        else
+            echo "Error: Custom directory does not exist: $custom" >&2
+            exit 1
+        fi
+    fi
+    [ -n "$verbose" ] && echo "Custom configuration: $custom" >&2
+fi
 
 platform="$(uname -s | tr '[A-Z]' '[a-z]')"
 [ "$platform" = "darwin" ] && platform=mac
@@ -103,6 +138,9 @@ find . -type f -print0 | while read -d '' file; do
         $platform/*)    # Platform-specific file for the current platform
             dst="${src/#$platform\//}"
             ;;
+        $custom/*)
+            dst="${src/#$custom\//}"
+            ;;
         .git/*|.gitignore|.gitmodules|.tags)    # Ignore git directory
             continue
             ;;
@@ -110,6 +148,9 @@ find . -type f -print0 | while read -d '' file; do
 
             # Ignore generic version if a platform-specific one exists
             [ -e "$platform/$file" ] && continue
+
+            # Ignore custom version if it exists
+            [ -n "$custom" -a -e "$custom/$file" ] && continue
 
             dst="$src"
             ;;
