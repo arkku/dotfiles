@@ -24,9 +24,7 @@
 # the platform directory. (The directory `local` is in gitignore so you can put
 # or symlink your custom configurations there.)
 #
-# directory containing your custom files that will be
-# linked. A file in the custom directory takes precedence over a file with the
-# same name in the source directory.
+# For example: ./link-files -f -c local/myconfig
 #
 # By Kimmo Kulovesi <https://arkku.dev/>
 # Distribute freely, use at your own risk only!
