@@ -426,7 +426,27 @@ if !exists('g:vscode')
         endfunction
 
         nnoremap <Leader>t :call OpenTerminal('console')<CR>
+
+        let g:yoinkSavePersistently=1
+        silent! set shada=!,'100,<50,s10,h
     endif
+
+    let g:yoinkSwapClampAtEnds=0
+    let g:yoinkSyncSystemClipboardOnFocus=0
+    "nnoremap <Plug>(YoinkYankPreserveCursorPosition) y
+    "xnoremap <Plug>(YoinkYankPreserveCursorPosition) y
+    "nmap y <Plug>(YoinkYankPreserveCursorPosition)
+    "xmap y <Plug>(YoinkYankPreserveCursorPosition)
+    nnoremap <Plug>(YoinkPaste_p) p
+    nnoremap <Plug>(YoinkPaste_P) P
+    nnoremap <Plug>(YoinkPostPasteSwapBack) j
+    nnoremap <Plug>(YoinkPostPasteSwapForward) k
+    nmap p <Plug>(YoinkPaste_p)
+    nmap P <Plug>(YoinkPaste_P)
+
+    " C-J and C-K immediately after put cycle history (with yoink.vim)
+    nmap <C-J> <Plug>(YoinkPostPasteSwapBack)
+    nmap <C-K> <Plug>(YoinkPostPasteSwapForward)
 
     " ]w and [w to jump to next/prev warning/error (coc, ale, llist)
     nmap <silent><expr> ]w (exists('coc_enabled') && coc_enabled && !(exists('b:coc_enabled') && !b:coc_enabled)) ? "\<Plug>(coc-diagnostic-next)" : (exists('ale_enabled') && ale_enabled) ? "\<Plug>(ale_next_wrap)" : ":lnext\<CR>"
