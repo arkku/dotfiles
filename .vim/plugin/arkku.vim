@@ -193,8 +193,8 @@ if has("autocmd")
     filetype indent on
 
     " Use my settings for various programming languages instead of filetype
-    au FileType ruby,eruby,yaml setlocal ai sw=2 sts=2 et
-    au FileType c,swift,cc,cs,cxx,cpp,h,hpp,java,python,sh,bash,zsh,eiffel,elixir,erlang,awk,javascript,dart,kotlin,rust,d,vim,typescript setlocal ai sw=4 sts=4 et
+    au FileType ruby,eruby,yaml,json setlocal ai sw=2 sts=2 ts=4 et
+    au FileType c,swift,cc,cs,cxx,cpp,h,hpp,java,python,sh,bash,zsh,eiffel,elixir,erlang,awk,javascript,dart,kotlin,rust,d,vim,typescript setlocal ai sw=4 ts=4 sts=4 et
     au FileType swift,objcpp,kotlin,dart,haskell let b:closer = 1 | let b:closer_flags = '([{'
 
     " Fix formatting of lists in markdown
@@ -297,6 +297,8 @@ inoremap <A-Left> <C-O>b
 inoremap <A-Right> <C-O>w
 noremap! <A-Up> <Home>
 noremap! <A-Down> <End>
+
+noremap! <A-BS> <C-W>
 
 inoremap <M-Left> <C-O>b
 inoremap <M-Right> <C-O>w

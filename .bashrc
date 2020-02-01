@@ -159,9 +159,18 @@ if [ -n "$PS1" -a -z "$ENVONLY" ]; then
         }
 
         alias kp='fzk'
+
+        if [ -n "$(command -v bat)" ]; then
+            alias gdf='git ls-files --exclude-standard -m -o -z | fzf --read0 -0 --bind "enter:execute(git diff --color=always {} | bat --paging=always --style=plain)" --bind "double-click:execute(git diff --color=always {} | bat --paging=always --style=plain)"'
+        else
+            alias gdf='git ls-files --exclude-standard -m -o -z | fzf --read0 -0 --bind "enter:execute(git diff --color=always {} | less -R)" --bind "double-click:execute(git diff --color=always {} | less -R)"'
+        fi
     fi
-    # set a fancy prompt
-    PS1='\u@$SHORT_HOSTNAME:$SHORT_PWD\$ '
+    if [ -n "$SSH_CONNECTION" -o -n "$SUDO_USER" ]; then
+        PS1='\u@$SHORT_HOSTNAME:$SHORT_PWD\$ '
+    else
+        PS1='$SHORT_PWD\$ '
+    fi
     PROMPT_COMMAND='short_pwd'
     SHORT_HOSTNAME="${HOSTNAME/%.*/}"
 
@@ -239,7 +248,7 @@ if [ -n "$PS1" -a -z "$ENVONLY" ]; then
         unset fasd_cache
 
         alias v='f -e vi'
-        alias sv='sf -e vi'
+        alias vv='sf -e vi'
 
         if [ -n "$(command -v fzf)" ]; then
             fasd_fzf() {

@@ -16,11 +16,19 @@ directory, while allowing platform-specific files and local overrides. See
 This is a checklist for me when I set up a new machine.
 
 * [ArkkuDvorak](https://arkku.com/dvorak/)
-* [vim plugins](https://github.com/arkku/vim-plugin-collection/)
-* [Homebrew](https://brew.sh)
 * [XCode](https://developer.apple.com/download/)
-* [VS Code](https://code.visualstudio.com)
+* [Homebrew](https://brew.sh)
+* [gpg](https://gnupg.org/download/) (also keys and passphrase input utility)
+* [tmux](https://neovim.io)
+    - [tmux plugins](https://github.com/arkku/tmux-plugin-collection)
+* [neovim](https://neovim.io)
+    - [vim plugins](https://github.com/arkku/vim-plugin-collection)
 * [mosh](https://mosh.org)
+* [VS Code](https://code.visualstudio.com)
+    - [VS Code colour theme](https://github.com/arkku/arkku-vscode-theme)
+    - [File Icons](https://github.com/file-icons/vscode)
+    - [Auto Dark Mode](https://github.com/LinusU/vscode-auto-dark-mode)
+    - extensions for C, Swift, Ruby, Awk, zsh, Assembler, Jekyll, Liquid, etc.
 * [zsh-syntax-highlighting](https://github.com/zsh-users/zsh-syntax-highlighting)
 * [rvm](https://rvm.io) (remember `readline`!)
 * [ripgrep](https://github.com/BurntSushi/ripgrep)
@@ -28,7 +36,7 @@ This is a checklist for me when I set up a new machine.
 * [fzf](https://github.com/junegunn/fzf)
 * [fasd](https://github.com/clvv/fasd)
 * [bat](https://github.com/sharkdp/bat)
-* [gpg](https://gnupg.org/download/) (also keys and passphrase input utility)
+* [SF Mono font](file:///Applications/Utilities/Terminal.app/Contents/Resources/Fonts/)
 * `~/.ssh` (keys, permissions, authorized keys, include shared config)
 * `~/.gitconfig` (account, signing, editor, merge tool, shared config)
 * `~/.profile` and `~/.zprofile` (source `~/.profile_shared`)
@@ -231,7 +239,7 @@ For `fasd`, the set of aliases is:
 * `a any` – print the directory or file matching the partial name `any`
 * `sa any` – print the directory or file matching the partial name `any`
 * `v file` – edit the file in vi
-* `sv file` – as above, but interactively disambiguate
+* `vv file` – as above, but interactively disambiguate
 
 #### Key Bindings
 
@@ -281,6 +289,16 @@ For `fasd`, the set of aliases is:
   on the command-line (but do not execute it)
 * `fzk` – use `fzf` to fuzzily search running processes, and pass them (and any
   arguments) to `kill`
+* `vgit` – use `fzf` to fuzzily search modified files in the git repository
+  and open the selected in vim (zsh only, also note that
+  <kbd>Ctrl</kbd>–<kbd>A</kbd> selects all)
+* `gdt` – use `fzf` to fuzzily search modified files in the git repository and
+  open the selected in `git difftool` (zsh only)
+* `gmt` – use `fzf` to fuzzily search unmerged files in the git repository and
+  open the selected in `git mergetool` (zsh only)
+* `gdf` – use `fzf` to fuzzily search modified files in the git repository and
+  press <kbd>Enter</kbd> to view the `git diff` for that file without leaving
+  the list (press <kbd>Ctrl</kbd>–<kbd>C</kbd> to exit)
 * `kp` – alias for `fzk` (kill process)
 * `clc` – copy the last command to system clipboard
 * `clct` – copy the last command to tmux buffer
@@ -291,6 +309,8 @@ For `fasd`, the set of aliases is:
 * `gs` – `git status`
 * `gsu` – `git submodule update --init --recursive`
 * `gsur` – `git submodule update --remote --recursive`
+* `gls` – `git ls-files --exclude-standard`
+* `glsm` – `git ls-files -m -o --exclude-standard` (modified files)
 * `cdr` – `cd` to the root of the current git repository (if any)
 * `gr` – `grep`, excluding `.git` (but prefer `ag`)
 * `vi` – `nvim` (if installed)

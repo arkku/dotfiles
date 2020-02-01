@@ -179,6 +179,8 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
     alias gs='git status --show-stash'
     alias gsu='git submodule update --init --recursive'
     alias gsur='git submodule update --remote --recursive'
+    alias gls='git ls-files --exclude-standard'
+    alias glsm='git ls-files -m -o --exclude-standard'
     alias cdr='[ -n "$REPO" ] && cd "$REPO"'
 
     # Make a directory (including parent diretory) and cd to it
@@ -327,6 +329,44 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
         }
 
         alias kp='fzk'
+
+        fzgls() {
+            local gargs=''
+            local fargs=( '-0' '-m' '--bind' 'ctrl-a:select-all' )
+            if [ "$1" = '-m' ]; then
+                gargs='-m -o'
+                shift
+            elif [ "$1" = '-u' ]; then
+                gargs='-u'
+                shift
+            fi
+            if [ "$1" = '--' ]; then
+                shift
+            fi
+            if [ $# -ge 1 ]; then
+                local cmd="$1"
+                shift
+                local sels=( "${(@f)$(git ls-files --exclude-standard -z ${=gargs} | fzf --read0 "${fargs[@]}")}" )
+                [ -n "$sels" ] && "$cmd" "$@" "${sels[@]}"
+            else
+                git ls-files --exclude-standard -z ${=gargs} | fzf --read0 "${fargs[@]}"
+            fi
+        }
+
+        alias gdt='fzgls -m -- git difftool -y --'
+        alias gmt='fzgls -u -- git mergetool -y --'
+
+        if [ -n "$(command -v nvim)" ]; then
+            alias vgit='fzgls -m -- nvim'
+        else
+            alias vgit='fzgls -m -- vim'
+        fi
+
+        if [ -n "$(command -v bat)" ]; then
+            alias gdf='git ls-files --exclude-standard -m -o -z | fzf --read0 -0 --bind "enter:execute(git diff --color=always {} | bat --paging=always --style=plain)" --bind "double-click:execute(git diff --color=always {} | bat --paging=always --style=plain)"'
+        else
+            alias gdf='git ls-files --exclude-standard -m -o -z | fzf --read0 -0 --bind "enter:execute(git diff --color=always {} | less -R)" --bind "double-click:execute(git diff --color=always {} | less -R)"'
+        fi
     fi
 
     # Pipe shortcuts
@@ -486,7 +526,10 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
     bindkey '\C-N' history-beginning-search-forward
     bindkey '\e[5~' history-search-backward
     bindkey '\e[6~' history-search-forward
+    bindkey '\e[1;5A' up-line
+    bindkey '\e[1;5B' down-line
     bindkey '\C-W' smart-backward-kill-word
+    bindkey '\e\C-?' smart-backward-kill-word
     bindkey '\C-K' kill-word
     bindkey '\C-U' kill-whole-line
     bindkey '\C-Y' yank
@@ -508,6 +551,8 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
         bindkey ${=mode} '\eOD' backward-char
         bindkey ${=mode} '\e[1~' beginning-of-line
         bindkey ${=mode} '\e[4~' end-of-line
+        bindkey ${=mode} '\e[H' beginning-of-line
+        bindkey ${=mode} '\e[F' end-of-line
         bindkey ${=mode} '\e[5C' forward-word
         bindkey ${=mode} '\e[5D' backward-word
         bindkey ${=mode} '\e[1;5C' end-of-line
@@ -797,10 +842,10 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
 
         if [ -n "$(command -v nvim)" ]; then
             alias v='f -e nvim'
-            alias sv='sf -e nvim'
+            alias vv='sf -e nvim'
         else
             alias v='f -e vim'
-            alias sv='sf -e vim'
+            alias vv='sf -e vim'
         fi
 
         if [ -n "$(command -v fzf)" ]; then

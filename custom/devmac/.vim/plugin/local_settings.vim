@@ -4,6 +4,11 @@ else
     let g:loaded_arkku_local_settings=1
 endif
 
+if !has('nvim')
+    " Silence complaint
+    let g:yoinkInitialized = 1
+endif
+
 "let g:syntastic_swift_checkers = [ 'swiftpm', 'swiftlint' ]
 let g:syntastic_swift_checkers = [ 'swiftlint' ]
 "let g:syntastic_c_checkers = [ 'make' ]

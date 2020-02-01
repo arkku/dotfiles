@@ -1,4 +1,4 @@
-" colors/arkku.vim: A color scheme for Vim
+" colors/arkku.vim: A color scheme for Vim and Neovim
 "
 " This theme supports both light and dark backgrounds. One design goal
 " is that it remains readable even in the basic EGA/VGA text mode
@@ -37,7 +37,7 @@ hi Boolean term=none cterm=none ctermfg=blue gui=none guifg=#0066cc
 hi Number term=none cterm=none ctermfg=blue gui=none guifg=#0099aa
 hi Float term=none cterm=none ctermfg=blue gui=none guifg=#0099aa
 hi Character term=none cterm=none ctermfg=blue gui=none guifg=#0041a3
-hi String term=none cterm=none ctermfg=brown gui=none guifg=#993399
+hi String term=none cterm=none ctermfg=brown gui=none guifg=#884466
 
 hi Identifier term=none cterm=none ctermfg=darkblue gui=none guifg=#003366
 hi clear Function
@@ -312,7 +312,7 @@ else " Light background
     let g:terminal_color_7 = '#bbbbbb'
     let g:terminal_color_8 = '#333333'
     let g:terminal_color_9 = '#993300'
-    let g:terminal_color_10 = '#006600'
+    let g:terminal_color_10 = '#009900'
     let g:terminal_color_11 = '#ff9900'
     let g:terminal_color_12 = '#0066cc'
     let g:terminal_color_13 = '#9966cc'
