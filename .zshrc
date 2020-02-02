@@ -974,6 +974,5 @@ if command -v path_force_order >/dev/null 2>&1; then
     done
 fi
 
-
 # Make path unique
 typeset -aU path

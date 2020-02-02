@@ -120,7 +120,7 @@ fzfcmd() {
         shift
     done
 
-    "$lister" "${largs[@]}" | fzf --print0 --query="$query" "${fargs[@]}" | drop_n_fields "$drop_fields" | xargs -0 -t "${cmdargs[@]}" ${=ddash}
+    "$lister" "${largs[@]}" | fzf --print0 --reverse --query="$query" "${fargs[@]}" | drop_n_fields "$drop_fields" | xargs -0 -t "${cmdargs[@]}" ${=ddash}
 }
 
 # Git mergetool
@@ -165,7 +165,7 @@ gdf() {
         shift
     fi
     git --no-pager diff --name-only -z ${=staged} | fzf -0 --read0 --no-multi \
-        --query="$@" \
+        --query="$@" --reverse \
         --preview="git diff ${=staged} "$@" --color=always -- {}" \
         --preview-window='top:50%:wrap' \
         --bind "enter:execute(git diff ${=staged} --color=always {} | $pager)" \
@@ -190,7 +190,7 @@ gstash() {
     fi
     local gitargs=( --no-pager stash list --pretty='%C(yellow)%h %C(white)%<(15)%gD %C(reset)%gs' --color=always )
     git ${gitargs[@]} | fzf --ansi -0 --no-sort --no-multi \
-            --query="$@" \
+            --query="$@" --reverse \
             --preview='git stash show --color=always --stat -- {1}; echo; git stash list --pretty=short --color=always' \
             --preview-window='top:50%:wrap' \
             --bind "ctrl-a:execute(git stash pop -- {2})+abort" \
@@ -202,7 +202,7 @@ gstash() {
 git-ls-branches() {
     local remotes=''
     [[ "$1" == *'remote'* ]] && remotes='--all'
-    git --no-pager branch ${=remotes} \
+    [[ "$1" != *'tagsonly'* ]] && git --no-pager branch ${=remotes} \
         --format="%(if)%(HEAD)%(then)%(else)%(if:equals=HEAD)%(refname:strip=3)%(then)%(else)branch%09%(refname:short)%(end)%(end)" \
         | sed '/^$/d'
     [[ "$1" == *'tags'* ]] && git --no-pager tag | sed 's/^/tag     /'
@@ -232,7 +232,7 @@ fzfgitbranchcmd() {
     query="${query/# /}"
 
     git-ls-branches ${=tags} | fzf --ansi -0 --no-sort --no-multi \
-            --query="$query" \
+            --query="$query" --reverse \
             --preview='echo "+++"; git --no-pager log --color=always --abbrev-commit --pretty=oneline ..{2}; echo "---"; git --no-pager log --color=always --abbrev-commit --pretty=oneline {2}..'\
             --preview-window='top:50%:wrap' \
             --bind "enter:execute[set -x; $action$cmdargs {2}]+abort" \
@@ -248,6 +248,11 @@ gcheckout() {
 
 # Pick and check out a branch or tag
 alias gco='gcheckout'
+
+# Pick and check out a tag
+gcotag() {
+    fzfgitbranchcmd tagsonly 'git checkout' 'Checkout' "$@"
+}
 
 # Pick a branch and rebase
 grebase() {
@@ -300,7 +305,7 @@ fzfgitcommitcmd() {
     [ "$branch" = 'HEAD' ] && branch=''
 
     git --no-pager log --color=always -n 1000 --abbrev-commit --pretty="%C(yellow)%h %C(white)%<(19,mtrunc)%an %C(cyan)%<(14,trunc)%ar %C(reset)%s" $branch \
-        | fzf --ansi -0 --no-sort "$multi" \
+        | fzf --ansi -0 --no-sort --reverse "$multi" \
             --preview='git --no-pager show --stat --color=always --pretty=fuller {1}'\
             --preview-window='top:50%:wrap' \
             --bind "enter:execute[set -x; $action$cmdargs {+1}]+abort" \
@@ -314,6 +319,9 @@ fzfgitcommitcmd() {
 glog() {
     fzfgitcommitcmd '' 'git show --pretty=fuller --color=always' 'Show' "$@"
 }
+
+# Show the git log interactively
+alias gll='glog'
 
 # Pick commit(s) to cherry-pick (give branch of commits as first argument)
 gcherry() {
@@ -333,7 +341,7 @@ grevert() {
 # Pick git commits, e.g.: git rebase --onto `fzc`<TAB>
 fzc() {
     git --no-pager log --color=always -n 1000 --abbrev-commit --pretty="%C(yellow)%h %C(white)%<(19,mtrunc)%an %C(cyan)%<(14,trunc)%ar %C(reset)%s" "$@" \
-        | fzf --ansi -0 --no-sort --multi \
+        | fzf --ansi -0 --no-sort --multi --reverse \
             --preview='git --no-pager show --color=always --pretty=fuller {1}'\
             --preview-window='top:50%:wrap' \
             --header "Esc: Close | Tab: Toggle Selection | Enter: Accept" \
