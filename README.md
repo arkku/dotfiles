@@ -324,7 +324,7 @@ usual, <kbd>Esc</kbd> or <kbd>Ctrl</kbd>-<kbd>C</kbd> leaves the selection
 * `gedit` – open a file in `$EDITOR`
 * `gdf` – view the diff of modified files without leaving the selection (press
   <kbd>Ctrl</kbd>–<kbd>E</kbd> to edit the file in `$EDITOR`, or
-  <kbd>Ctrl</kdb>–<kbd>G</kbd> to open the `git difftool`)
+  <kbd>Ctrl</kbd>–<kbd>G</kbd> to open the `git difftool`)
 * `gdfs` – view the diff of staged files without leaving the selection
 * `gadd` – select modified files to stage (`git add`)
 * `gunstage` – select staged files to unstage (`git restore --staged`)
@@ -332,10 +332,11 @@ usual, <kbd>Esc</kbd> or <kbd>Ctrl</kbd>-<kbd>C</kbd> leaves the selection
 * `gdt` – select modified files to open in `git difftool`
 * `gmt` – select unmerged files to open in `git mergetool`
 * `gstash` – view stashes and diff them, there are also keyboard shortcuts to
-  apply/pop (<kbd>Ctrl</kbd>–<kbd>A</kbd>) the stash, and to
-  (<kbd>Ctrl</kbd>–<kbd>B</kbd>) branch the stash
+  apply/pop the stash (<kbd>Ctrl</kbd>–<kbd>A</kbd>), and to
+  branch the stash (<kbd>Ctrl</kbd>–<kbd>B</kbd>)
 * `gcheckout` or `gco` – check out a branch or tag
 * `gcheckoutc` or `gcoc` – check out a commit
+* `gcheckoutt` or `gcotag` – check out a tag
 * `grebase` – select branch and rebase
 * `gmerge` – select branch and merge
 * `glog` – view individual commits and their logs
@@ -343,6 +344,8 @@ usual, <kbd>Esc</kbd> or <kbd>Ctrl</kbd>-<kbd>C</kbd> leaves the selection
   first argument, other arguments are passed to the `git commit` command)
 * `gfixup` – select a commit to fix-up with a new commit
 * `grevert` – select a commit to revert
+* `gbranchdel` – select a branch to remove
+* `gtagdel` – select a tag to remove
 * `fzc` – select one or more commits and print their hashes (e.g., to be used
   as part of other commands, like: <code>git rebase --onto \`fzc\`<kbd>Tab</kbd></code>)
 

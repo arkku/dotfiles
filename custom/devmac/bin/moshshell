@@ -1,0 +1,29 @@
+#!/bin/sh
+host="$1"
+[ -z "$host" ] && host=homeshell
+port="$2"
+[ -z "$port" ] && port=62300:62399
+slave="$3"
+[ -z "$slave" ] && slave=`hostname -s`
+main=$4
+[ -z "$main" ] && main=0
+
+session="${main}_${slave}"
+server="env MOSH_SERVER_SIGNAL_TMOUT=20 mosh-server"
+
+attempted_detach=0
+while true; do
+    if mosh --server="$server" -P "$port" "$host" -- bin/tmx prefix '^b' "$main" "$slave"; then
+        exit 0
+    elif [ $attempted_detach = 1 ]; then
+        exit 1
+    fi
+    # Try to detach the existing client from holding up our port
+    # (it will not detach if it is still live due to -P and
+    # MOSH_SERVER_SIGNAL_TMOUT)
+
+    echo "Attempting to detach session $session..." >&2
+    ssh "$host" -- tmux lsc -F '\#{client_pid}' -t "$session" \| \
+                   xargs ps -o ppid= \| xargs kill -SIGUSR1 >&2
+    attempted_detach=1
+done

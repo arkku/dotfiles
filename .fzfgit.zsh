@@ -250,9 +250,12 @@ gcheckout() {
 alias gco='gcheckout'
 
 # Pick and check out a tag
-gcotag() {
+gcheckoutt() {
     fzfgitbranchcmd tagsonly 'git checkout' 'Checkout' "$@"
 }
+
+# Pick and check out a tag
+alias gcot='gcheckoutt'
 
 # Pick a branch and rebase
 grebase() {
@@ -263,6 +266,17 @@ grebase() {
 gmerge() {
     fzfgitbranchcmd '' 'git merge' 'Merge' "$@"
 }
+
+# Pick a branch to remove
+gbranchdel() {
+    fzfgitbranchcmd '' 'git branch -d' 'REMOVE' "$@"
+}
+
+# Pick and remove a tag
+gtagdel() {
+    fzfgitbranchcmd tagsonly 'git tag -d' 'REMOVE' "$@"
+}
+
 
 # A helper for various commands that need to pick a commit
 fzfgitcommitcmd() {
@@ -337,6 +351,14 @@ gfixup() {
 grevert() {
     fzfgitcommitcmd '' 'git revert' 'Revert Commit' -- "$@"
 }
+
+# Pick a commit to check out
+gcheckoutc() {
+    fzfgitcommitcmd '' 'git checkout' 'Checkout Commit' -- "$@"
+}
+
+# Pick a commit to check out
+alias gcoc='gcheckoutc'
 
 # Pick git commits, e.g.: git rebase --onto `fzc`<TAB>
 fzc() {
