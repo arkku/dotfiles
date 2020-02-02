@@ -181,7 +181,24 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
     alias gsur='git submodule update --remote --recursive'
     alias gls='git ls-files --exclude-standard'
     alias glsm='git ls-files -m -o --exclude-standard'
-    alias cdr='[ -n "$REPO" ] && cd "$REPO"'
+
+    # cd to the root of the git repository
+    cdr() {
+        REPO="$(git rev-parse --show-toplevel)"
+        [ -z "$REPO" ] && return 1
+        cd "$REPO"
+    }
+
+    # cd to the outermost git repository (from nested submodules)
+    cdrr() {
+        local gitroot="$(git rev-parse --show-toplevel)"
+        [ -z "$gitroot" ] && return 1
+        while [ -n "$gitroot" ]; do
+            cd "$gitroot" || return 1
+            gitroot="$(git rev-parse --show-superproject-working-tree 2>/dev/null)"
+        done
+        return 0
+    }
 
     # Make a directory (including parent diretory) and cd to it
     alias md='(){ mkdir -pv "$1" && cd "$1" }'
@@ -328,45 +345,8 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
                 | xargs kill "$@"
         }
 
-        alias kp='fzk'
-
-        fzgls() {
-            local gargs=''
-            local fargs=( '-0' '-m' '--bind' 'ctrl-a:select-all' )
-            if [ "$1" = '-m' ]; then
-                gargs='-m -o'
-                shift
-            elif [ "$1" = '-u' ]; then
-                gargs='-u'
-                shift
-            fi
-            if [ "$1" = '--' ]; then
-                shift
-            fi
-            if [ $# -ge 1 ]; then
-                local cmd="$1"
-                shift
-                local sels=( "${(@f)$(git ls-files --exclude-standard -z ${=gargs} | fzf --read0 "${fargs[@]}")}" )
-                [ -n "$sels" ] && "$cmd" "$@" "${sels[@]}"
-            else
-                git ls-files --exclude-standard -z ${=gargs} | fzf --read0 "${fargs[@]}"
-            fi
-        }
-
-        alias gdt='fzgls -m -- git difftool -y --'
-        alias gmt='fzgls -u -- git mergetool -y --'
-
-        if [ -n "$(command -v nvim)" ]; then
-            alias vgit='fzgls -m -- nvim'
-        else
-            alias vgit='fzgls -m -- vim'
-        fi
-
-        if [ -n "$(command -v bat)" ]; then
-            alias gdf='git ls-files --exclude-standard -m -o -z | fzf --read0 -0 --bind "enter:execute(git diff --color=always {} | bat --paging=always --style=plain)" --bind "double-click:execute(git diff --color=always {} | bat --paging=always --style=plain)"'
-        else
-            alias gdf='git ls-files --exclude-standard -m -o -z | fzf --read0 -0 --bind "enter:execute(git diff --color=always {} | less -R)" --bind "double-click:execute(git diff --color=always {} | less -R)"'
-        fi
+        # A bunch of git wrappers using fzf
+        [ -s "$HOME/.fzfgit.zsh" ] && . "$HOME/.fzfgit.zsh"
     fi
 
     # Pipe shortcuts

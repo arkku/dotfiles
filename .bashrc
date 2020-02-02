@@ -68,21 +68,17 @@ if [ -n "$PS1" -a -z "$ENVONLY" ]; then
         [ -z "$TITLE_EXCLUDE_PWD" ] && PROMPT_COMMAND="$PROMPT_COMMAND "'"$SHORT_PWD"'
     }
     function short_pwd () {
-        local pwd_limit=21
-        SHORT_PWD="${PWD/#$HOME/~}"
-        if [ ${#SHORT_PWD} -ge $pwd_limit ]; then
-            SHORT_PWD="${SHORT_PWD#??????*/}"
-            local first=${SHORT_PWD:0:1}
-            local prev=''
-            while [ ${#SHORT_PWD} -ge $pwd_limit -a \
-                    ! "$prev" = "$SHORT_PWD" -a \
-                    ! "$first" = '/' -a ! "$first" = '~' ]; do
-                prev="$SHORT_PWD"
-                SHORT_PWD="${SHORT_PWD#??*/}"
-                first=${SHORT_PWD:0:1}
-            done
-            [ "$first" = '/' -o "$first" = '~' ] || SHORT_PWD=".../$SHORT_PWD"
-        fi
+        SHORT_PWD=$(echo "$PWD" | awk -F/ -v "n=${COLUMNS:-80}" -v "h=^$HOME" '{
+            sub(h,"~"); n= 0.3 * n; b=$1"/"$2
+        }
+        length($0) <= n || NF == 3 { print; next; }
+        NF > 3 {
+            b = b "/.../";
+            e = $NF;
+            n-=length(b $NF);
+            for (i = NF - 1; i > 3 && n > length(e) + 1; i--) e =  $i "/" e;
+        }
+        { print b e; }')
         export SHORT_PWD
     }
     function set_term_title () {
@@ -110,7 +106,24 @@ if [ -n "$PS1" -a -z "$ENVONLY" ]; then
     alias gs='git status --show-stash'
     alias gsu='git submodule update --init --recursive'
     alias gsur='git submodule update --remote --recursive'
-    alias cdr='[ -n "$REPO" ] && cd "$REPO"'
+
+    # cd to the root of the current git repository
+    cdr() {
+        REPO="$(git rev-parse --show-toplevel)"
+        [ -z "$REPO" ] && return 1
+        cd "$REPO"
+    }
+
+    # cd to the outermost git repository (from nested submodules)
+    cdrr() {
+        REPO="$(git rev-parse --show-toplevel)"
+        [ -z "$REPO" ] && return 1
+        while [ -n "$REPO" ]; do
+            cd "$REPO" || return 1
+            REPO="$(git rev-parse --show-superproject-working-tree 2>/dev/null)"
+        done
+        return 0
+    }
 
     # Make a directory (including parent diretory) and cd to it
     md() {
@@ -195,12 +208,10 @@ if [ -n "$PS1" -a -z "$ENVONLY" ]; then
                 | xargs kill "$@"
         }
 
-        alias kp='fzk'
-
         if [ -n "$(command -v bat)" ]; then
-            alias gdf='git ls-files --exclude-standard -m -o -z | fzf --read0 -0 --bind "enter:execute(git diff --color=always {} | bat --paging=always --style=plain)" --bind "double-click:execute(git diff --color=always {} | bat --paging=always --style=plain)"'
+            alias gdf='git diff-files --name-only --diff-filter=M -z | fzf --read0 -0 --bind "enter:execute(git diff --color=always {} | bat --paging=always --style=plain)" --bind "double-click:execute(git diff --color=always {} | bat --paging=always --style=plain)"'
         else
-            alias gdf='git ls-files --exclude-standard -m -o -z | fzf --read0 -0 --bind "enter:execute(git diff --color=always {} | less -R)" --bind "double-click:execute(git diff --color=always {} | less -R)"'
+            alias gdf='git diff-files --name-only --diff-filter=M -z | fzf --read0 -0 --bind "enter:execute(git diff --color=always {} | less -R)" --bind "double-click:execute(git diff --color=always {} | less -R)"'
         fi
     fi
     if [ -n "$SSH_CONNECTION" -o -n "$SUDO_USER" ]; then

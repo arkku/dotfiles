@@ -39,7 +39,7 @@ This is a checklist for me when I set up a new machine.
 * [SF Mono font](file:///Applications/Utilities/Terminal.app/Contents/Resources/Fonts/)
 * `~/.ssh` (keys, permissions, authorized keys, include shared config)
 * `~/.gitconfig` (account, signing, editor, merge tool, shared config)
-* `~/.profile` and `~/.zprofile` (source `~/.profile_shared`)
+* `~/.profile` (source `~/.profile_shared`)
 
 ## Features
 
@@ -172,10 +172,15 @@ so, simply:
     . "$HOME/.profile_shared"
 
 It sets `EDITOR` and `VISUAL` to `nvim`, `vim`, or `vi`, whichever is installed
-(in that order). `~/bin` is added to `$PATH` if it exists, and likewise `~/man`
-is added to `$MANPATH`. Flow control is disabled for the terminal, allowing
+(in that order). Flow control is disabled for the terminal, allowing
 <kbd>Ctrl</kbd>–<kbd>S</kbd> and <kbd>Ctrl</kbd>–<kbd>Q</kbd> to be used for
 keyboard shortcuts.
+
+The profiles generally ensure that `rvm` is loaded if installed, and that
+`PATH` contains `rvm` directories in the correct order. `~/bin` and
+`/usr/local/bin` are also added to the path, in that order, so that things
+installed in `/usr/local/bin` override older versions shipped with the OS, and
+`~/bin` can be used to override both.
 
 #### Prompt
 
@@ -276,8 +281,17 @@ For `fasd`, the set of aliases is:
   `cd` to it
 * `please` – re-run the entire previous command with `sudo` (note: this is
   _not_ just putting `sudo ` in front of the command, but rather the entire
-  command is executed under `sudo` so any pipes and redirections also gain
+  command is executed under `sudo` so any pipes and redirects also gain
   privileges)
+* `clc` – copy the last command to system clipboard
+* `clct` – copy the last command to tmux buffer
+* `plc` – paste command-line from system clipboard (but do not execute it)
+* `plct` – paste command-line from tmux buffer (but do not execute it)
+* `cpwd` – copy the current working directory to system clipboard
+* `cpath` – copy the current path, with symlinks expanded, to system clipboard
+* `gr` – `grep`, excluding `.git`
+* `vi` – `nvim` (if installed)
+* `nvis` – `nvim -S Session.vim` (if installed and the file exists)
 * `psg` – `grep` the output of `ps`
 * `hgrep` – `grep` history
 * `agrep` – `grep` aliases
@@ -289,32 +303,48 @@ For `fasd`, the set of aliases is:
   on the command-line (but do not execute it)
 * `fzk` – use `fzf` to fuzzily search running processes, and pass them (and any
   arguments) to `kill`
-* `vgit` – use `fzf` to fuzzily search modified files in the git repository
-  and open the selected in vim (zsh only, also note that
-  <kbd>Ctrl</kbd>–<kbd>A</kbd> selects all)
-* `gdt` – use `fzf` to fuzzily search modified files in the git repository and
-  open the selected in `git difftool` (zsh only)
-* `gmt` – use `fzf` to fuzzily search unmerged files in the git repository and
-  open the selected in `git mergetool` (zsh only)
-* `gdf` – use `fzf` to fuzzily search modified files in the git repository and
-  press <kbd>Enter</kbd> to view the `git diff` for that file without leaving
-  the list (press <kbd>Ctrl</kbd>–<kbd>C</kbd> to exit)
-* `kp` – alias for `fzk` (kill process)
-* `clc` – copy the last command to system clipboard
-* `clct` – copy the last command to tmux buffer
-* `plc` – paste command-line from system clipboard (but do not execute it)
-* `plct` – paste command-line from tmux buffer (but do not execute it)
-* `cpwd` – copy the current working directory to system clipboard
-* `cpath` – copy the current path, with symlinks expanded, to system clipboard
+
+#### Aliases for Git
+
+* `cdr` – `cd` to the root of the repository
+* `cdrr` – `cd` to the root of the outermost repository (from submodules at any
+  depth)
 * `gs` – `git status`
 * `gsu` – `git submodule update --init --recursive`
 * `gsur` – `git submodule update --remote --recursive`
 * `gls` – `git ls-files --exclude-standard`
 * `glsm` – `git ls-files -m -o --exclude-standard` (modified files)
-* `cdr` – `cd` to the root of the current git repository (if any)
-* `gr` – `grep`, excluding `.git` (but prefer `ag`)
-* `vi` – `nvim` (if installed)
-* `nvis` – `nvim -S Session.vim` (if installed and the file exists)
+
+The following aliases have an interactive, fuzzy-searchable selection which
+requires `fzf`, and most are only for zsh. Where applicable, there
+is an additional binding of <kbd>Ctrl</kbd>–<kbd>A</kbd> to select all. As
+usual, <kbd>Esc</kbd> or <kbd>Ctrl</kbd>-<kbd>C</kbd> leaves the selection
+(e.g., for `gdf` which intentionally doesn't close after selection).
+
+* `gedit` – open a file in `$EDITOR`
+* `gdf` – view the diff of modified files without leaving the selection (press
+  <kbd>Ctrl</kbd>–<kbd>E</kbd> to edit the file in `$EDITOR`, or
+  <kbd>Ctrl</kdb>–<kbd>G</kbd> to open the `git difftool`)
+* `gdfs` – view the diff of staged files without leaving the selection
+* `gadd` – select modified files to stage (`git add`)
+* `gunstage` – select staged files to unstage (`git restore --staged`)
+* `gdiscard` – select modified files to discard changes of (`git restore`)
+* `gdt` – select modified files to open in `git difftool`
+* `gmt` – select unmerged files to open in `git mergetool`
+* `gstash` – view stashes and diff them, there are also keyboard shortcuts to
+  apply/pop (<kbd>Ctrl</kbd>–<kbd>A</kbd>) the stash, and to
+  (<kbd>Ctrl</kbd>–<kbd>B</kbd>) branch the stash
+* `gcheckout` or `gco` – check out a branch or tag
+* `gcheckoutc` or `gcoc` – check out a commit
+* `grebase` – select branch and rebase
+* `gmerge` – select branch and merge
+* `glog` – view individual commits and their logs
+* `gcherry` – cherry-pick an individual commit (this can take a branch as the
+  first argument, other arguments are passed to the `git commit` command)
+* `gfixup` – select a commit to fix-up with a new commit
+* `grevert` – select a commit to revert
+* `fzc` – select one or more commits and print their hashes (e.g., to be used
+  as part of other commands, like: <code>git rebase --onto \`fzc\`<kbd>Tab</kbd></code>)
 
 #### Global Aliases
 

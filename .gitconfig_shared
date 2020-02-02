@@ -14,7 +14,7 @@
 [push]
 	default = simple
 [mergetool "nvimfugitive"]
-	cmd = nvim -f -c \"Gdiff\" \"$MERGED\"
+	cmd = nvim -f -c \"Gvdiffsplit!\" \"$MERGED\"
 [mergetool "nvim"]
 	cmd = nvim -d \"$BASE\" \"$LOCAL\" \"$REMOTE\" \"$MERGED\" -c '$wincmd w' -c 'wincmd J'
 [difftool "nvim"]
