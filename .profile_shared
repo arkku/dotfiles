@@ -17,22 +17,6 @@ export CVS_RSH
 RSYNC_RSH=ssh
 export RSYNC_RSH
 
-# set PATH so it includes user's private bin if it exists
-if [ -d "${HOME}/bin" ]; then
-    PATH="${HOME}/bin:${PATH}"
-    export PATH
-fi
-
-if [ -z "$MANPATH" ]; then
-    MANPATH="/usr/local/man:/usr/local/share/man:/usr/man:/usr/share/man"
-    export MANPATH
-fi
-
-if [ -d "${HOME}/man" ] ; then
-    MANPATH="${HOME}/man:${MANPATH}"
-    export MANPATH
-fi
-
 if [ -z "$TMPDIR" -a -n "$TMP" ]; then
     TMPDIR="$TMP"
     export TMPDIR TMP

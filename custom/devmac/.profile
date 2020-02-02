@@ -38,13 +38,3 @@ for vscpath in "$HOME/" '/'; do
 done
 
 [ -e "$HOME/.profile_private" ] && . "$HOME/.profile_private"
-
-for rvmpath in "$HOME/.rvm" '/usr/local/rvm'; do
-    if [ -s "$rvmpath/scripts/rvm" ]; then
-        source "$rvmpath/scripts/rvm"
-        break
-    fi
-done
-
-# Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
-export PATH="$PATH:$HOME/.rvm/bin"

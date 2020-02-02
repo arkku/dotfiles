@@ -1,6 +1,43 @@
 unset HISTFILE
 export HISTFILE
 
+path_force_head() {
+    [ ! -d "$1" ] && return
+    if [[ ":$PATH:" == *":$1:"* ]]; then
+        tmppath=":$PATH:"
+        tmppath="$1${tmppath/:$1:/:}"
+        tmppath="${tmppath//::/:}"
+        export PATH="${tmppath/%:/}"
+        unset tmppath
+    else
+        export PATH="$1${PATH:+":$PATH"}"
+    fi
+}
+path_force_tail() {
+    [ ! -d "$1" ] && return
+    if [[ ":$PATH:" == *":$1:"* ]]; then
+        tmppath=":$PATH:"
+        tmppath="${tmppath/:$1:/:}$1"
+        tmppath="${tmppath//::/:}"
+        export PATH="${tmppath/#:/}"
+        unset tmppath
+    else
+        export PATH="${PATH:+"$PATH:"}$1"
+    fi
+}
+path_add_head() {
+    if [ -d "$1" ] && [[ ":$PATH:" != *":$1:"* ]]; then
+        export PATH="$1${PATH:+":$PATH"}"
+    fi
+}
+path_add_tail() {
+    if [ -d "$1" ] && [[ ":$PATH:" != *":$1:"* ]]; then
+        export PATH="${PATH:+"$PATH:"}$1"
+    fi
+}
+path_add_head '/usr/local/bin'
+path_add_head "$HOME/bin"
+
 # If running interactively, then:
 if [ -n "$PS1" -a -z "$ENVONLY" ]; then
     preexec_interactive_mode=''
@@ -307,11 +344,8 @@ if [ -n "$PS1" -a -z "$ENVONLY" ]; then
     unset fasd_cache
 
     export PROMPT_COMMAND TITLE_SET_HEAD TITLE_SET_TAIL SHORT_HOSTNAME SHOW_USERNAME
-else
-    echo "$PATH" | grep -qE '(^|:)/usr/local/bin(:|$)' || export PATH="/usr/local/bin:$PATH"
 fi
 
 [ -e "$HOME/.bashrc_private" ] && . "$HOME/.bashrc_private"
 
-# Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
-export PATH="$PATH:$HOME/.rvm/bin"
+path_force_tail "$HOME/.rvm/bin"

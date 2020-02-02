@@ -40,11 +40,3 @@ if [ -d "/ServerRoot/usr/bin" ]; then
 fi
 
 [ -e "$HOME/.profile_private" ] && . "$HOME/.profile_private"
-
-for rvmpath in "$HOME/.rvm" '/usr/local/rvm'; do
-    if [ -s "$rvmpath/scripts/rvm" ]; then
-        export rvmsudo_secure_path=0
-        source "$rvmpath/scripts/rvm"
-        break
-    fi
-done

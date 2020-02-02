@@ -982,11 +982,18 @@ fi
 
 [ -e "$HOME/.zshrc_private" ] && . "$HOME/.zshrc_private"
 
-if [ -d "$HOME/.rvm/bin" ]; then
-    export PATH="$PATH:$HOME/.rvm/bin"
-elif [ -d "/usr/local/rvm/bin" ]; then
-    export PATH="$PATH:/usr/local/rvm/bin"
+if command -v path_force_order >/dev/null 2>&1; then
+    path_force_order '/usr/local/bin' '/usr/bin'
+    path_force_order "$HOME/bin" '/usr/local/bin'
+
+    for rvmdir in "$HOME/.rvm/bin" '/usr/local/rvm/bin'; do
+        if [ -d "$rvmdir" ]; then
+            path_force_tail "$rvmdir"
+            break
+        fi
+    done
 fi
+
 
 # Make path unique
 typeset -aU path
