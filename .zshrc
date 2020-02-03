@@ -292,7 +292,7 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
         if [ -n "$(command -v fd)" ]; then
             fzo() {
                 [ -n "$2" ] || return 1
-                local sels=( "${(@f)$(fd --max-depth "$1" --color=always . "${@:3}" 2>/dev/null | fzf -m --ansi)}" )
+                local sels=( "${(@f)$(fd --max-depth "$1" --color=always . "${@:3}" 2>/dev/null | fzf -m --height=25% --min-height=20 --reverse --ansi)}" )
                 [ -n "$sels" ] && print -z -- "$2 ${sels[@]:q:q}"
             }
 
@@ -300,19 +300,19 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
         elif [ -n "$(command -v rg)" ]; then
             fzo() {
                 [ -n "$2" ] || return 1
-                local sels=( "${(@f)$(rg -l --max-depth "$(( ${1} - 1 ))" -- '' "${@:3}" 2>/dev/null | fzf -m)}" )
+                local sels=( "${(@f)$(rg -l --max-depth "$(( ${1} - 1 ))" -- '' "${@:3}" 2>/dev/null | fzf -m --height=25% --min-height=20 --reverse --ansi)}" )
                 [ -n "$sels" ] && print -z -- "$2 ${sels[@]:q:q}"
             }
         elif [ -n "$(command -v ag)" ]; then
             fzo() {
                 [ -n "$2" ] || return 1
-                local sels=( "${(@f)$(ag --nocolor -l --depth "$(( ${1} - 1 ))" -- '' "${@:3}" 2>/dev/null | fzf -m)}" )
+                local sels=( "${(@f)$(ag --nocolor -l --depth "$(( ${1} - 1 ))" -- '' "${@:3}" 2>/dev/null | fzf -m --height=25% --min-height=20 --reverse --ansi)}" )
                 [ -n "$sels" ] && print -z -- "$2 ${sels[@]:q:q}"
             }
         else
             fzo() {
                 [ -n "$2" ] || return 1
-                local sels=( "${(@f)$(find -H "${3:-.}" "${@:4}" -maxdepth "$1" 2>/dev/null | fzf -m)}" )
+                local sels=( "${(@f)$(find -H "${3:-.}" "${@:4}" -maxdepth "$1" 2>/dev/null | fzf -m --height=25% --min-height=20 --reverse --ansi)}" )
                 [ -n "$sels" ] && print -z -- "$2 ${sels[@]:q:q}"
             }
         fi
@@ -330,7 +330,8 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
 
         # fuzzy-find in history and paste to command-line
         fzh() {
-            print -z -- "$(history 1 | fzf -n 2.. | awk '{ $1=""; sub(/^ */, ""); sub(/ *$/, ""); print }')"
+            local selh="$(history -1 0 | fzf --ansi --reverse --height=50% --min-height=25 -n 2.. | awk '{ sub(/^[ ]*[^ ]*[ ]*/, ""); sub(/[ ]*$/, ""); print }')"
+            [ -n "$selh" ] && print -z -- "${selh:q}"
         }
 
         # kill process selected with fzf
@@ -339,7 +340,7 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
             [[ $EUID = 0 ]] && showall=e
             ps "${showall}xu" \
                 | sed 1d \
-                | eval "fzf ${FZF_DEFAULT_OPTS} -m --header='[kill ${@:-process}]'" \
+                | eval "fzf ${FZF_DEFAULT_OPTS} -m --reverse --header='[kill ${@:-process}]'" \
                 | tee /dev/stderr \
                 | awk '{ print $2 }' \
                 | xargs kill "$@"
@@ -838,7 +839,7 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
                     cmd="$1"
                     shift
                 fi
-                local sel="$(fasd "$fargs" -- "$@" | fzf -1)"
+                local sel="$(fasd "$fargs" -- "$@" | fzf --ansi -1 -0)"
                 [ -z "$sel" ] && return
                 if [ -n "$cmd" ]; then
                     "$cmd" "$sel"

@@ -320,14 +320,15 @@ For `fasd`, the set of aliases is:
 
 The following aliases have an interactive, fuzzy-searchable selection which
 requires `fzf`, and most are only for zsh. Where applicable, there
-is an additional binding of <kbd>Ctrl</kbd>–<kbd>A</kbd> to select all. As
-usual, <kbd>Esc</kbd> or <kbd>Ctrl</kbd>-<kbd>C</kbd> leaves the selection
-(e.g., for `gdf` which intentionally doesn't close after selection).
+is an additional binding of <kbd>Ctrl</kbd>–<kbd>A</kbd> to select
+all. Pressing <kbd>Esc</kbd> leaves the selection (e.g., for `gdf` which
+intentionally doesn't close after selection).
 
 * `gedit` – open a file in `$EDITOR`
-* `gdf` – view the diff of modified files without leaving the selection (press
-  <kbd>Ctrl</kbd>–<kbd>E</kbd> to edit the file in `$EDITOR`, or
-  <kbd>Ctrl</kbd>–<kbd>G</kbd> to open the `git difftool`)
+* `gdf` – view the diff of modified files without leaving the selection, with
+  a live preview of the diff (this supports multiple keyboard shortcuts, shown
+  on the screen, to perform various actions, such as staging/unstaging files,
+  opening them in the editor or difftool, etc.)
 * `gdfs` – view the diff of staged files without leaving the selection
 * `gadd` – select modified files to stage (`git add`)
 * `gunstage` – select staged files to unstage (`git restore --staged`)
@@ -338,8 +339,9 @@ usual, <kbd>Esc</kbd> or <kbd>Ctrl</kbd>-<kbd>C</kbd> leaves the selection
   apply/pop the stash (<kbd>Ctrl</kbd>–<kbd>A</kbd>), and to
   branch the stash (<kbd>Ctrl</kbd>–<kbd>B</kbd>)
 * `gcheckout` or `gco` – check out a branch or tag
-* `gcheckoutc` or `gcoc` – check out a commit
+* `gcheckoutb` or `gcobranch` – check out a branch
 * `gcheckoutt` or `gcotag` – check out a tag
+* `gcheckoutc` or `gcocommit` – check out a commit
 * `grebase` – select branch and rebase
 * `gmerge` – select branch and merge
 * `glog` – view individual commits and their logs
@@ -356,6 +358,12 @@ usual, <kbd>Esc</kbd> or <kbd>Ctrl</kbd>-<kbd>C</kbd> leaves the selection
 * `gcistatus` – select a commit and view its CI status (requires `hub`)
 * `fzc` – select one or more commits and print their hashes (e.g., to be used
   as part of other commands, like: <code>git rebase --onto \`fzc\`<kbd>Tab</kbd></code>)
+* `fzbr` – select a branch and print its name (e.g., to be used as part of
+  other commands)
+* `fzbrr` – select a branch, including remotes, and print its name (e.g., to
+  be used as part of other commands)
+* `fztag` – select a tag and print its name (e.g., to be used as part of other
+  commands)
 
 #### Global Aliases
 

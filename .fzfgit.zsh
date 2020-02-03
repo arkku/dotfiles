@@ -125,12 +125,12 @@ fzfcmd() {
 
 # Git mergetool
 gmt() {
-    fzfcmd 0 git diff-files --name-only --diff-filter=U -z --fzfm --fzf0 --fzf --query="$query" --ddash -- git mergetool -y -- "$@"
+    fzfcmd 0 git diff-files --name-only --relative --diff-filter=U -z --fzfm --fzf0 --fzf --query="$query" --ddash -- git mergetool -y -- "$@"
 }
 
 # Git difftool
 gdt() {
-    fzfcmd 0 git diff-files --name-only --diff-filter=M -z --fzfm --fzf0 --fzfpreview "git diff --color=always {}" --ddash -- git difftool -y -- "$@"
+    fzfcmd 0 git diff-files --name-only --relative --diff-filter=M -z --fzfm --fzf0 --fzfpreview "git diff --color=always {}" --ddash -- git difftool -y -- "$@"
 }
 
 # Git add/stage
@@ -140,12 +140,13 @@ gadd() {
 
 # Git discard changes
 gdiscard() {
-    fzfcmd 0 git diff --name-only -z --fzfm --fzf0 --fzfpreview "git diff --color=always {}" --ddash -- git restore -- "$@"
+    fzfcmd 0 git diff --name-only --relative -z --fzfm --fzf0 --fzfpreview "git diff --color=always {}" --ddash -- git restore -- "$@"
 }
 
 # Git unstage
 gunstage() {
-    fzfcmd 0 git diff --name-only --staged -z --fzfm --fzf0 --fzfpreview "git diff --color=always --staged {}" --ddash -- git restore --staged -- "$@"
+    # TODO: change `git reset HEAD` to `git restore --staged` once common
+    fzfcmd 0 git diff --name-only --relative --staged -z --fzfm --fzf0 --fzfpreview "git diff --color=always --staged {}" --ddash -- git reset HEAD -- "$@"
 }
 
 # Git edit in "$EDITOR"
@@ -159,24 +160,28 @@ gdf() {
     if [ -n "$(command -v bat)" ]; then
         pager='bat --paging=always --style=plain'
     fi
+    local gargs='--no-pager diff --name-only --relative -z --color=always'
     local staged=''
-    if [ "$1" = '--staged' ]; then
-        staged="$1"
+    if [ "$1" = '--staged' -o "$1" = '--cached' ]; then
+        staged=" $1"
         shift
     fi
-    git --no-pager diff --name-only -z ${=staged} | fzf -0 --read0 --no-multi \
+    # TODO: change `git reset HEAD` to `git restore --staged` once common
+    gargs="$gargs$staged"
+    git ${=gargs} | fzf -0 --read0 --no-multi \
         --query="$@" --reverse \
-        --preview="git diff ${=staged} "$@" --color=always -- {}" \
+        --preview="git --no-pager diff --color=always ${staged} -- {} 2>/dev/null" \
         --preview-window='top:50%:wrap' \
-        --bind "enter:execute(git diff ${=staged} --color=always {} | $pager)" \
-        --bind "double-click:execute(git diff ${=staged} --color=always {} | $pager)" \
-        --bind "ctrl-a:execute(git add -- {})+reload(git diff ${=staged} --name-only -z)" \
-        --bind "ctrl-u:execute(git restore --staged -- {})+reload(git diff ${=staged} --name-only -z)" \
-        --bind "ctrl-g:execute(git difftool ${=staged} -y -- {})" \
+        --bind "enter:execute(git diff$staged --color=always {} | $pager)" \
+        --bind "double-click:execute(git diff$staged --color=always {} | $pager)" \
+        --bind "ctrl-a:execute(git add -- {})+reload(git $gargs 2>/dev/null)" \
+        --bind "ctrl-u:execute(git reset HEAD -- {})+reload(git $gargs 2>/dev/null)" \
+        --bind "ctrl-g:execute(git difftool -y$staged -- {})" \
         --bind "ctrl-o:execute(git commit)+abort" \
-        --bind "ctrl-e:execute($EDITOR {})" \
-        --bind "ctrl-r:execute(echo -n)+reload(git diff ${=staged} --name-only -z)" \
-        --header "Esc: Close / ${${staged:+^U: Unstage}:-^A: Add} / ^E Edit / ^G Git difftool / ^R Reload${staged:+ / ^O Commit}"
+        --bind "ctrl-c:execute(echo -n {} | clipcopy)" \
+        --bind "ctrl-e:execute($EDITOR {})+reload(git $gargs 2>/dev/null)" \
+        --bind "ctrl-r:reload(git $gargs 2>/dev/null)+clear-screen" \
+        --header "Esc: Close | ${${staged:+^U: Unstage}:-^A: Add} | ^E: Edit | ^G: Git difftool | ^R: Reload${staged:+ | ^O: Commit} | ^C: Copy"
 }
 
 # Interactive git diff of staged changes
@@ -196,7 +201,7 @@ gstash() {
             --bind "ctrl-a:execute(git stash pop -- {2})+abort" \
             --bind "ctrl-b:execute(git stash branch stash-{1} {1})+abort" \
             --bind "enter:execute(git stash show --color=always -p -- {1} | $pager)" \
-            --header "Esc: Close / Enter: Diff / ^B Branch / ^A Apply/Pop"
+            --header "Esc: Close | Enter: Diff | ^B: Branch | ^A: Apply/Pop"
 }
 
 git-ls-branches() {
@@ -205,7 +210,7 @@ git-ls-branches() {
     [[ "$1" != *'tagsonly'* ]] && git --no-pager branch ${=remotes} \
         --format="%(if)%(HEAD)%(then)%(else)%(if:equals=HEAD)%(refname:strip=3)%(then)%(else)branch%09%(refname:short)%(end)%(end)" \
         | sed '/^$/d'
-    [[ "$1" == *'tags'* ]] && git --no-pager tag | sed 's/^/tag     /'
+    [[ "$1" == *'tags'* ]] && git --no-pager tag --sort -creatordate | sed 's/^/tag     /'
 }
 
 # A helper for various commands that need to pick a branch or tag
@@ -231,7 +236,7 @@ fzfgitbranchcmd() {
     done
     query="${query/# /}"
 
-    git-ls-branches ${=tags} | fzf --ansi -0 --no-sort --no-multi \
+    git-ls-branches ${=tags} | fzf --ansi -0 --no-multi \
             --query="$query" --reverse \
             --preview='echo "+++"; git --no-pager log --color=always --abbrev-commit --pretty=oneline ..{2}; echo "---"; git --no-pager log --color=always --abbrev-commit --pretty=oneline {2}..'\
             --preview-window='top:50%:wrap' \
@@ -250,13 +255,21 @@ gcheckout() {
 # Pick and check out a branch or tag
 alias gco='gcheckout'
 
+# Pick and check out a branch
+gcheckoutb() {
+    fzfgitbranchcmd remotes 'git checkout' 'Checkout' "$@"
+}
+
+# Pick and check out a branch
+alias gcobranch='gcheckoutb'
+
 # Pick and check out a tag
 gcheckoutt() {
     fzfgitbranchcmd tagsonly 'git checkout' 'Checkout' "$@"
 }
 
 # Pick and check out a tag
-alias gcot='gcheckoutt'
+alias gcotag='gcheckoutt'
 
 # Pick a branch and rebase
 grebase() {
@@ -278,12 +291,17 @@ gtagdel() {
     fzfgitbranchcmd tagsonly 'git tag -d' 'REMOVE' "$@"
 }
 
+# A substitution alias for a single branch
+alias fzbr='git-ls-branches "" | fzf --ansi | awk "{ print \$2 }"'
+
+# A substitution alias for a single branch, including remotes
+alias fzbrr='git-ls-branches remotes | fzf --ansi | awk "{ print \$2 }"'
+
+# A substitution alias for a single tag
+alias fztag='git-ls-branches tagsonly | fzf --ansi | awk "{ print \$2 }"'
+
 # A helper for various commands that need to pick a commit
 fzfgitcommitcmd() {
-    local clipcopy='pbcopy'
-    if [ -n "$(command -v clipcopy)" ]; then
-        clipcopy='clipcopy'
-    fi
     local multi='--no-multi'
     [[ "$1" == *'multi'* ]] && multi='--multi'
 
@@ -319,11 +337,11 @@ fzfgitcommitcmd() {
     [ "$branch" = 'HEAD' ] && branch=''
 
     git --no-pager log --color=always -n 1000 --abbrev-commit --pretty="%C(yellow)%h %C(white)%<(19,mtrunc)%an %C(cyan)%<(14,trunc)%ar %C(reset)%s" $branch \
-        | fzf --ansi -0 --no-sort --reverse "$multi" \
+        | fzf --ansi -0 --reverse "$multi" \
             --preview='git --no-pager show --stat --color=always --pretty=fuller {1}'\
             --preview-window='top:50%:wrap' \
             --bind "enter:execute[set -x; $action$cmdargs {+1}]+abort" \
-            --bind "ctrl-c:execute(echo -n {1} | $clipcopy)" \
+            --bind "ctrl-c:execute(echo -n {1} | clipcopy)" \
             --bind "ctrl-g:execute(git --no-pager diff --color=always {1} | $pager)" \
             --bind "ctrl-s:execute(git --no-pager show --color=always --pretty=fuller {1} | $pager)" \
             --header "Esc: Close | Enter: $name | ^S: Show | ^G: Git Diff | ^C: Copy Hash"
@@ -358,7 +376,7 @@ gcheckoutc() {
 }
 
 # Pick a commit to check out
-alias gcoc='gcheckoutc'
+alias gcocommit='gcheckoutc'
 
 # Pick git commits, e.g.: git rebase --onto `fzc`<TAB>
 fzc() {
@@ -378,10 +396,6 @@ if [ -n "$(command -v hub)" ]; then
 
     # A helper for selecting interactively from GitHub issues
     fzhubi() {
-        local clipcopy='pbcopy'
-        if [ -n "$(command -v clipcopy)" ]; then
-            clipcopy='clipcopy'
-        fi
         local action="$1"
         local name="$2"
         shift 2
@@ -414,14 +428,14 @@ if [ -n "$(command -v hub)" ]; then
         [ "$query" = '--' ] && query=''
 
         hub issue -f '%sC%<(6)%I%Creset %t    %Cwhite[%l%Cwhite] %U%n' --color=always "${largs[@]}" \
-            | fzf --ansi -0 --no-sort --reverse --query="$query" \
+            | fzf --ansi -0 --reverse --query="$query" \
                 --nth=..-2 --with-nth=..-2 \
                 --preview='hub issue show --color=always \
                 --format="%sC%<(6)%i %<(6)%S %Ccyan%cr %Creset%l%n%Creset%t%n%Cwhite(Updated: %ur) %Cyellow%Mn %Cwhite%Mt%n%CcyanAuthor: %Creset%<(20)%au %CcyanAssignees: %Creset%as%n%Cblue%U%n%n%Creset%b%n" {1}' \
                 --preview-window='top:50%:wrap' \
                 --bind "enter:execute($action)+abort" \
-                --bind "ctrl-u:execute(echo -n {-1} | $clipcopy)" \
-                --bind "ctrl-c:execute(echo -n {1} | $clipcopy)" \
+                --bind "ctrl-u:execute(echo -n {-1} | clipcopy)" \
+                --bind "ctrl-c:execute(echo -n {1} | clipcopy)" \
                 --bind "ctrl-o:execute(open {-1})" \
                 --bind "ctrl-e:execute(hub issue update --edit {1})+abort" \
                 --header "Esc: Close | Enter: $name | ^E: Edit | ^O: Open | ^C: Copy # | ^U: Copy URL"
@@ -437,12 +451,10 @@ if [ -n "$(command -v hub)" ]; then
         fzhubi 'git commit -m "Closes #"{1} -e' 'Commit' "$@"
     }
 
+    alias fziss='hub issue -f "%sC%<(6)%I%Creset %t    %Cwhite[%l%Cwhite]%n" --color=always -o updated -L 100 | fzf --ansi -0 | awk "{ printf(\"%s\", \$1) }"'
+
     # A helper for selecting interactively from GitHub pull requests
     fzhubpr() {
-        local clipcopy='pbcopy'
-        if [ -n "$(command -v clipcopy)" ]; then
-            clipcopy='clipcopy'
-        fi
         local action="$1"
         local name="$2"
         shift 2
@@ -475,14 +487,14 @@ if [ -n "$(command -v hub)" ]; then
         [ "$query" = '--' ] && query=''
 
         hub pr list -f '%sC%<(6)%I %Creset %t    %Cwhite[%l%Cwhite] %U%n' --color=always "${largs[@]}" \
-            | fzf --ansi -0 --no-sort --reverse --query="$query" \
+            | fzf --ansi -0 --reverse --query="$query" \
                 --nth=..-2 --with-nth=..-2 \
                 --preview='hub pr show --color=always \
                 --format="%sC%<(6)%i %<(6)%S %Ccyan%cr %Creset%l%n%Creset%t%n%Cwhite(Updated: %ur) %Cyellow%Mn %Cwhite%Mt%n%CcyanAuthor: %Creset%<(20)%au %CcyanAssignees: %Creset%as%n%Cblue%U%n%n%Creset%b%n" {1}' \
                 --preview-window='top:50%:wrap' \
                 --bind "enter:execute($action)+abort" \
-                --bind "ctrl-u:execute(echo -n {-1} | $clipcopy)" \
-                --bind "ctrl-c:execute(echo -n {1} | $clipcopy)" \
+                --bind "ctrl-u:execute(echo -n {-1} | clipcopy)" \
+                --bind "ctrl-c:execute(echo -n {1} | clipcopy)" \
                 --bind "ctrl-o:execute(open {-1})" \
                 --bind "ctrl-e:execute(hub pr checkout {1})+abort" \
                 --header "Esc: Close | Enter: $name | ^E: Checkout | ^O: Open | ^C: Copy # | ^U: Copy URL"

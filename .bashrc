@@ -180,7 +180,7 @@ if [ -n "$PS1" -a -z "$ENVONLY" ]; then
                 shift
                 local prog="$1"
                 shift
-                sels=( $(fd "${fd_default[@]}" --max-depth "$depth" --color=always . "$@" | fzf -m -0 --ansi) )
+                sels=( $(fd "${fd_default[@]}" --max-depth "$depth" --color=always . "$@" | fzf -m --height=25% --min-height=20 --reverse -0 --ansi) )
                 [ -n "$sels" ] && "$prog" "${sels[@]}"
             }
         fi
@@ -202,16 +202,16 @@ if [ -n "$PS1" -a -z "$ENVONLY" ]; then
             [[ $EUID = 0 ]] && showall=e
             ps "${showall}xu" \
                 | sed 1d \
-                | eval "fzf ${FZF_DEFAULT_OPTS} -m --header='[kill ${@:-process}]'" \
+                | eval "fzf ${FZF_DEFAULT_OPTS} -m --reverse --header='[kill ${@:-process}]'" \
                 | tee /dev/stderr \
                 | awk '{ print $2 }' \
                 | xargs kill "$@"
         }
 
         if [ -n "$(command -v bat)" ]; then
-            alias gdf='git diff-files --name-only --diff-filter=M -z | fzf --read0 -0 --bind "enter:execute(git diff --color=always {} | bat --paging=always --style=plain)" --bind "double-click:execute(git diff --color=always {} | bat --paging=always --style=plain)"'
+            alias gdf='git diff-files --name-only --diff-filter=M -z | fzf --read0 -0 --reverse --bind "enter:execute(git diff --color=always {} | bat --paging=always --style=plain)" --bind "double-click:execute(git diff --color=always {} | bat --paging=always --style=plain)"'
         else
-            alias gdf='git diff-files --name-only --diff-filter=M -z | fzf --read0 -0 --bind "enter:execute(git diff --color=always {} | less -R)" --bind "double-click:execute(git diff --color=always {} | less -R)"'
+            alias gdf='git diff-files --name-only --diff-filter=M -z | fzf --read0 -0 --reverse --bind "enter:execute(git diff --color=always {} | less -R)" --bind "double-click:execute(git diff --color=always {} | less -R)"'
         fi
     fi
     if [ -n "$SSH_CONNECTION" -o -n "$SUDO_USER" ]; then
@@ -308,7 +308,7 @@ if [ -n "$PS1" -a -z "$ENVONLY" ]; then
                     cmd="$1"
                     shift
                 fi
-                local sel="$(fasd "$fargs" -- "$@" | fzf -1)"
+                local sel="$(fasd "$fargs" -- "$@" | fzf --height=25% --min-height=12 --reverse --ansi -1 -0)"
                 [ -z "$sel" ] && return
                 if [ -n "$cmd" ]; then
                     "$cmd" "$sel"
@@ -330,8 +330,8 @@ if [ -n "$PS1" -a -z "$ENVONLY" ]; then
             }
 
             # fzf select a file or directory from fasd list
-            unalias s 2>/dev/null
-            s() {
+            unalias any 2>/dev/null
+            any() {
                 fasd_fzf -la "$@"
             }
 
@@ -340,6 +340,16 @@ if [ -n "$PS1" -a -z "$ENVONLY" ]; then
             zz() {
                 local dir="$(sd "$@")"
                 [ -n "$dir" ] && cd "$dir"
+            }
+
+            unalias zzz 2>/dev/null
+            zzz() {
+                local file="$(any "$@")"
+                if [ -d "$file" -a ! "$file" = '/' ]; then
+                    cd "$file/.."
+                elif [ -n "$file" ]; then
+                    cd "$(dirname "$file")"
+                fi
             }
         fi
     elif [ -e "$HOME/.z" ]; then
