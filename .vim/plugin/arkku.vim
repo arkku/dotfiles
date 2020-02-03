@@ -478,11 +478,11 @@ if !exists('g:vscode')
     let g:ale_sign_warning = '??'
 
     " Esc to exit terminal (with some delay), Esc Esc to send Esc
-    tnoremap <Esc> <C-\><C-N>
-    tnoremap <Esc><Esc> <Esc>
+    silent! tnoremap <Esc> <C-\><C-N>
+    silent! tnoremap <Esc><Esc> <Esc>
 
     " I use ^T as the tmux prefix, so let's appropriate ^B for the terminal
-    tnoremap <C-B> <C-T>
+    silent! tnoremap <C-B> <C-T>
 
     " Paste from system clipboard in insert mode with C-B (mnemonic: Baste)
     if !has('nvim') && empty(mapcheck('<C-B>', 'i'))
