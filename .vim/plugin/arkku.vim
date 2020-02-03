@@ -163,7 +163,7 @@ set statusline+=%=              " left/right separator
 silent! set statusline+=%<%{SyntaxErrorsStatus()}
 set statusline+=%20(%c,%l/%L\ %P%)  " cursor position
 set statusline+=\ %6(0x%02B%) " hex value of character under cursor
-set laststatus=2                " always show status line
+set laststatus=2              " always show status line
 
 set sessionoptions-=options
 set viewoptions-=options
@@ -183,9 +183,7 @@ silent! set ttyfast
 
 set wildmenu
 set wildmode=longest:full,full
-set wildignore+=*.o,*~,*.bin,*.exe,*.com,*.a,*.so,*.dll
-set wildignore+=*/.git/*,*/.hg/*,*/.svn/*
-set wildignore+=*\\.git\\*,*\\.hg\\*,*\\.svn\\*
+set wildignore+=*.o,*.bin,*.exe,*.com,*.a,*.so,*.dll,*.obj
 silent! set wildoptions=pum
 silent! set wildignorecase
 

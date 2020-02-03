@@ -60,6 +60,10 @@ augroup localcocsettings
     autocmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
 augroup end
 
+let g:ctrlp_custom_ignore = {
+    \ 'dir':  '\v[\/]\.(git|hg|svn|build|bzr)$',
+    \ 'file': '\v\.(exe|so|dll|o|obj|bin|a|[~])$'
+    \ }
 
 let g:ale_c_clang_options = '--std=c11 -Wall -Wextra'
 let g:ale_cpp_clang_options = '--std=c++17 -Wall -Wextra'
