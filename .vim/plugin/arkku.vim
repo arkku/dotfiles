@@ -341,6 +341,8 @@ if !exists('g:vscode')
     noremap! <C-BS> <C-W>
     inoremap <C-Del> <C-O>dw
 
+    nmap <silent> <C-N> :Lexplore<CR>
+
     " \1 to \0 switch buffers (vim-buffet)
     nmap <Leader>1 <Plug>BuffetSwitch(1)
     nmap <Leader>2 <Plug>BuffetSwitch(2)
