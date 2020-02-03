@@ -51,7 +51,7 @@ some years later I have forgotten what I set up. =)
 
 Configuration and colour scheme (imaginatively named `arkku`) for Vim and
 Neovim. The colour scheme supports both light and dark backgrounds, and works in
-an EGA/VGA textmode terminal. Even if the background is mistakenly set as
+an EGA/VGA text-mode terminal. Even if the background is mistakenly set as
 light, the colour scheme is still usable, allowing me to keep light background
 as the default.
 
@@ -60,7 +60,7 @@ Some other general settings done:
 * if `rg` is installed, use it instead of `grep` (also in plugins), otherwise
   use `ag` if that is installed
 * if `fzf` is installed (via `brew`, `apt`, or in `~./fzf`), load its plugin,
-  and use the first of `fd`, `rg` or `ag` that is installd to power the search
+  and use the first of `fd`, `rg` or `ag` that is installed to power the search
 * `g:markdown_fenced_languages` is set to contain a variety of popular
   languages but only if the filetype is known (e.g., `swift` is not currently
   shipped with Vim, so it would cause an error if added without the plugin
@@ -265,7 +265,7 @@ For `fasd`, the set of aliases is:
 * <kbd>Ctrl</kbd>-<kbd>Z</kbd> on an empty prompt in insert mode – if the
   on the first line, execute `fg` (i.e., bring suspended process to
   foreground, allowing to toggle suspend/resume with the same keystroke),
-  otherwise make previous lines of the multiline prompt editable again
+  otherwise make previous lines of the multi-line prompt editable again
 * <kbd>Ctrl</kbd>-<kbd>U</kbd> – kills the whole line (not just backwards from
   the cursor, as is the default)
 * <kbd>Ctrl</kbd>-<kbd>Y</kbd> – yanks (or, more accurately, puts) the
@@ -350,6 +350,8 @@ usual, <kbd>Esc</kbd> or <kbd>Ctrl</kbd>-<kbd>C</kbd> leaves the selection
 * `gbranchdel` – select a branch to remove
 * `gtagdel` – select a tag to remove
 * `gissues` – view GitHub issues interactively (requires `hub`)
+* `gissuecommit` – select an issue and pre-populate "Closes #" into the message
+  of a new commit (requires `hub`)
 * `gpullrs` – view GitHub pull requests interactively (requires `hub`)
 * `gcistatus` – select a commit and view its CI status (requires `hub`)
 * `fzc` – select one or more commits and print their hashes (e.g., to be used
@@ -357,7 +359,7 @@ usual, <kbd>Esc</kbd> or <kbd>Ctrl</kbd>-<kbd>C</kbd> leaves the selection
 
 #### Global Aliases
 
-Global aliases are a `zsh` feature that allows alias expansios anywhere on the
+Global aliases are a `zsh` feature that allows alias expansions anywhere on the
 command-line. All of mine are uppercase and begin with a `:` to make accidental
 use unlikely. The command-line is configured to expand such aliases immediately
 when pressing space, e.g., `cat file :H1 ` will expand the `:H1` to `| head -1`
@@ -405,7 +407,7 @@ Also note that coc has various extensions that it can install by itself, e.g.:
 ### Clipboard
 
 The scripts `clipcopy` and `clippaste` copy and paste to/from the system
-clipboard (trying to autodetect macOS, X11, etc). They fall back to the tmux
+clipboard (trying to auto-detect macOS, X11, etc.). They fall back to the tmux
 buffer if no known system clipboard is available.
 
 ### tmux

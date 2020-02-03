@@ -420,15 +420,21 @@ if [ -n "$(command -v hub)" ]; then
                 --format="%sC%<(6)%i %<(6)%S %Ccyan%cr %Creset%l%n%Creset%t%n%Cwhite(Updated: %ur) %Cyellow%Mn %Cwhite%Mt%n%CcyanAuthor: %Creset%<(20)%au %CcyanAssignees: %Creset%as%n%Cblue%U%n%n%Creset%b%n" {1}' \
                 --preview-window='top:50%:wrap' \
                 --bind "enter:execute($action)+abort" \
-                --bind "ctrl-c:execute(echo -n {-1} | $clipcopy)" \
+                --bind "ctrl-u:execute(echo -n {-1} | $clipcopy)" \
+                --bind "ctrl-c:execute(echo -n {1} | $clipcopy)" \
                 --bind "ctrl-o:execute(open {-1})" \
                 --bind "ctrl-e:execute(hub issue update --edit {1})+abort" \
-                --header "Esc: Close | Enter: $name | ^E: Edit | ^O: Open | ^C: Copy URL"
+                --header "Esc: Close | Enter: $name | ^E: Edit | ^O: Open | ^C: Copy # | ^U: Copy URL"
     }
 
     # View Github issues interactively
     gissues() {
         fzhubi 'hub issue show --color=always {1}' 'Show' "$@"
+    }
+
+    # View Github issues interactively and commit to close the selected one
+    gissuecommit() {
+        fzhubi 'git commit -m "Closes #"{1} -e' 'Commit' "$@"
     }
 
     # A helper for selecting interactively from GitHub pull requests
@@ -475,10 +481,11 @@ if [ -n "$(command -v hub)" ]; then
                 --format="%sC%<(6)%i %<(6)%S %Ccyan%cr %Creset%l%n%Creset%t%n%Cwhite(Updated: %ur) %Cyellow%Mn %Cwhite%Mt%n%CcyanAuthor: %Creset%<(20)%au %CcyanAssignees: %Creset%as%n%Cblue%U%n%n%Creset%b%n" {1}' \
                 --preview-window='top:50%:wrap' \
                 --bind "enter:execute($action)+abort" \
-                --bind "ctrl-c:execute(echo -n {-1} | $clipcopy)" \
+                --bind "ctrl-u:execute(echo -n {-1} | $clipcopy)" \
+                --bind "ctrl-c:execute(echo -n {1} | $clipcopy)" \
                 --bind "ctrl-o:execute(open {-1})" \
                 --bind "ctrl-e:execute(hub pr checkout {1})+abort" \
-                --header "Esc: Close | Enter: $name | ^E: Checkout | ^O: Open | ^C: Copy URL"
+                --header "Esc: Close | Enter: $name | ^E: Checkout | ^O: Open | ^C: Copy # | ^U: Copy URL"
     }
 
     # View Github pull requests interactively
