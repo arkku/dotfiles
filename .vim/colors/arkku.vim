@@ -30,18 +30,18 @@ hi Conceal term=underline cterm=none ctermfg=gray gui=none guifg=#cccccc
 " Syntax highlighting
 hi clear SpecialComment
 hi Comment term=underline cterm=none ctermfg=gray gui=none guifg=#cccccc
-hi SpecialComment term=underline cterm=none ctermfg=darkcyan gui=none guifg=#99cccc
+hi SpecialComment term=underline cterm=none ctermfg=darkcyan gui=none guifg=#669999
 
 hi Constant term=none cterm=none ctermfg=blue gui=none guifg=#0066cc
 hi Boolean term=none cterm=none ctermfg=blue gui=none guifg=#0066cc
-hi Number term=none cterm=none ctermfg=blue gui=none guifg=#0099aa
-hi Float term=none cterm=none ctermfg=blue gui=none guifg=#0099aa
+hi Number term=none cterm=none ctermfg=blue gui=none guifg=#006699
+hi Float term=none cterm=none ctermfg=blue gui=none guifg=#006699
 hi Character term=none cterm=none ctermfg=blue gui=none guifg=#0041a3
 hi String term=none cterm=none ctermfg=brown gui=none guifg=#884466
 
 hi Identifier term=none cterm=none ctermfg=darkblue gui=none guifg=#003366
 hi clear Function
-hi Function term=none cterm=none gui=none guifg=#000000
+hi Function term=none cterm=none gui=none guifg=#26474B
 
 hi clear Conditional
 hi clear Repeat
@@ -62,8 +62,12 @@ hi Macro term=none cterm=bold ctermfg=darkgreen gui=none guifg=#006633
 hi clear Structure
 hi clear Typedef
 hi clear StorageClass
+hi Structure term=none cterm=bold gui=bold guifg=#000000
+hi Typedef term=none cterm=bold gui=bold guifg=#3F6E74
+hi StorageClass term=none cterm=bold gui=bold guifg=#000000
 hi clear Type
-hi Type term=none cterm=bold gui=bold guifg=#000000
+"hi Type term=none cterm=bold gui=bold guifg=#48286D
+hi Type term=none cterm=bold gui=bold guifg=#4B3366
 
 hi clear SpecialChar
 hi clear Delimiter
