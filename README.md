@@ -30,12 +30,13 @@ This is a checklist for me when I set up a new machine.
     - [Auto Dark Mode](https://github.com/LinusU/vscode-auto-dark-mode)
     - extensions for C, Swift, Ruby, Awk, zsh, Assembler, Jekyll, Liquid, etc.
 * [zsh-syntax-highlighting](https://github.com/zsh-users/zsh-syntax-highlighting)
-* [rvm](https://rvm.io) (remember `readline`!)
-* [ripgrep](https://github.com/BurntSushi/ripgrep)
-* [fd](https://github.com/sharkdp/fd)
+* [hub](https://hub.github.com)
 * [fzf](https://github.com/junegunn/fzf)
 * [fasd](https://github.com/clvv/fasd)
+* [ripgrep](https://github.com/BurntSushi/ripgrep)
+* [fd](https://github.com/sharkdp/fd)
 * [bat](https://github.com/sharkdp/bat)
+* [rvm](https://rvm.io) (remember `readline`!)
 * [SF Mono font](file:///Applications/Utilities/Terminal.app/Contents/Resources/Fonts/)
 * `~/.ssh` (keys, permissions, authorized keys, include shared config)
 * `~/.gitconfig` (account, signing, editor, merge tool, shared config)
@@ -237,12 +238,14 @@ For `fasd`, the set of aliases is:
 * `z dir` – jump from anywhere to directory matching the partial name `dir`
 * `zz dir` – as `z`, but interactively select the directory if there are
   multiple matches
+* `zzz file` – interactively select a file or directory, and jump to the
+  directory _containing_ it (even if it is a directory in itself)
 * `d dir` – print the directory matching the partial name `dir`
 * `sd dir` – as above, but interactively disambiguate
 * `f file` – print the file matching the partial name `file`
 * `sf dir` – as above, but interactively disambiguate
 * `a any` – print the directory or file matching the partial name `any`
-* `sa any` – print the directory or file matching the partial name `any`
+* `any any` – print the directory or file matching the partial name `any`
 * `v file` – edit the file in vi
 * `vv file` – as above, but interactively disambiguate
 
@@ -346,6 +349,9 @@ usual, <kbd>Esc</kbd> or <kbd>Ctrl</kbd>-<kbd>C</kbd> leaves the selection
 * `grevert` – select a commit to revert
 * `gbranchdel` – select a branch to remove
 * `gtagdel` – select a tag to remove
+* `gissues` – view GitHub issues interactively (requires `hub`)
+* `gpullrs` – view GitHub pull requests interactively (requires `hub`)
+* `gcistatus` – select a commit and view its CI status (requires `hub`)
 * `fzc` – select one or more commits and print their hashes (e.g., to be used
   as part of other commands, like: <code>git rebase --onto \`fzc\`<kbd>Tab</kbd></code>)
 

@@ -860,8 +860,8 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
             }
 
             # fzf select a file or directory from fasd list
-            unalias s 2>/dev/null
-            s() {
+            unalias any 2>/dev/null
+            any() {
                 fasd_fzf -la "$@"
             }
 
@@ -870,6 +870,17 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
             zz() {
                 local dir="$(sd "$@")"
                 [ -n "$dir" ] && cd "$dir"
+            }
+
+            # replace the fasd interactive selection with fzf
+            unalias zzz 2>/dev/null
+            zzz() {
+                local file="$(any "$@")"
+                if [ -d "$file" -a ! "$file" = '/' ]; then
+                    cd "$file/.."
+                elif [ -n "$file" ]; then
+                    cd "$(dirname "$file")"
+                fi
             }
         fi
     elif [ -e "$HOME/.z" ]; then

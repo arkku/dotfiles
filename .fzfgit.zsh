@@ -236,6 +236,7 @@ fzfgitbranchcmd() {
             --preview='echo "+++"; git --no-pager log --color=always --abbrev-commit --pretty=oneline ..{2}; echo "---"; git --no-pager log --color=always --abbrev-commit --pretty=oneline {2}..'\
             --preview-window='top:50%:wrap' \
             --bind "enter:execute[set -x; $action$cmdargs {2}]+abort" \
+            --bind 'ctrl-o:execute(hub compare $(git rev-parse --abbrev-ref HEAD)...{2})' \
             --bind "ctrl-g:execute(git --no-pager diff --color=always ..{2} | $pager)" \
             --bind "ctrl-a:execute(git --no-pager diff --color=always ...{2} | $pager)" \
             --header "Esc: Close | Enter: $name | ^G: Git Diff | ^A: Ancestor Diff"
@@ -276,7 +277,6 @@ gbranchdel() {
 gtagdel() {
     fzfgitbranchcmd tagsonly 'git tag -d' 'REMOVE' "$@"
 }
-
 
 # A helper for various commands that need to pick a commit
 fzfgitcommitcmd() {
@@ -368,4 +368,119 @@ fzc() {
             --preview-window='top:50%:wrap' \
             --header "Esc: Close | Tab: Toggle Selection | Enter: Accept" \
             | awk '{ print $1 }'
+}
+
+[ -z "$(command -v hub)" ] && exit 0
+
+# Pick a commit to check out
+gcistatus() {
+    fzfgitcommitcmd '' 'hub ci-status --color=always' 'CI Status' -- "$@"
+}
+
+# A helper for selecting interactively from GitHub issues
+fzhubi() {
+    local clipcopy='pbcopy'
+    if [ -n "$(command -v clipcopy)" ]; then
+        clipcopy='clipcopy'
+    fi
+    local action="$1"
+    local name="$2"
+    shift 2
+    local query=''
+    local largs=( '-o' 'updated' )
+    while [ $# -ge 1 ]; do
+        local arg="$1"
+        shift
+        case "$arg"; in
+            (--)
+                if [ -z "$query" -a -z "$largs" ]; then
+                    query='--'
+                else
+                    largs+=( "$arg" )
+                fi
+                ;;
+            (-*)
+                largs+=( "$arg" )
+                ;;
+            (*)
+                if [ -z "$query" -a -z "$largs" ]; then
+                    query="$arg"
+                else
+                    largs+=( "$arg" )
+                fi
+                ;;
+        esac
+    done
+    [ "$query" = '--' ] && query=''
+
+    hub issue -f '%sC%<(6)%I%Creset %t    %l %Cwhite%U%n' --color=always "${largs[@]}" \
+        | fzf --ansi -0 --no-sort --reverse --query="$query" \
+            --nth=..-2 --with-nth=..-2 \
+            --preview='hub issue show --color=always \
+            --format="%sC%<(6)%i %<(6)%S %Ccyan%cr %Creset%l%n%Creset%t%n%Cwhite(Updated: %ur) %Cyellow%Mn %Cwhite%Mt%n%CcyanAuthor: %Creset%<(20)%au %CcyanAssignees: %Creset%as%n%Cblue%U%n%n%Creset%b%n" {1}' \
+            --preview-window='top:50%:wrap' \
+            --bind "enter:execute($action)+abort" \
+            --bind "ctrl-c:execute(echo -n {-1} | $clipcopy)" \
+            --bind "ctrl-o:execute(open {-1})" \
+            --bind "ctrl-e:execute(hub issue update --edit {1})+abort" \
+            --header "Esc: Close | Enter: $name | ^E: Edit | ^O: Open | ^C: Copy URL"
+}
+
+# View Github issues interactively
+gissues() {
+    fzhubi 'hub issue show --color=always {1}' 'Show' -- "$@"
+}
+
+# A helper for selecting interactively from GitHub pull requests
+fzhubpr() {
+    local clipcopy='pbcopy'
+    if [ -n "$(command -v clipcopy)" ]; then
+        clipcopy='clipcopy'
+    fi
+    local action="$1"
+    local name="$2"
+    shift 2
+    local query=''
+    local largs=( '-o' 'updated' )
+    while [ $# -ge 1 ]; do
+        local arg="$1"
+        shift
+        case "$arg"; in
+            (--)
+                if [ -z "$query" -a -z "$largs" ]; then
+                    query='--'
+                else
+                    largs+=( "$arg" )
+                fi
+                ;;
+            (-*)
+                largs+=( "$arg" )
+                ;;
+            (*)
+                if [ -z "$query" -a -z "$largs" ]; then
+                    query="$arg"
+                else
+                    largs+=( "$arg" )
+                fi
+                ;;
+        esac
+    done
+    [ "$query" = '--' ] && query=''
+
+    hub pr list -f '%sC%<(6)%I %Creset %t    %l %Cwhite%U%n' --color=always "${largs[@]}" \
+        | fzf --ansi -0 --no-sort --reverse --query="$query" \
+            --nth=..-2 --with-nth=..-2 \
+            --preview='hub pr show --color=always \
+            --format="%sC%<(6)%i %<(6)%S %Ccyan%cr %Creset%l%n%Creset%t%n%Cwhite(Updated: %ur) %Cyellow%Mn %Cwhite%Mt%n%CcyanAuthor: %Creset%<(20)%au %CcyanAssignees: %Creset%as%n%Cblue%U%n%n%Creset%b%n" {1}' \
+            --preview-window='top:50%:wrap' \
+            --bind "enter:execute($action)+abort" \
+            --bind "ctrl-c:execute(echo -n {-1} | $clipcopy)" \
+            --bind "ctrl-o:execute(open {-1})" \
+            --bind "ctrl-e:execute(hub pr checkout {1})+abort" \
+            --header "Esc: Close | Enter: $name | ^E: Checkout | ^O: Open | ^C: Copy URL"
+}
+
+# View Github pull requests interactively
+gpullrs() {
+    fzhubpr 'hub pr show --color=always {1}' 'Show' -- "$@"
 }
