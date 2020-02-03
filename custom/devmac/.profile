@@ -32,9 +32,9 @@ fi
 
 . "$HOME/.profile_shared"
 
-if [ -n "$PS1" -a -z "$ENVONLY" -a -t 0 ]; then
-    tabs -4
-fi
+#if [ -n "$PS1" -a -z "$ENVONLY" -a -t 0 ]; then
+#    tabs -4
+#fi
 
 if [ -d "/Library/Developer/Toolchains/swift-latest.xctoolchain/usr/bin" ]; then
     export PATH="$PATH:/Library/Developer/Toolchains/swift-latest.xctoolchain/usr/bin"
