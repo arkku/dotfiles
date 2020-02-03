@@ -157,8 +157,10 @@ gite() {
 # Interactive git diff with preview (^E to edit, ^G for git difftool, ^A to add)
 gdf() {
     local pager='less -R'
-    if [ -n "$(command -v bat)" ]; then
-        pager='bat --paging=always --style=plain'
+    local color='always'
+    if [ -n "$(command -v viless)" ]; then
+        pager='viless -c "set ft=diff"'
+        color=never
     fi
     local gargs='--no-pager diff --name-only --relative -z --color=always'
     local staged=''
@@ -167,17 +169,18 @@ gdf() {
         shift
     fi
     # TODO: change `git reset HEAD` to `git restore --staged` once common
+    local diffcmd="reset; git diff$staged --color=$color {} | $pager"
     gargs="$gargs$staged"
     git ${=gargs} | fzf -0 --read0 --no-multi \
         --query="$@" --reverse \
         --preview="git --no-pager diff --color=always ${staged} -- {} 2>/dev/null" \
         --preview-window='top:50%:wrap' \
-        --bind "enter:execute(git diff$staged --color=always {} | $pager)" \
-        --bind "double-click:execute(git diff$staged --color=always {} | $pager)" \
-        --bind "ctrl-a:execute(git add -- {})+reload(git $gargs 2>/dev/null)" \
-        --bind "ctrl-u:execute(git reset HEAD -- {})+reload(git $gargs 2>/dev/null)" \
+        --bind "enter:execute[$diffcmd]" \
+        --bind "double-click:execute[$diffcmd]" \
+        --bind "ctrl-a:execute(set -x; git add -- {})+reload(git $gargs 2>/dev/null)" \
+        --bind "ctrl-u:execute(set -x; git reset HEAD -- {})+reload(git $gargs 2>/dev/null)" \
         --bind "ctrl-g:execute(git difftool -y$staged -- {})" \
-        --bind "ctrl-o:execute(git commit)+abort" \
+        --bind "ctrl-o:execute(set -x; git commit)+abort" \
         --bind "ctrl-c:execute(echo -n {} | clipcopy)" \
         --bind "ctrl-e:execute($EDITOR {})+reload(git $gargs 2>/dev/null)" \
         --bind "ctrl-r:reload(git $gargs 2>/dev/null)+clear-screen" \
@@ -189,21 +192,26 @@ alias gdfs='gdf --staged'
 
 # Interactive git stash viewing and manipulation
 gstash() {
-    local pager='less -R'
-    if [ -n "$(command -v bat)" ]; then
-        pager='bat --paging=always --style=plain'
-    fi
-    local gitargs=( --no-pager stash list --pretty='%C(yellow)%h %C(white)%<(15)%gD %C(reset)%gs' --color=always )
-    git ${gitargs[@]} | fzf --ansi -0 --no-sort --no-multi \
+    git --no-pager stash list \
+        --pretty='%C(yellow)%h %C(white)%<(15)%gD %C(reset)%gs' \
+        --color=always \
+        | fzf --ansi -0 --no-sort --no-multi --print0 \
             --query="$@" --reverse \
-            --preview='git stash show --color=always --stat -- {1}; echo; git stash list --pretty=short --color=always' \
+            --preview='git --no-pager stash show --color=always --stat -- {1}; echo; git --no-pager stash show --color=always -p {1}' \
             --preview-window='top:50%:wrap' \
-            --bind "ctrl-a:execute(git stash pop -- {2})+abort" \
-            --bind "ctrl-b:execute(git stash branch stash-{1} {1})+abort" \
-            --bind "enter:execute(git stash show --color=always -p -- {1} | $pager)" \
-            --header "Esc: Close | Enter: Diff | ^B: Branch | ^A: Apply/Pop"
+            --bind "ctrl-a:execute(set -x; git stash pop -- {2})+abort" \
+            --bind "ctrl-b:execute(set -x; git stash branch stash-{1} {1})+abort" \
+            --bind "ctrl-x:execute(set -x; git stash drop -- {2})+abort" \
+            --header "Esc: Close | Enter: Diff | ^A: Apply/Pop | ^B: Branch | ^X: DROP" \
+            | drop_n_fields -1 \
+            | xargs -0 git stash show --color=always -p 
 }
 
+# List branches and/or tags
+# The first argument may contain the following substrings:
+#   tags        include tags
+#   tagsonly    nothing but tags
+#   remote      include remote branches
 git-ls-branches() {
     local remotes=''
     [[ "$1" == *'remote'* ]] && remotes='--all'
@@ -220,6 +228,11 @@ fzfgitbranchcmd() {
     local name="$3"
     shift 3
     local pager='less -R'
+    local color='always'
+    if [ -n "$(command -v viless)" ]; then
+        pager='viless -c "set ft=diff"'
+        color=never
+    fi
     local query=''
     local cmdargs=''
     while [ $# -ge 1 ]; do
@@ -241,9 +254,10 @@ fzfgitbranchcmd() {
             --preview='echo "+++"; git --no-pager log --color=always --abbrev-commit --pretty=oneline ..{2}; echo "---"; git --no-pager log --color=always --abbrev-commit --pretty=oneline {2}..'\
             --preview-window='top:50%:wrap' \
             --bind "enter:execute[set -x; $action$cmdargs {2}]+abort" \
+            --bind "double-click:execute[set -x; $action$cmdargs {2}]+abort" \
             --bind 'ctrl-o:execute(hub compare $(git rev-parse --abbrev-ref HEAD)...{2})' \
-            --bind "ctrl-g:execute(git --no-pager diff --color=always ..{2} | $pager)" \
-            --bind "ctrl-a:execute(git --no-pager diff --color=always ...{2} | $pager)" \
+            --bind "ctrl-g:execute(git --no-pager diff --color=$color ..{2} | $pager)" \
+            --bind "ctrl-a:execute(git --no-pager diff --color=$color ...{2} | $pager)" \
             --header "Esc: Close | Enter: $name | ^G: Git Diff | ^A: Ancestor Diff"
 }
 
@@ -301,6 +315,8 @@ alias fzbrr='git-ls-branches remotes | fzf --ansi | awk "{ print \$2 }"'
 alias fztag='git-ls-branches tagsonly | fzf --ansi | awk "{ print \$2 }"'
 
 # A helper for various commands that need to pick a commit
+#
+# Usage: $1
 fzfgitcommitcmd() {
     local multi='--no-multi'
     [[ "$1" == *'multi'* ]] && multi='--multi'
@@ -309,6 +325,11 @@ fzfgitcommitcmd() {
     local name="$3"
     shift 3
     local pager='less -R'
+    local color='always'
+    if [ -n "$(command -v viless)" ]; then
+        pager='viless -c "set ft=diff"'
+        color=never
+    fi
     local branch=''
     local cmdargs=''
     while [ $# -ge 1 ]; do
@@ -341,9 +362,10 @@ fzfgitcommitcmd() {
             --preview='git --no-pager show --stat --color=always --pretty=fuller {1}'\
             --preview-window='top:50%:wrap' \
             --bind "enter:execute[set -x; $action$cmdargs {+1}]+abort" \
+            --bind "double-click:execute[set -x; $action$cmdargs {+1}]+abort" \
             --bind "ctrl-c:execute(echo -n {1} | clipcopy)" \
-            --bind "ctrl-g:execute(git --no-pager diff --color=always {1} | $pager)" \
-            --bind "ctrl-s:execute(git --no-pager show --color=always --pretty=fuller {1} | $pager)" \
+            --bind "ctrl-g:execute(git --no-pager diff --color=$color {1} | $pager)" \
+            --bind "ctrl-s:execute(git --no-pager show --color=$color --pretty=fuller {1} | $pager)" \
             --header "Esc: Close | Enter: $name | ^S: Show | ^G: Git Diff | ^C: Copy Hash"
 }
 
@@ -434,6 +456,7 @@ if [ -n "$(command -v hub)" ]; then
                 --format="%sC%<(6)%i %<(6)%S %Ccyan%cr %Creset%l%n%Creset%t%n%Cwhite(Updated: %ur) %Cyellow%Mn %Cwhite%Mt%n%CcyanAuthor: %Creset%<(20)%au %CcyanAssignees: %Creset%as%n%Cblue%U%n%n%Creset%b%n" {1}' \
                 --preview-window='top:50%:wrap' \
                 --bind "enter:execute($action)+abort" \
+                --bind "double-click:execute($action)+abort" \
                 --bind "ctrl-u:execute(echo -n {-1} | clipcopy)" \
                 --bind "ctrl-c:execute(echo -n {1} | clipcopy)" \
                 --bind "ctrl-o:execute(open {-1})" \
@@ -493,6 +516,7 @@ if [ -n "$(command -v hub)" ]; then
                 --format="%sC%<(6)%i %<(6)%S %Ccyan%cr %Creset%l%n%Creset%t%n%Cwhite(Updated: %ur) %Cyellow%Mn %Cwhite%Mt%n%CcyanAuthor: %Creset%<(20)%au %CcyanAssignees: %Creset%as%n%Cblue%U%n%n%Creset%b%n" {1}' \
                 --preview-window='top:50%:wrap' \
                 --bind "enter:execute($action)+abort" \
+                --bind "double-click:execute($action)+abort" \
                 --bind "ctrl-u:execute(echo -n {-1} | clipcopy)" \
                 --bind "ctrl-c:execute(echo -n {1} | clipcopy)" \
                 --bind "ctrl-o:execute(open {-1})" \

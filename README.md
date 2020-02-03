@@ -335,7 +335,7 @@ intentionally doesn't close after selection).
 * `gdiscard` – select modified files to discard changes of (`git restore`)
 * `gdt` – select modified files to open in `git difftool`
 * `gmt` – select unmerged files to open in `git mergetool`
-* `gstash` – view stashes and diff them, there are also keyboard shortcuts to
+* `gstash` – view stashes and diff them; there are also keyboard shortcuts to
   apply/pop the stash (<kbd>Ctrl</kbd>–<kbd>A</kbd>), and to
   branch the stash (<kbd>Ctrl</kbd>–<kbd>B</kbd>)
 * `gcheckout` or `gco` – check out a branch or tag
