@@ -413,7 +413,7 @@ if [ -n "$(command -v hub)" ]; then
         done
         [ "$query" = '--' ] && query=''
 
-        hub issue -f '%sC%<(6)%I%Creset %t    %l %Cwhite%U%n' --color=always "${largs[@]}" \
+        hub issue -f '%sC%<(6)%I%Creset %t    %Cwhite[%l%Cwhite] %U%n' --color=always "${largs[@]}" \
             | fzf --ansi -0 --no-sort --reverse --query="$query" \
                 --nth=..-2 --with-nth=..-2 \
                 --preview='hub issue show --color=always \
@@ -474,7 +474,7 @@ if [ -n "$(command -v hub)" ]; then
         done
         [ "$query" = '--' ] && query=''
 
-        hub pr list -f '%sC%<(6)%I %Creset %t    %l %Cwhite%U%n' --color=always "${largs[@]}" \
+        hub pr list -f '%sC%<(6)%I %Creset %t    %Cwhite[%l%Cwhite] %U%n' --color=always "${largs[@]}" \
             | fzf --ansi -0 --no-sort --reverse --query="$query" \
                 --nth=..-2 --with-nth=..-2 \
                 --preview='hub pr show --color=always \
