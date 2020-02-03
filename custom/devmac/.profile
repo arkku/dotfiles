@@ -7,6 +7,8 @@ export LC_MONETARY=fi_FI.UTF-8
 export LC_TELEPHONE=fi_FI.UTF-8
 export LC_ADDRESS=fi_FI.UTF-8
 export LC_MEASUREMENT=fi_FI.UTF-8
+#export LC_COLLATE=C
+export LESSCHARSET=utf-8
 
 export MOSH_TITLE_NOPREFIX=1
 
@@ -17,9 +19,16 @@ export CLICOLOR=1
 unset MAILCHECK
 export MAILCHECK
 
+export NVIM_TUI_ENABLE_TRUE_COLOR=0
+
 if [ -n "$PS1" ]; then
     export GPG_TTY=`tty`
 fi
+
+[ -d "$HOME/.npm-packages" ] && export NPM_PACKAGES="$HOME/.npm-packages"
+[ -d "$HOME/go" ] && export GOPATH="$HOME/go"
+[ -d "$HOME/google-cloud-sdk" ] && export GCLOUD="$HOME/google-cloud-sdk"
+[ -d "$GCLOUD/bin" ] && export PATH="$PATH:$GCLOUD/bin"
 
 . "$HOME/.profile_shared"
 

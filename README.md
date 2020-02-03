@@ -37,7 +37,7 @@ This is a checklist for me when I set up a new machine.
 * [fd](https://github.com/sharkdp/fd)
 * [bat](https://github.com/sharkdp/bat)
 * [rvm](https://rvm.io) (remember `readline`!)
-* [SF Mono font](file:///Applications/Utilities/Terminal.app/Contents/Resources/Fonts/)
+* [SF Mono font](file:///System/Applications/Utilities/Terminal.app/Contents/Resources/Fonts/)
 * `~/.ssh` (keys, permissions, authorized keys, include shared config)
 * `~/.gitconfig` (account, signing, editor, merge tool, shared config)
 * `~/.profile` (source `~/.profile_shared`)
