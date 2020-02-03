@@ -14,6 +14,9 @@ set belloff=all
 set backspace=indent,eol,start
 set nostartofline       " Try to stay in the same column
 
+silent! set diffopt+=vertical
+"silent! set diffopt+=indent-heuristic
+
 set modelines=0
 set autoindent          " always set autoindenting on
 set viminfo='20,\"100   " read/write a .viminfo file

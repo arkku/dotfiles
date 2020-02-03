@@ -14,8 +14,14 @@
 [push]
 	default = simple
 [mergetool "nvimfugitive"]
-	cmd = nvim -f -c \"Gvdiffsplit!\" \"$MERGED\"
+	cmd = nvim -f -c \"Gdiffsplit!\" \"$MERGED\"
 [mergetool "nvim"]
 	cmd = nvim -d \"$BASE\" \"$LOCAL\" \"$REMOTE\" \"$MERGED\" -c '$wincmd w' -c 'wincmd J'
+[mergetool "nvimselect"]
+	cmd = [[ "$REPO" == *' '* ]] && nvim -d \"$BASE\" \"$LOCAL\" \"$REMOTE\" \"$MERGED\" -c '$wincmd w' -c 'wincmd J' || nvim -f -c \"Gdiffsplit!\" \"$MERGED\"
 [difftool "nvim"]
 	cmd = nvim -d \"$REMOTE\" \"$LOCAL\"
+[difftool "nvimfugitive"]
+	cmd = nvim -f -c "Gdiffsplit" \"$BASE\"
+[difftool "nvimselect"]
+	cmd = [[ "$REPO" == *' '* ]] && nvim -d \"$REMOTE\" \"$LOCAL\" || nvim -f -c "Gdiffsplit" \"$BASE\"

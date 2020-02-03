@@ -387,13 +387,14 @@ fzhubi() {
     local name="$2"
     shift 2
     local query=''
-    local largs=( '-o' 'updated' )
+    local largs=( '-o' 'updated' '-L' '1000' )
+    local linit=${#largs}
     while [ $# -ge 1 ]; do
         local arg="$1"
         shift
         case "$arg"; in
             (--)
-                if [ -z "$query" -a -z "$largs" ]; then
+                if [ -z "$query" ]; then
                     query='--'
                 else
                     largs+=( "$arg" )
@@ -403,7 +404,7 @@ fzhubi() {
                 largs+=( "$arg" )
                 ;;
             (*)
-                if [ -z "$query" -a -z "$largs" ]; then
+                if [ -z "$query" -a ${#largs} -eq $linit ]; then
                     query="$arg"
                 else
                     largs+=( "$arg" )
@@ -428,7 +429,7 @@ fzhubi() {
 
 # View Github issues interactively
 gissues() {
-    fzhubi 'hub issue show --color=always {1}' 'Show' -- "$@"
+    fzhubi 'hub issue show --color=always {1}' 'Show' "$@"
 }
 
 # A helper for selecting interactively from GitHub pull requests
@@ -441,13 +442,14 @@ fzhubpr() {
     local name="$2"
     shift 2
     local query=''
-    local largs=( '-o' 'updated' )
+    local largs=( '-o' 'updated' '-L' '500' )
+    local linit=${#largs}
     while [ $# -ge 1 ]; do
         local arg="$1"
         shift
         case "$arg"; in
             (--)
-                if [ -z "$query" -a -z "$largs" ]; then
+                if [ -z "$query" ]; then
                     query='--'
                 else
                     largs+=( "$arg" )
@@ -457,7 +459,7 @@ fzhubpr() {
                 largs+=( "$arg" )
                 ;;
             (*)
-                if [ -z "$query" -a -z "$largs" ]; then
+                if [ -z "$query" -a ${#largs} -eq $linit ]; then
                     query="$arg"
                 else
                     largs+=( "$arg" )
@@ -482,5 +484,5 @@ fzhubpr() {
 
 # View Github pull requests interactively
 gpullrs() {
-    fzhubpr 'hub pr show --color=always {1}' 'Show' -- "$@"
+    fzhubpr 'hub pr show --color=always {1}' 'Show' "$@"
 }
