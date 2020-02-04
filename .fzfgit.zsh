@@ -257,7 +257,10 @@ alias gstaged='gdf --staged'
 
 # Interactive git diff commit
 gcommit() {
-    local pager='less -R'
+    local viewer='cat'
+    if command -v bat >/dev/null 2>&1; then
+        viewer='bat --style=plain --color=always --paging=never --'
+    fi
     local color='always'
     if [ -n "$(command -v viless)" ]; then
         pager='viless -c "set ft=diff"'
@@ -278,7 +281,7 @@ gcommit() {
         --bind "ctrl-c:execute(echo -n {+2..} | clipcopy)" \
         --bind "ctrl-e:execute($EDITOR {+2..})+reload($statusfunc)" \
         --bind 'ctrl-g:execute(git difftool -y $(test x{1} = xS && echo --staged) -- {2..})+'"reload($statusfunc)" \
-        --preview='git --no-pager diff --color=always $(test x{1} = xS && echo --staged) -- {2..} 2>/dev/null' \
+        --preview='test x{1} = "x?" && '"$viewer"' {2..} || git --no-pager diff --color=always $(test x{1} = xS && echo --staged) -- {2..} 2>/dev/null' \
         --preview-window='top:50%:wrap' \
         --header "^S: Stage | ^U: Unstage | ^E: Edit | ^R: Reload | Enter: Commit Selected or ^O: Staged | ^A: All | ^D: Deselect | ^C: Copy | ^G: Git Difftool"
 }
