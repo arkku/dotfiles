@@ -277,13 +277,14 @@ gcommit() {
         --bind "ctrl-a:select-all" \
         --bind "ctrl-d:deselect-all" \
         --bind "ctrl-s:execute(set -x; git add -- {+2..})+reload($statusfunc)" \
+        --bind 'ctrl-t:execute[git `test x{1} = xS && echo reset HEAD || echo add` -- {2..}]+'"reload($statusfunc)" \
         --bind "ctrl-u:execute(set -x; git reset HEAD -- {+2..})+reload($statusfunc)" \
         --bind "ctrl-c:execute(echo -n {+2..} | clipcopy)" \
         --bind "ctrl-e:execute($EDITOR {+2..})+reload($statusfunc)" \
-        --bind 'ctrl-g:execute(git difftool -y $(test x{1} = xS && echo --staged) -- {2..})+'"reload($statusfunc)" \
+        --bind 'ctrl-g:execute[git difftool -y `test x{1} = xS && echo --staged` -- {2..}]+'"reload($statusfunc)" \
         --preview='test x{1} = "x?" && '"$viewer"' {2..} || git --no-pager diff --color=always $(test x{1} = xS && echo --staged) -- {2..} 2>/dev/null' \
         --preview-window='top:50%:wrap' \
-        --header "^S: Stage | ^U: Unstage | ^E: Edit | ^R: Reload | Enter: Commit Selected or ^O: Staged | ^A: All | ^D: Deselect | ^C: Copy | ^G: Git Difftool"
+        --header "^Stage ^Unstage ^Toggle ^Edit | <Enter> Commit / ^Only Staged | ^All ^Deselect ^Copy ^Git difftool"
 }
 
 # Interactive git stash viewing and manipulation
