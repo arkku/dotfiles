@@ -356,12 +356,14 @@ is an additional binding of <kbd>Ctrl</kbd>–<kbd>A</kbd> to select
 all. Pressing <kbd>Esc</kbd> leaves the selection (e.g., for `gdf` which
 intentionally doesn't close after selection).
 
-* `ge` – open a file in `$EDITOR`
+* `gcommit` – interactively select files to commit, stage, unstage, edit, diff,
+  etc
 * `gdf` – view the diff of modified files without leaving the selection, with
   a live preview of the diff (this supports multiple keyboard shortcuts, shown
   on the screen, to perform various actions, such as staging/unstaging files,
   opening them in the editor or difftool, etc.)
 * `gdfs` or `gstaged` – view staged files and diff, unstage, or commit them
+* `ge` – open a file in `$EDITOR`
 * `gadd` – select modified files to stage (`git add`)
 * `gunstage` – select staged files to unstage (`git restore --staged`)
 * `gdiscard` – select modified files to discard changes of (`git restore`)
@@ -617,3 +619,4 @@ export PATH="/Library/Developer/Toolchains/swift-latest.xctoolchain/usr/bin:$PAT
 :CocInstall coc-tsserver
 :CocInstall coc-solargraph
 ```
+

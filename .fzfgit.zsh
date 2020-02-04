@@ -216,7 +216,6 @@ ge() {
 
 unalias gdf 2>/dev/null
 
-# Interactive git diff with preview (^E to edit, ^G for git difftool, ^A to add)
 gdf() {
     [ -n "$ZSH_VERSION" ] && setopt localoptions shwordsplit
     local pager='less -R'
@@ -255,6 +254,34 @@ gdf() {
 # Interactive git diff of staged changes
 alias gdfs='gdf --staged'
 alias gstaged='gdf --staged'
+
+# Interactive git diff commit
+gcommit() {
+    local pager='less -R'
+    local color='always'
+    if [ -n "$(command -v viless)" ]; then
+        pager='viless -c "set ft=diff"'
+        color=never
+    fi
+
+    local statusfunc='git --no-pager diff --name-only --relative --staged | sed "s/^/S /"; git --no-pager ls-files -m -o -v --exclude-standard'
+    eval "$statusfunc" | fzf --ansi -0 \
+        --query="$@" --reverse -m \
+        --bind "enter:execute[set -x; git commit -- {+2..}]+abort" \
+        --bind "ctrl-o:execute(git commit)+abort" \
+        --bind "double-click:ignore" \
+        --bind "ctrl-r:reload($statusfunc)" \
+        --bind "ctrl-a:select-all" \
+        --bind "ctrl-d:deselect-all" \
+        --bind "ctrl-s:execute(set -x; git add -- {+2..})+reload($statusfunc)" \
+        --bind "ctrl-u:execute(set -x; git reset HEAD -- {+2..})+reload($statusfunc)" \
+        --bind "ctrl-c:execute(echo -n {+2..} | clipcopy)" \
+        --bind "ctrl-e:execute($EDITOR {+2..})+reload($statusfunc)" \
+        --bind 'ctrl-g:execute(git difftool -y $(test x{1} = xS && echo --staged) -- {2..})+'"reload($statusfunc)" \
+        --preview='git --no-pager diff --color=always $(test x{1} = xS && echo --staged) -- {2..} 2>/dev/null' \
+        --preview-window='top:50%:wrap' \
+        --header "^S: Stage | ^U: Unstage | ^E: Edit | ^R: Reload | Enter: Commit Selected or ^O: Staged | ^A: All | ^D: Deselect | ^C: Copy | ^G: Git Difftool"
+}
 
 # Interactive git stash viewing and manipulation
 gstash() {

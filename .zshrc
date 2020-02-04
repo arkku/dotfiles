@@ -291,7 +291,7 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
         # Type ~~<Tab> to start fzf completion
         export FZF_COMPLETION_TRIGGER='~~'
         export FZF_COMPLETION_OPTS='+c -x'
-        export FZF_TMUX=1
+        #export FZF_TMUX=1
         export FZF_TMUX_HEIGHT='30%'
         export FZF_DEFAULT_OPTS='--layout=reverse'
 
