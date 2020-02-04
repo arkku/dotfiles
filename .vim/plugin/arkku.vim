@@ -47,9 +47,12 @@ set smarttab            " Use backspace to go back a tabstop
 set shiftround          " Round indent to shift widths
 set wrap                " Wrap long lines on screen
 set linebreak           " Wrap at word boundaries
-set foldclose=all       " Close folds automatically
 set nofoldenable
-set foldmethod=marker
+set foldclose=all       " Close folds automatically
+set foldopen+=insert
+set foldmethod=indent
+set foldlevelstart=0
+set foldnestmax=4
 set textwidth=79        " Wordwrap at this column
 set formatoptions=cl1
 set formatoptions+=q    " Allow formatting of comments
@@ -430,18 +433,26 @@ if !exists('g:vscode')
             startinsert
         endfunction
 
+        "nnoremap <C-T> :call OpenTerminal('console')<CR>
         nnoremap <Leader>t :call OpenTerminal('console')<CR>
 
         let g:yoinkSavePersistently=1
         silent! set shada=!,'100,<50,s10,h
+
+        " Paste from system clipboard (in nvim it generally just works to paste
+        " directly, so this kind of inverts the behaviour since Ctrl-R is
+        " affected by formatting) - mnemonic 'Baste'
+        inoremap <C-B> <C-R>+
     endif
 
     let g:yoinkSwapClampAtEnds=0
     let g:yoinkSyncSystemClipboardOnFocus=0
-    "nnoremap <Plug>(YoinkYankPreserveCursorPosition) y
-    "xnoremap <Plug>(YoinkYankPreserveCursorPosition) y
-    "nmap y <Plug>(YoinkYankPreserveCursorPosition)
-    "xmap y <Plug>(YoinkYankPreserveCursorPosition)
+    let g:yoinkMoveCursorToEndOfPaste=1
+    let g:yoinkIncludeDeleteOperations=1
+    " nnoremap <Plug>(YoinkYankPreserveCursorPosition) y
+    " xnoremap <Plug>(YoinkYankPreserveCursorPosition) y
+    " nmap y <Plug>(YoinkYankPreserveCursorPosition)
+    " xmap y <Plug>(YoinkYankPreserveCursorPosition)
     nnoremap <Plug>(YoinkPaste_p) p
     nnoremap <Plug>(YoinkPaste_P) P
     nnoremap <Plug>(YoinkPostPasteSwapBack) j
@@ -480,9 +491,6 @@ if !exists('g:vscode')
     " Esc to exit terminal (with some delay), Esc Esc to send Esc
     silent! tnoremap <Esc> <C-\><C-N>
     silent! tnoremap <Esc><Esc> <Esc>
-
-    " I use ^T as the tmux prefix, so let's appropriate ^B for the terminal
-    silent! tnoremap <C-B> <C-T>
 
     " Paste from system clipboard in insert mode with C-B (mnemonic: Baste)
     if !has('nvim') && empty(mapcheck('<C-B>', 'i'))

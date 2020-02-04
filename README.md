@@ -75,14 +75,20 @@ collection](https://github.com/arkku/vim-plugin-collection/) is installed, and
 some plugin-related settings are in that collection (and not duplicated here
 anymore).
 
-##### General Bindings
+#### General Bindings
 
 * `p` – in visual mode, put (paste) over the selection without yanking the
   replaced text
+* `K` – show documentation for word under cursor (using `coc` or `ale` if
+  available, otherwise the normal Vim behaviour)
 * arrows (with Ctrl and Alt) escape sequences explicitly bound for various
   different terminals (not in Neovim)
-* alt-arrows mapped the same way as in macOS, i.e., alt-left and alt-right skip
-  between words whereas alt-up and alt-down go to the beginning/end of line
+* <kbd>Alt</kbd>-<kbd>arrow</kbd> mapped the same way as in macOS, i.e., skip
+  words left/right, or to beginning/end of line
+* <kbd>Ctrl</kbd>–<kbd>left</kbd> and <kbd>Ctrl</kbd>–<kbd>right</kbd> mapped
+  the same way as in macOS, i.e., line beginning/end
+* <kbd>Ctrl</kbd>–<kbd>up</kbd> and <kbd>Ctrl</kbd>–<kbd>down</kbd> move
+  visually, i.e., lines on screen instead of lines in file
 * <kbd>Ctrl</kbd>-<kbd>A</kbd> – go to the beginning of line
 * <kbd>Ctrl</kbd>-<kbd>E</kbd> – go to the end of line (unless pop-up
   completion menu is open, in which case close it)
@@ -91,15 +97,16 @@ anymore).
   mnemonic makes more sense now)
 * <kbd>Ctrl</kbd>–<kbd>B</kbd> – toggle paste mode, paste, and toggle paste
   mode again (Vim only)
-* <kbd>Ctrl</kbd>-<kbd>B</kbd> – terminal command (replacement for
-  <kbd>Ctrl</kbd>–<kbd>T</kbd>, which is my tmux prefix)
 * <kbd>Esc</kbd> – exit integrated terminal (press twice quickly to send to
 * <kbd>Esc</kbd> <kbd>Esc</kbd> – in insert mode, clear highlighting of
   previous search
 * <kbd>Ctrl</kbd>-<kbd>\_</kbd> – various bindings in different modes, not
   settled on a final choice yet
+* <kbd>Ctrl</kbd>–<kbd>J</kbd> and <kbd>Ctrl</kbd>–<kbd>K</kbd> right after
+  putting text in normal change the text that was put by cycling put history
+  (depends on Yoink plugin)
 
-##### Unimpaired-style Bindings
+#### Unimpaired-style Bindings
 
 Some additional bindings in the style of the "unimpaired" plugin:
 
@@ -108,7 +115,7 @@ Some additional bindings in the style of the "unimpaired" plugin:
 * `]w`, `[w` – jump to next/previous warning/error (using coc, ale, or the
   location list, in that order)
 
-##### Leader Bindings
+#### Leader Bindings
 
 These bindings are for the normal mode, preceded by the leader (<kbd>\\</kbd>):
 
@@ -255,6 +262,10 @@ For `fasd`, the set of aliases is:
 * arrow keys with alt are bound as per macOS defaults
 * <kbd>Ctrl</kbd>–<kbd>A</kbd> and <kbd>Ctrl</kbd>–<kbd>E</kbd> go to the
   beginning/end of the line
+* <kbd>Alt</kbd>-<kbd>arrow</kbd> mapped the same way as in macOS, i.e., skip
+  words left/right, or to beginning/end of line
+* <kbd>Ctrl</kbd>–<kbd>left</kbd> and <kbd>Ctrl</kbd>–<kbd>right</kbd> mapped
+  the same way as in macOS, i.e., line beginning/end
 * <kbd>Ctrl</kbd>-<kbd>Space</kbd> – opens the current command line in an
   editor
 * <kbd>Ctrl</kbd>-<kbd>Q</kbd> – `push-line-or-edit`, if you are in
@@ -324,7 +335,7 @@ is an additional binding of <kbd>Ctrl</kbd>–<kbd>A</kbd> to select
 all. Pressing <kbd>Esc</kbd> leaves the selection (e.g., for `gdf` which
 intentionally doesn't close after selection).
 
-* `gedit` – open a file in `$EDITOR`
+* `ge` – open a file in `$EDITOR`
 * `gdf` – view the diff of modified files without leaving the selection, with
   a live preview of the diff (this supports multiple keyboard shortcuts, shown
   on the screen, to perform various actions, such as staging/unstaging files,

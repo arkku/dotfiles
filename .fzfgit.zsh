@@ -120,7 +120,10 @@ fzfcmd() {
         shift
     done
 
-    "$lister" "${largs[@]}" | fzf --print0 --reverse --query="$query" "${fargs[@]}" | drop_n_fields "$drop_fields" | xargs -0 -t "${cmdargs[@]}" ${=ddash}
+    "$lister" "${largs[@]}" \
+        | fzf --print0 --reverse --query="$query" "${fargs[@]}" \
+        | drop_n_fields "$drop_fields" \
+        | xargs -0 -t "${cmdargs[@]}" ${=ddash}
 }
 
 # Git mergetool
@@ -150,7 +153,7 @@ gunstage() {
 }
 
 # Git edit in "$EDITOR"
-gite() {
+ge() {
     fzfcmd 0 git ls-files -z --fzfm --fzf0 --exclude-standard --fzfpreview "( command -v bat >/dev/null 2>&1 && bat --color=always --style=plain --paging=never {} || cat {}) | head -n 1000" -- "$EDITOR" -- "$@"
 }
 
