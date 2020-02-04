@@ -207,6 +207,9 @@ if has("autocmd")
     " Set markdown comments to HTML and use headers for dlist
     au FileType markdown setlocal commentstring=<!--%s--> | setlocal define=^#\\+\\s*
 
+    " Use man headers for dlist
+    au FileType man setlocal define=^[A-Z0-9].*
+
     au FileType liquid if exists('b:liquid_subtype') && b:liquid_subtype == 'markdown' | setlocal formatlistpat=^\\s*\\d\\+[.\)]\\s\\+\\\|^\\s*[*+~-]\\s\\+\\\|^\\(\\\|[*#]\\)\\[^[^\\]]\\+\\]:\\s | setlocal comments=n:> | setlocal formatoptions+=tcn | setlocal indentexpr= autoindent smartindent | setlocal define=^#\\+\\s* | endif
     au FileType liquid setlocal commentstring={%\ comment\ %}%s{%\ endcomment\ %}
 
@@ -257,7 +260,7 @@ let g:vim_markdown_auto_insert_bullets=0
 
 let g:syntastic_mode_map = {
     \ "mode": "active",
-    \ "active_filetypes": ["ruby","c","swift"],
+    \ "active_filetypes": ["ruby","c","swift","zsh","bash","sh"],
     \ "passive_filetypes": [] }
 
 let g:syntastic_always_populate_loc_list = 0
@@ -335,6 +338,10 @@ if !exists('g:vscode')
 
     set switchbuf=useopen,split
     silent! set switchbuf+=usetab
+
+    " Since Tab/C-I is mapped to other things, use C-Q for the old C-I
+    " (note that on Dvorak C-O and C-Q are vertically adjacent)
+    nnoremap <C-Q> <C-I>
 
     nnoremap [oa <Esc>:set formatoptions +=a<CR>
     nnoremap ]oa <Esc>:set formatoptions -=a<CR>
