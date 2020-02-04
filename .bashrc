@@ -208,11 +208,9 @@ if [ -n "$PS1" -a -z "$ENVONLY" ]; then
                 | xargs kill "$@"
         }
 
-        if [ -n "$(command -v bat)" ]; then
-            alias gdf='git diff-files --name-only --diff-filter=M -z | fzf --read0 -0 --reverse --bind "enter:execute(git diff --color=always {} | bat --paging=always --style=plain)" --bind "double-click:execute(git diff --color=always {} | bat --paging=always --style=plain)"'
-        else
-            alias gdf='git diff-files --name-only --diff-filter=M -z | fzf --read0 -0 --reverse --bind "enter:execute(git diff --color=always {} | less -R)" --bind "double-click:execute(git diff --color=always {} | less -R)"'
-        fi
+        # A bunch of git wrappers using fzf (yes, it says .zsh but it mostly
+        # works on bash, we just miss out on the key bindings)
+        [ -s "$HOME/.fzfgit.zsh" ] && . "$HOME/.fzfgit.zsh"
     fi
     if [ -n "$SSH_CONNECTION" -o -n "$SUDO_USER" ]; then
         PS1='\u@$SHORT_HOSTNAME:$SHORT_PWD\$ '

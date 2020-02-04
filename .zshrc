@@ -6,6 +6,7 @@ disable log
 if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
     # Vi-mode
     bindkey -v
+    setopt vi
 
     export KEYTIMEOUT=1
 
@@ -287,45 +288,148 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
 
     # fzf
     if [ -n "$(command -v fzf)" ]; then
-        # use fd, rg, ag or find (in that order) to implement fuzzy search with fzf
+        # Type ~~<Tab> to start fzf completion
+        export FZF_COMPLETION_TRIGGER='~~'
+        export FZF_COMPLETION_OPTS='+c -x'
+        export FZF_TMUX=1
+        export FZF_TMUX_HEIGHT='30%'
+        export FZF_DEFAULT_OPTS='--layout=reverse'
 
-        if [ -n "$(command -v fd)" ]; then
-            fzo() {
-                [ -n "$2" ] || return 1
-                local sels=( "${(@f)$(fd --max-depth "$1" --color=always . "${@:3}" 2>/dev/null | fzf -m --height=25% --min-height=20 --reverse --ansi)}" )
-                [ -n "$sels" ] && print -z -- "$2 ${sels[@]:q:q}"
-            }
-
-            export FZF_DEFAULT_COMMAND='fd --type f'
-        elif [ -n "$(command -v rg)" ]; then
-            fzo() {
-                [ -n "$2" ] || return 1
-                local sels=( "${(@f)$(rg -l --max-depth "$(( ${1} - 1 ))" -- '' "${@:3}" 2>/dev/null | fzf -m --height=25% --min-height=20 --reverse --ansi)}" )
-                [ -n "$sels" ] && print -z -- "$2 ${sels[@]:q:q}"
-            }
-        elif [ -n "$(command -v ag)" ]; then
-            fzo() {
-                [ -n "$2" ] || return 1
-                local sels=( "${(@f)$(ag --nocolor -l --depth "$(( ${1} - 1 ))" -- '' "${@:3}" 2>/dev/null | fzf -m --height=25% --min-height=20 --reverse --ansi)}" )
-                [ -n "$sels" ] && print -z -- "$2 ${sels[@]:q:q}"
-            }
-        else
-            fzo() {
-                [ -n "$2" ] || return 1
-                local sels=( "${(@f)$(find -H "${3:-.}" "${@:4}" -maxdepth "$1" 2>/dev/null | fzf -m --height=25% --min-height=20 --reverse --ansi)}" )
-                [ -n "$sels" ] && print -z -- "$2 ${sels[@]:q:q}"
-            }
+        if whence fzf-completion >/dev/null 2>&1; then
+            # fzf is probably sourced first so the completion binding breaks
+            bindkey -M viins '\C-I' fzf-completion
         fi
+
+        # use fd with fzf (note: symlink /usr/bin/fdfind to ~/bin/fd)
+        if [ -n "$(command -v fd)" ]; then
+            export FZF_DEFAULT_COMMAND='fd --color=always --exclude .git'
+
+            fzfind() {
+                local fdargs=( '--color=always' '--exclude' '.git' )
+                local fzfargs=( )
+                local have_path=''
+                while [ $# -ge 1 ]; do
+                    local arg="$1"
+                    shift
+                    case "$arg"; in
+                        (--fzf)
+                            fzfargs+=( "$1" )
+                            shift
+                            ;;
+                        (-*)
+                            fdargs+=( "$arg" )
+                            ;;
+                        (*)
+                            [ -d "$arg" ] && have_path="$arg"
+                            fdargs+=( "$arg" )
+                            ;;
+                    esac
+                done
+                [ -n "$have_path" -a ! "$have_path" = '.' ] && fdargs=( '.' "${fdargs[@]}" )
+                fd -0 "${fdargs[@]}" 2>/dev/null \
+                    | fzf --read0 --ansi -m --reverse \
+                    --preview="file -b -h {} 2>/dev/null; ls -lah {} 2>/dev/null" \
+                    --preview-window='top:40%:wrap' "${fzfargs[@]}"
+            }
+
+            ffz() { fzfind "$@"  }
+            fff() { fzfind --type=file --hidden "$@"  }
+            ffd() { fzfind --type=directory --hidden "$@" }
+            ff.() { fzfind --max-depth 1 --hidden "$@" }
+        else
+            ffz() {
+                local fdargs=( '-not' '-iwholename' '*/.git/*' )
+                local fzfargs=( )
+                local have_path='.'
+                local value_next=''
+                while [ $# -ge 1 ]; do
+                    local arg="$1"
+                    shift
+                    case "$arg"; in
+                        (--fzf)
+                            fzfargs+=( "$1" )
+                            shift
+                            ;;
+                        (-*)
+                            fdargs+=( "$arg" )
+                            value_next=1
+                            ;;
+                        (*)
+                            if [ -d "$arg" ]; then
+                                have_path="$arg"
+                            elif [ -n "$value_next" ]; then
+                                value_next=''
+                                fdargs+=( "$arg" )
+                            else
+                                fdargs+=( -iwholename "*$arg*" )
+                            fi
+                            ;;
+                    esac
+                done
+                find "${have_path:-.}" "${fdargs[@]}" 2>/dev/null \
+                    | fzf --ansi -m --reverse \
+                    --preview="file -b -h {} 2>/dev/null; ls -lah {} 2>/dev/null" \
+                    --preview-window='top:40%:wrap' "${fzfargs[@]}"
+            }
+
+            fff() { ffz -type f "$@"  }
+            ffd() { ffz -type d "$@" }
+            ff.() { ffz -depth 1 "$@" }
+        fi
+
+        _fzfcmdl() {
+            local cmd="$1"
+            local cmdarg=''
+            local cli=( "$2" )
+            shift 2 || return 1
+            while [ $# -ge 1 ]; do
+                local arg="$1"
+                shift
+                case "$arg"; in
+                    (-*)
+                        cli+=( "$arg" )
+                        ;;
+                    (*)
+                        # Take the last non-option as the search term
+                        [ -n "$cmdarg" ] && cli+=( "$cmdarg" )
+                        cmdarg="$arg"
+                        ;;
+                esac
+            done
+            local cmdargs=()
+            [ -n "$cmdarg" ] && cmdargs+=( "$cmdarg" )
+            local sels=( "${(@f)$( $cmd "${cmdargs[@]}" )}" )
+            [ -n "$sels" ] && print -z -- "${cli[@]:q:q} ${sels[@]:q:q}"
+        }
+
+        # Ctrl-F to find from insert mode
+        _zle-fzfind() {
+            local sels=( "${(@f)$(ffz --max-depth 4 \
+                --fzf --bind \
+                --fzf 'ctrl-f:reload(fd -0 --color=always --hidden --max-depth 1 2>/dev/null)' \
+                --fzf --bind \
+                --fzf 'ctrl-d:reload(fd -0 --color=always --hidden --max-depth 4 --exclude .git --type=directory 2>/dev/null)' \
+                --fzf --bind \
+                --fzf 'ctrl-a:reload(fd -0 --color=always --hidden --max-depth 4 --exclude .git 2>/dev/null)' \
+                --fzf --bind \
+                --fzf 'ctrl-g:reload(git ls-files -c -z --exclude-standard --recurse-submodules 2>/dev/null)' \
+                --fzf --header \
+                --fzf 'Esc: Close | Tab: Select | ^A: Show All | ^D: Directories | ^G: Git | ^F: Files in .' \
+                "$@")}" )
+            LBUFFER+="${sels[@]:q} "
+        }
+        zle -N _zle-fzfind
+        bindkey -M viins '\C-F' _zle-fzfind
 
         # fuzzy-find in nearby directories, e.g., `fz vi`
         # can also take a path, such as `fz vi /usr/include`
         fz() {
-            fzo 4 "$@"
+            _fzfcmdl ffz "$@"
         }
 
         # current directory only, e.g., `f. mv`
         f.() {
-            fzo 1 "$@"
+            _fzfcmdl ff. "$@"
         }
 
         # fuzzy-find in history and paste to command-line

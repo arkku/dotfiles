@@ -105,6 +105,11 @@ anymore).
 * <kbd>Ctrl</kbd>–<kbd>J</kbd> and <kbd>Ctrl</kbd>–<kbd>K</kbd> right after
   putting text in normal change the text that was put by cycling put history
   (depends on Yoink plugin)
+* <kbd>Ctrl</kbd>-<kbd>Q</kbd> – in normal mode works as the original
+  <kbd>Tab</kbd> binding (since usually I use a configuration that rebinds it),
+  i.e., jump to newer cursor position (such as after jumping to an older
+  position with <kbd>Ctrl</kbd>–<kbd>O</kbd>, which is also conveniently
+  adjacent in Dvorak)
 
 #### Unimpaired-style Bindings
 
@@ -281,6 +286,14 @@ For `fasd`, the set of aliases is:
   the cursor, as is the default)
 * <kbd>Ctrl</kbd>-<kbd>Y</kbd> – yanks (or, more accurately, puts) the
   previously-killed line
+* <kbd>Ctrl</kbd>-<kbd>F</kbd> – in zsh Vi insert mode starts a fuzzy file
+  finder (requires fzf and fd), with keyboard shortcuts to change the list to
+  show everything, only directories, only the current directory, or Git
+  repository contents (including submodules)
+* <kbd>Ctrl</kbd>-<kbd>G</kbd> – in zsh Vi insert mode shows a prompt to choose
+  from Git commits, branches, tags, or files (not including submodules), or
+  GitHub issues or pull requests, and starts a fuzzy finder for the choice,
+  with live preview
 * `S` + surround – in visual selection mode surrounds the selection with the
   given quotes, e.g., `v$S"` in vi command mode selects to the end of the line
   and surrounds the selection with `" "` quotes
@@ -318,6 +331,14 @@ For `fasd`, the set of aliases is:
 * `fzk` – use `fzf` to fuzzily search running processes, and pass them (and any
   arguments) to `kill`
 
+Also adds the following reusable `zsh` aliases that just print the selection to
+`stdout`:
+
+* `ffz` – fuzzily find a file or directory
+* `fff` – fuzzily find a find a file
+* `ff.` – fuzzily find a file in the current directory
+* `ffd` – fuzzily find a directory
+
 #### Aliases for Git
 
 * `cdr` – `cd` to the root of the repository
@@ -340,7 +361,7 @@ intentionally doesn't close after selection).
   a live preview of the diff (this supports multiple keyboard shortcuts, shown
   on the screen, to perform various actions, such as staging/unstaging files,
   opening them in the editor or difftool, etc.)
-* `gdfs` – view the diff of staged files without leaving the selection
+* `gdfs` or `gstaged` – view staged files and diff, unstage, or commit them
 * `gadd` – select modified files to stage (`git add`)
 * `gunstage` – select staged files to unstage (`git restore --staged`)
 * `gdiscard` – select modified files to discard changes of (`git restore`)
@@ -375,6 +396,16 @@ intentionally doesn't close after selection).
   be used as part of other commands)
 * `fztag` – select a tag and print its name (e.g., to be used as part of other
   commands)
+* `fzbrt` – select a branch or tag and print its name (e.g., to be used as
+  part of other commands)
+* `fzgf` – select a file from the git repository and print its name
+* `fzgcf` – select from changed files in the git repository and print its name
+* `fzgfr` – select a file from the git repository, or its submodules, and print
+  its name
+* `fziss` – select a GitHub issue and print its number (e.g., to be used as
+  part of other commands)
+* `fzpullr` – select a GitHub pull request and print its number (e.g., to be
+  used as part of other commands)
 
 #### Global Aliases
 
