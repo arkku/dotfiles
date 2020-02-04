@@ -97,7 +97,7 @@ hi MatchParen term=reverse ctermbg=lightcyan guibg=#d9f1ff
 
 " UI
 hi StatusLine term=bold,reverse cterm=reverse gui=reverse guifg=#0281ff guibg=#ffffff
-hi StatusLineNC term=bold,reverse cterm=reverse gui=reverse guifg=#0281ff guibg=#99ccff
+hi StatusLineNC term=bold,reverse cterm=reverse gui=reverse guifg=#3399cc guibg=#bbccff
 hi TabLine term=reverse cterm=none ctermfg=gray ctermbg=blue gui=none guibg=#cccccc guifg=#403f53
 hi TabLineSel term=bold,reverse cterm=underline,bold ctermfg=white ctermbg=blue gui=underline guibg=#fafafa guifg=#000000
 hi TabLineFill term=reverse cterm=none ctermfg=gray ctermbg=blue gui=none guibg=#222222 guifg=#666666
@@ -224,7 +224,7 @@ if &background == "dark"
     hi MatchParen term=reverse ctermbg=cyan guibg=#333399
 
     hi StatusLine term=bold,reverse cterm=reverse gui=reverse guifg=#0066cc guibg=#ffffff
-    hi StatusLineNC term=bold,reverse cterm=reverse gui=reverse guifg=#0066cc guibg=#99ccff
+    hi StatusLineNC term=bold,reverse cterm=reverse gui=reverse guifg=#336699 guibg=#aaaaaf
 
     hi WarningMsg term=standout cterm=bold ctermfg=yellow gui=bold guifg=#ff9900
 

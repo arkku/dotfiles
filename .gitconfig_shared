@@ -20,4 +20,6 @@
 [difftool "nvim"]
 	cmd = nvim -d \"$REMOTE\" \"$LOCAL\"
 [difftool "nvimfugitive"]
-	cmd = nvim -f -c "Gdiffsplit" \"$BASE\"
+	cmd = nvim -f -c \"Gvdiffsplit!\" \"$BASE\"
+[difftool "nvimfugitiver"]
+	cmd = nvim -f -c \"Gvdiffsplit | wincmd x\" \"$BASE\"
