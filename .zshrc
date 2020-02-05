@@ -434,8 +434,8 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
 
         # fuzzy-find in history and paste to command-line
         fzh() {
-            local selh="$(history -1 0 | fzf --ansi --reverse --height=50% --min-height=25 -n 2.. | awk '{ sub(/^[ ]*[^ ]*[ ]*/, ""); sub(/[ ]*$/, ""); print }')"
-            [ -n "$selh" ] && print -z -- "${selh:q}"
+            local selh="$(history -1 0 | fzf --ansi --no-sort -m --height=50% --min-height=25 -n 2.. | awk '{ sub(/^[ ]*[^ ]*[ ]*/, ""); sub(/[ ]*$/, ""); print }')"
+            [ -n "$selh" ] && print -z -- ${selh}
         }
 
         # kill process selected with fzf
