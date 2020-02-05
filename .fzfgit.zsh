@@ -548,7 +548,7 @@ fzc() {
 if [ -n "$(command -v hub)" ]; then
     # Pick a commit to check out
     gcistatus() {
-        _fzfgitcommitcmd '' 'hub ci-status --color=always' 'CI Status' -- "$@"
+        _fzfgitcommitcmd '' 'hub ci-status --color=always' 'CI Status' "$@"
     }
 
     # A helper for selecting interactively from GitHub issues
