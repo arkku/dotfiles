@@ -18,7 +18,8 @@ This is a checklist for me when I set up a new machine.
 * [ArkkuDvorak](https://arkku.com/dvorak/)
 * [XCode](https://developer.apple.com/download/)
 * [Homebrew](https://brew.sh)
-* [gpg](https://gnupg.org/download/) (also keys and passphrase input utility)
+* [gpg](https://gnupg.org/download/)
+    - also pinentry program and config
 * [tmux](https://neovim.io)
     - [tmux plugins](https://github.com/arkku/tmux-plugin-collection)
 * [neovim](https://neovim.io)
@@ -46,6 +47,7 @@ This is a checklist for me when I set up a new machine.
 * `~/.ssh` (keys, permissions, authorized keys, include shared config)
 * `~/.gitconfig` (account, signing, editor, merge tool, shared config)
 * `~/.profile` (source `~/.profile_shared`)
+* `/etc/locale.gen`
 
 ## Features
 

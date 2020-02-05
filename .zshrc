@@ -22,7 +22,7 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
     autoload -Uz zmv
 
     # Test for UTF-8
-    if locale 2>/dev/null | grep -qiF -e 'UTF-8' -e 'utf8'; then
+    if locale 2>/dev/null | grep -qi -e 'LC_CTYPE.*UTF-8' -e 'LC_CTYPE.*utf8'; then
         [ -z "$UTF8" ] && export UTF8=1
         [ -z "$ELLIPSIS" ] && export ELLIPSIS='…'
         [ -z "$PROMPTCHAR" ] && export PROMPTCHAR='%F{blue}❯%F{reset}'
