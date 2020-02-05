@@ -35,9 +35,12 @@ This is a checklist for me when I set up a new machine.
 * [fasd](https://github.com/clvv/fasd)
 * [ripgrep](https://github.com/BurntSushi/ripgrep)
 * [fd](https://github.com/sharkdp/fd)
+    - On some systems may have to `ln -s /usr/bin/fdfind ~/bin/fd`
 * [bat](https://github.com/sharkdp/bat)
-* [rvm](https://rvm.io) (remember `readline`!)
-* [SF Mono font](file:///System/Applications/Utilities/Terminal.app/Contents/Resources/Fonts/)
+    - On some systems may have to `ln -s /usr/bin/batcat ~/bin/bat`
+* [rvm](https://rvm.io)
+* SF Mono font
+    - `/System/Applications/Utilities/Terminal.app/Contents/Resources/Fonts`
 * `~/.ssh` (keys, permissions, authorized keys, include shared config)
 * `~/.gitconfig` (account, signing, editor, merge tool, shared config)
 * `~/.profile` (source `~/.profile_shared`)
