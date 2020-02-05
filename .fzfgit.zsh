@@ -272,16 +272,25 @@ gcommit() {
         pager='viless -c "set ft=diff"'
         color=never
     fi
+    local commitargs='commit'
+    while [ $# -ge 1 ]; do
+        local arg="$1"
+        shift
+        if [ -n "$ZSH_VERSION" ]; then
+            commitargs="$commitargs ${arg:q}"
+        else
+            commitargs="$commitargs '${arg//\'/\'\\\'\'}'"
+        fi
+    done
 
     # Go to the repository root, otherwise we may miss staged files
     pushd "$(git rev-parse --show-toplevel)" >/dev/null || return 1
 
     # TODO: change `git reset HEAD` to `git restore --staged` once common
     local statusfunc='git --no-pager diff --name-only --relative --staged | sed "s/^/A /"; git --no-pager ls-files -m -o -v -d --exclude-standard'
-    eval "$statusfunc" | fzf --ansi -0 \
-        --query="$@" --reverse -m \
-        --bind "ctrl-o:execute[set -x; git commit -- {+2..}]+abort" \
-        --bind "enter:execute(git commit)+abort" \
+    eval "$statusfunc" | fzf --ansi -0 --reverse -m \
+        --bind "ctrl-o:execute[set -x; git $commitargs -- {+2..}]+abort" \
+        --bind "enter:execute[git $commitargs]+abort" \
         --bind "double-click:ignore" \
         --bind "ctrl-r:reload($statusfunc)" \
         --bind "ctrl-a:select-all" \
