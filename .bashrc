@@ -1,3 +1,6 @@
+# .bashrc
+# Kimmo Kulovesi <https://arkku.dev>
+
 unset HISTFILE
 export HISTFILE
 
@@ -173,28 +176,96 @@ if [ -n "$PS1" -a -z "$ENVONLY" ]; then
     alias l.='ls -d .*'
 
     if [ -n "$(command -v fzf)" ]; then
+        # use fd with fzf (note: symlink /usr/bin/fdfind to ~/bin/fd)
         if [ -n "$(command -v fd)" ]; then
-            fzo() {
-                [ -n "$2" ] || return 1
-                local depth="$1"
-                shift
-                local prog="$1"
-                shift
-                sels=( $(fd "${fd_default[@]}" --max-depth "$depth" --color=always . "$@" | fzf -m --height=25% --min-height=20 --reverse -0 --ansi) )
-                [ -n "$sels" ] && "$prog" "${sels[@]}"
+            export FZF_DEFAULT_COMMAND='fd --color=always --exclude .git'
+
+            fzfind() {
+                local fdargs=( '--color=always' '--exclude' '.git' )
+                local fzfargs=( )
+                local have_path=''
+                while [ $# -ge 1 ]; do
+                    local arg="$1"
+                    shift
+                    case "$arg" in
+                        (--fzf)
+                            fzfargs+=( "$1" )
+                            shift
+                            ;;
+                        (-*)
+                            fdargs+=( "$arg" )
+                            ;;
+                        (*)
+                            [ -d "$arg" ] && have_path="$arg"
+                            fdargs+=( "$arg" )
+                            ;;
+                    esac
+                done
+                [ -n "$have_path" -a ! "$have_path" = '.' ] && fdargs=( '.' "${fdargs[@]}" )
+                fd -0 "${fdargs[@]}" 2>/dev/null \
+                    | fzf --read0 --ansi --reverse \
+                    --preview="file -b -h {} 2>/dev/null; ls -lah {} 2>/dev/null" \
+                    --preview-window='top:40%:wrap' "${fzfargs[@]}"
+            }
+
+            ffz() {
+                fzfind --fzf -m "$@"
+            }
+            fff() {
+                fzfind --fzf -m --type=file --hidden "$@"
+            }
+            ffd() {
+                fzfind --type=directory --hidden "$@"
+            }
+            ff.() {
+                fzfind --fzf -m --max-depth 1 --hidden "$@"
+            }
+        else
+            ffz() {
+                local fdargs=( '-not' '-iwholename' '*/.git/*' )
+                local fzfargs=( )
+                local have_path='.'
+                local value_next=''
+                while [ $# -ge 1 ]; do
+                    local arg="$1"
+                    shift
+                    case "$arg" in
+                        (--fzf)
+                            fzfargs+=( "$1" )
+                            shift
+                            ;;
+                        (-*)
+                            fdargs+=( "$arg" )
+                            value_next=1
+                            ;;
+                        (*)
+                            if [ -d "$arg" ]; then
+                                have_path="$arg"
+                            elif [ -n "$value_next" ]; then
+                                value_next=''
+                                fdargs+=( "$arg" )
+                            else
+                                fdargs+=( -iwholename "*$arg*" )
+                            fi
+                            ;;
+                    esac
+                done
+                find "${have_path:-.}" "${fdargs[@]}" 2>/dev/null \
+                    | fzf --ansi -m --reverse \
+                    --preview="file -b -h {} 2>/dev/null; ls -lah {} 2>/dev/null" \
+                    --preview-window='top:40%:wrap' "${fzfargs[@]}"
+            }
+
+            fff() {
+                ffz -type f "$@"
+            }
+            ffd() {
+                ffz -type d "$@"
+            }
+            ff.() {
+                ffz -depth 1 "$@"
             }
         fi
-
-        # fuzzy-find in nearby directories, e.g., `fz vi`
-        # can also take a path, such as `fz vi /usr/include`
-        fz() {
-            fzo 4 "$@"
-        }
-
-        # current directory only, e.g., `f. mv`
-        f.() {
-            fzo 1 "$@"
-        }
 
         # kill process selected with fzf
         fzk() {

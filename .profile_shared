@@ -20,6 +20,9 @@ export RSYNC_RSH
 if [ -z "$TMPDIR" -a -n "$TMP" ]; then
     TMPDIR="$TMP"
     export TMPDIR TMP
+elif [ -n "$TMPDIR" -a -z "$TMP" ]; then
+    TMP="$TMPDIR"
+    export TMPDIR TMP
 fi
 
 if [ -n "$PS1" -a -z "$ENVONLY" ]; then

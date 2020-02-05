@@ -1,3 +1,5 @@
+# .bash_profile: run instead of .profile by bash
+
 # include .profile if it exists
 if [ -f ~/.profile ]; then
     source ~/.profile
