@@ -89,7 +89,7 @@ _fzfcmd() {
             shift
             ;;
         (--fzfm)
-            fargs+=( '-m' '--bind' 'ctrl-a:select-all' )
+            fargs+=( '-m' '--bind' 'ctrl-a:select-all' '--bind' 'ctrl-d:deselect-all' )
             ;;
         (--fzf)
             fargs+=( "$1" )
@@ -185,8 +185,9 @@ fzgf() {
         | fzf --read0 --reverse -m --query="$@" \
         --preview="( command -v bat >/dev/null 2>&1 && bat --color=always --style=plain --paging=never {} || cat {}) | head -n 1000" \
         --preview-window='top:50%:wrap' \
-        --bind 'ctrl-a:select-all' \
-        --header "Esc: Close | Tab: Toggle Selection | ^A: Select All | Enter: Accept"
+        --bind "ctrl-a:select-all" \
+        --bind "ctrl-d:deselect-all" \
+        --header "Esc: Close | Enter: Accept | Tab: Toggle Selection | ^A: Select All | ^D: Deselect"
 }
 
 # Fuzzy-pick changed git files
@@ -195,8 +196,9 @@ fzgcf() {
         | fzf --read0 --reverse -m --query="$@" \
         --preview="git --no-pager diff --color=always {}" \
         --preview-window='top:50%:wrap' \
-        --bind 'ctrl-a:select-all' \
-        --header "Esc: Close | Tab: Toggle Selection | ^A: Select All | Enter: Accept"
+        --bind "ctrl-a:select-all" \
+        --bind "ctrl-d:deselect-all" \
+        --header "Esc: Close | Enter: Accept | Tab: Toggle Selection | ^A: Select All | ^D: Deselect"
 }
 
 # Fuzzy-pick git files recursively into submodules
@@ -205,16 +207,15 @@ fzgfr() {
         | fzf --read0 --reverse -m --query="$@" \
         --preview="( command -v bat >/dev/null 2>&1 && bat --color=always --style=plain --paging=never {} || cat {}) | head -n 1000" \
         --preview-window='top:50%:wrap' \
-        --bind 'ctrl-a:select-all' \
-        --header "Esc: Close | Tab: Toggle Selection | ^A: Select All | Enter: Accept"
+        --bind "ctrl-a:select-all" \
+        --bind "ctrl-d:deselect-all" \
+        --header "Esc: Close | Enter: Accept | Tab: Toggle Selection | ^A: Select All | ^D: Deselect"
 }
 
 # Git edit in "$EDITOR"
 ge() {
-    _fzfcmd 0 git ls-files -z --recurse-submodules --fzfm --fzf0 --exclude-standard --fzfpreview "( command -v bat >/dev/null 2>&1 && bat --color=always --style=plain --paging=never {} || cat {}) | head -n 1000" -- "$EDITOR" -- "$@"
+    _fzfcmd 0 git ls-files -z --recurse-submodules --fzfm --fzf0 --exclude-standard --fzfpreview "command -v bat >/dev/null 2>&1 && bat --color=always --style=plain --paging=never {} || cat {}" -- "$EDITOR" -- "$@"
 }
-
-unalias gdf 2>/dev/null
 
 gdf() {
     [ -n "$ZSH_VERSION" ] && setopt localoptions shwordsplit
@@ -262,29 +263,37 @@ gcommit() {
         viewer='bat --style=plain --color=always --paging=never --'
     fi
     local color='always'
+    local pager='less -R'
     if [ -n "$(command -v viless)" ]; then
         pager='viless -c "set ft=diff"'
         color=never
     fi
 
-    local statusfunc='git --no-pager diff --name-only --relative --staged | sed "s/^/S /"; git --no-pager ls-files -m -o -v --exclude-standard'
+    # Go to the repository root, otherwise we may miss staged files
+    pushd `git rev-parse --show-toplevel` >/dev/null || return 1
+
+    # TODO: change `git reset HEAD` to `git restore --staged` once common
+    local statusfunc='git --no-pager diff --name-only --relative --staged | sed "s/^/A /"; git --no-pager ls-files -m -o -v --exclude-standard'
     eval "$statusfunc" | fzf --ansi -0 \
         --query="$@" --reverse -m \
-        --bind "enter:execute[set -x; git commit -- {+2..}]+abort" \
-        --bind "ctrl-o:execute(git commit)+abort" \
+        --bind "ctrl-o:execute[set -x; git commit -- {+2..}]+abort" \
+        --bind "enter:execute(git commit)+abort" \
         --bind "double-click:ignore" \
         --bind "ctrl-r:reload($statusfunc)" \
         --bind "ctrl-a:select-all" \
         --bind "ctrl-d:deselect-all" \
         --bind "ctrl-s:execute(set -x; git add -- {+2..})+reload($statusfunc)" \
-        --bind 'ctrl-t:execute[git `test x{1} = xS && echo reset HEAD || echo add` -- {2..}]+'"reload($statusfunc)" \
+        --bind 'ctrl-t:execute[git `test x{1} = xA && echo reset HEAD || echo add` -- {2..}]+'"reload($statusfunc)" \
         --bind "ctrl-u:execute(set -x; git reset HEAD -- {+2..})+reload($statusfunc)" \
         --bind "ctrl-c:execute(echo -n {+2..} | clipcopy)" \
         --bind "ctrl-e:execute($EDITOR {+2..})+reload($statusfunc)" \
-        --bind 'ctrl-g:execute[git difftool -y `test x{1} = xS && echo --staged` -- {2..}]+'"reload($statusfunc)" \
-        --preview='test x{1} = "x?" && '"$viewer"' {2..} || git --no-pager diff --color=always $(test x{1} = xS && echo --staged) -- {2..} 2>/dev/null' \
+        --bind 'ctrl-g:execute[git difftool -y `test x{1} = xA && echo --staged` -- {2..}]+'"reload($statusfunc)" \
+        --bind 'ctrl-v:execute[test x{1} = "x?" && '"$viewer"' {2..} | less -R || git --no-pager diff --color='"$color"' $(test x{1} = xA && echo --staged) -- {2..} 2>/dev/null | '"$pager"']' \
+        --preview='test x{1} = "x?" && '"$viewer"' {2..} || git --no-pager diff --color=always $(test x{1} = xA && echo --staged) -- {2..} 2>/dev/null' \
         --preview-window='top:50%:wrap' \
-        --header "^Stage ^Unstage ^Toggle ^Edit | <Enter> Commit / ^Only Staged | ^All ^Deselect ^Copy ^Git difftool"
+        --header "^Stage ^Unstage ^Toggle ^Edit | <Enter> Commit Staged / ^Override | ^All ^Deselect ^Copy ^Git difftool ^View"
+
+    popd >/dev/null
 }
 
 # Interactive git stash viewing and manipulation
@@ -468,8 +477,8 @@ _fzfgitcommitcmd() {
     [ "$branch" = 'HEAD' ] && branch=''
 
     git --no-pager log --color=always -n 1000 --abbrev-commit --pretty="%C(yellow)%h %C(white)%<(19,mtrunc)%an %C(cyan)%<(14,trunc)%ar %C(reset)%s" $branch \
-        | fzf --ansi -0 --reverse "$multi" \
-            --preview='git --no-pager show --stat --color=always --pretty=fuller {1}'\
+        | fzf --ansi -0 --reverse "$multi" --no-sort \
+            --preview='git --no-pager show --stat --color=always --pretty=full {1} --; git --no-pager show --color=always --pretty="%b" {1} -- 2>/dev/null' \
             --preview-window='top:50%:wrap' \
             --bind "enter:execute[set -x; $action$cmdargs {+1}]+abort" \
             --bind "double-click:execute[set -x; $action$cmdargs {+1}]+abort" \
@@ -481,7 +490,7 @@ _fzfgitcommitcmd() {
 
 # Show the git log interactively
 glog() {
-    _fzfgitcommitcmd '' 'git show --pretty=fuller --color=always' 'Show' "$@"
+    _fzfgitcommitcmd '' 'git --no-pager show --pretty=fuller --color=always' 'Show' "$@"
 }
 
 # Show the git log interactively
@@ -514,10 +523,11 @@ alias gcocommit='gcheckoutc'
 fzc() {
     git --no-pager log --color=always -n 1000 --abbrev-commit --pretty="%C(yellow)%h %C(white)%<(19,mtrunc)%an %C(cyan)%<(14,trunc)%ar %C(reset)%s" "$@" \
         | fzf --ansi -0 --no-sort --multi --reverse \
-            --preview='git --no-pager show --stat --color=always --pretty=full {1}; git --no-pager show --color=always --pretty="%b" 2>/dev/null' \
+            --preview='git --no-pager show --stat --color=always --pretty=full {1} --; git --no-pager show --color=always --pretty="%b" {1} -- 2>/dev/null' \
             --preview-window='top:50%:wrap' \
-            --bind 'ctrl-a:select-all' \
-            --header "Esc: Close | Tab: Toggle Selection | ^A: Select All | Enter: Accept" \
+            --bind "ctrl-a:select-all" \
+            --bind "ctrl-d:deselect-all" \
+            --header "Esc: Close | Enter: Accept | Tab: Toggle Selection | ^A: Select All | ^D: Deselect" \
             | awk '{ print $1 }'
 }
 
