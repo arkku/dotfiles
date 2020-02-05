@@ -327,10 +327,9 @@ For `fasd`, the set of aliases is:
 * `psg` – `grep` the output of `ps`
 * `hgrep` – `grep` history
 * `agrep` – `grep` aliases
-* `fz` – open `fzf` to fuzzily search for file arguments for the following
-  command, e.g. `fzf vi` (in zsh the command is not executed immediately
-  afterwards, so you can type in more arguments, e.g., `fz mv` works)
-* `f.` – like `fz` but only select files in the current directory
+* `cdf` – open `fzf` to fuzzily search for directories and `cd` to the selected
+  one (can take arguments, e.g., `cdf /` will search from the root instead of
+  from the current directory)
 * `fzh` – use `fzf` to fuzzily search command history, and paste the selection
   on the command-line (but do not execute it)
 * `fzk` – use `fzf` to fuzzily search running processes, and pass them (and any
@@ -343,6 +342,12 @@ Also adds the following reusable `zsh` aliases that just print the selection to
 * `fff` – fuzzily find a find a file
 * `ff.` – fuzzily find a file in the current directory
 * `ffd` – fuzzily find a directory
+
+Each of these can take a path as an argument, e.g., `ffz /` will seach from the
+root instead of from the current directory. Remember that <kbd>Tab</kbd> can
+complete the search in zsh when pressed after the closing backtick
+<code>\`</code>. But also note that <kbd>Ctrl</kbd>–<kbd>F</kbd> is bound to
+these same features in my zsh configuration…
 
 #### Aliases for Git
 

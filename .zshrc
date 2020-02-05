@@ -1,3 +1,6 @@
+# .zshrc
+# Kimmo Kulovesi <https://arkku.dev>
+
 disable log
 
 # Add custom functions directory to fpath
@@ -311,7 +314,7 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
                 while [ $# -ge 1 ]; do
                     local arg="$1"
                     shift
-                    case "$arg"; in
+                    case "$arg" in
                         (--fzf)
                             fzfargs+=( "$1" )
                             shift
@@ -327,15 +330,15 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
                 done
                 [ -n "$have_path" -a ! "$have_path" = '.' ] && fdargs=( '.' "${fdargs[@]}" )
                 fd -0 "${fdargs[@]}" 2>/dev/null \
-                    | fzf --read0 --ansi -m --reverse \
+                    | fzf --read0 --ansi --reverse \
                     --preview="file -b -h {} 2>/dev/null; ls -lah {} 2>/dev/null" \
                     --preview-window='top:40%:wrap' "${fzfargs[@]}"
             }
 
-            ffz() { fzfind "$@"  }
-            fff() { fzfind --type=file --hidden "$@"  }
+            ffz() { fzfind --fzf -m "$@"  }
+            fff() { fzfind --fzf -m --type=file --hidden "$@"  }
             ffd() { fzfind --type=directory --hidden "$@" }
-            ff.() { fzfind --max-depth 1 --hidden "$@" }
+            ff.() { fzfind --fzf -m --max-depth 1 --hidden "$@" }
         else
             ffz() {
                 local fdargs=( '-not' '-iwholename' '*/.git/*' )
@@ -345,7 +348,7 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
                 while [ $# -ge 1 ]; do
                     local arg="$1"
                     shift
-                    case "$arg"; in
+                    case "$arg" in
                         (--fzf)
                             fzfargs+=( "$1" )
                             shift
@@ -377,38 +380,13 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
             ff.() { ffz -depth 1 "$@" }
         fi
 
-        _fzfcmdl() {
-            local cmd="$1"
-            local cmdarg=''
-            local cli=( "$2" )
-            shift 2 || return 1
-            while [ $# -ge 1 ]; do
-                local arg="$1"
-                shift
-                case "$arg"; in
-                    (-*)
-                        cli+=( "$arg" )
-                        ;;
-                    (*)
-                        # Take the last non-option as the search term
-                        [ -n "$cmdarg" ] && cli+=( "$cmdarg" )
-                        cmdarg="$arg"
-                        ;;
-                esac
-            done
-            local cmdargs=()
-            [ -n "$cmdarg" ] && cmdargs+=( "$cmdarg" )
-            local sels=( "${(@f)$( $cmd "${cmdargs[@]}" )}" )
-            [ -n "$sels" ] && print -z -- "${cli[@]:q:q} ${sels[@]:q:q}"
-        }
-
         # Ctrl-F to find from insert mode
         _zle-fzfind() {
             local sels=( "${(@f)$(ffz --max-depth 4 \
                 --fzf --bind \
-                --fzf 'ctrl-f:reload(fd -0 --color=always --hidden --max-depth 1 2>/dev/null)' \
+            --fzf 'ctrl-f:reload(fd -0 --color=always --hidden --max-depth 1 2>/dev/null)' \
                 --fzf --bind \
-                --fzf 'ctrl-d:reload(fd -0 --color=always --hidden --max-depth 4 --exclude .git --type=directory 2>/dev/null)' \
+                --fzf 'ctrl-d:reload(fd -0 --color=always --hidden --exclude .git --type=directory 2>/dev/null)' \
                 --fzf --bind \
                 --fzf 'ctrl-a:reload(fd -0 --color=always --hidden --max-depth 4 --exclude .git 2>/dev/null)' \
                 --fzf --bind \
@@ -421,15 +399,10 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
         zle -N _zle-fzfind
         bindkey -M viins '\C-F' _zle-fzfind
 
-        # fuzzy-find in nearby directories, e.g., `fz vi`
-        # can also take a path, such as `fz vi /usr/include`
-        fz() {
-            _fzfcmdl ffz "$@"
-        }
-
-        # current directory only, e.g., `f. mv`
-        f.() {
-            _fzfcmdl ff. "$@"
+        # fuzzy-find a directory and cd to it
+        cdf() {
+            local seld="$(ffd "$@")"
+            [ -n "$seld" ] && pushd "$seld" >/dev/null
         }
 
         # fuzzy-find in history and paste to command-line
