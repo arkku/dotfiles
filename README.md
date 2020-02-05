@@ -33,11 +33,13 @@ This is a checklist for me when I set up a new machine.
 * [hub](https://hub.github.com)
 * [fzf](https://github.com/junegunn/fzf)
 * [fasd](https://github.com/clvv/fasd)
+    - in my config, remember to `touch ~/.fasd-init-zsh`
 * [ripgrep](https://github.com/BurntSushi/ripgrep)
 * [fd](https://github.com/sharkdp/fd)
-    - On some systems may have to `ln -s /usr/bin/fdfind ~/bin/fd`
+    - on some systems may have to `ln -s /usr/bin/fdfind ~/bin/fd`
 * [bat](https://github.com/sharkdp/bat)
-    - On some systems may have to `ln -s /usr/bin/batcat ~/bin/bat`
+    - on some systems may have to `ln -s /usr/bin/batcat ~/bin/bat`
+    - need to run `bat cache --build` for themes to be detected
 * [rvm](https://rvm.io)
 * SF Mono font
     - `/System/Applications/Utilities/Terminal.app/Contents/Resources/Fonts`
