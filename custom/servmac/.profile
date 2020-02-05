@@ -20,7 +20,7 @@ export MAILCHECK
 if [ -n "$PS1" ]; then
     export GPG_TTY=`tty`
     if [ -n "`command -v gpg-connect-agent 2>/dev/null`" -a -c "$GPG_TTY" ]; then
-        gpg-connect-agent updatestartuptty /bye
+        gpg-connect-agent /bye >/dev/null 2>&1 && gpg-connect-agent updatestartuptty /bye
     fi
 fi
 

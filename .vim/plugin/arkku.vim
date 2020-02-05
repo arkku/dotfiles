@@ -277,6 +277,9 @@ let g:ruby_minlines=100
 
 silent! set virtualedit=onemore,block
 
+" ^? as backspace
+noremap! <C-?> <C-H>
+
 " alt backspace
 noremap! <Esc><C-H> <C-U>
 noremap! <Esc><C-?> <C-U>
