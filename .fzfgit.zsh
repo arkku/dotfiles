@@ -181,9 +181,11 @@ gunstage() {
 
 # Fuzzy-pick git files
 fzgf() {
+    local lsoptions='-lahGF'
+    ls --version 2>/dev/null | grep -q GNU && lsoptions="$lsoptions --color=always"
     git ls-files --exclude-standard -z \
         | fzf --read0 --reverse -m --query="$@" \
-        --preview="( command -v bat >/dev/null 2>&1 && bat --color=always --style=plain --paging=never {} || cat {}) | head -n 1000" \
+        --preview="test -d {} && ls $lsoptions {} || ( command -v bat >/dev/null 2>&1 && bat --color=always --style=plain --paging=never {} || cat {}) | head -n 1000" \
         --preview-window='top:50%:wrap' \
         --bind "ctrl-a:select-all" \
         --bind "ctrl-d:deselect-all" \
@@ -203,9 +205,11 @@ fzgcf() {
 
 # Fuzzy-pick git files recursively into submodules
 fzgfr() {
+    local lsoptions='-lahGF'
+    ls --version 2>/dev/null | grep -q GNU && lsoptions="$lsoptions --color=always"
     git ls-files --exclude-standard --recurse-submodules -z \
         | fzf --read0 --reverse -m --query="$@" \
-        --preview="( command -v bat >/dev/null 2>&1 && bat --color=always --style=plain --paging=never {} || cat {}) | head -n 1000" \
+        --preview="test -d {} && ls $lsoptions {} || ( command -v bat >/dev/null 2>&1 && bat --color=always --style=plain --paging=never {} || cat {}) | head -n 1000" \
         --preview-window='top:50%:wrap' \
         --bind "ctrl-a:select-all" \
         --bind "ctrl-d:deselect-all" \
@@ -214,7 +218,7 @@ fzgfr() {
 
 # Git edit in "$EDITOR"
 ge() {
-    _fzfcmd 0 git ls-files -z --recurse-submodules --fzfm --fzf0 --exclude-standard --fzfpreview "command -v bat >/dev/null 2>&1 && bat --color=always --style=plain --paging=never {} || cat {}" -- "$EDITOR" -- "$@"
+    _fzfcmd 0 git ls-files -z --recurse-submodules --fzfm --fzf0 --exclude-standard --fzfpreview "test -d {} && ls -lhG {} || command -v bat >/dev/null 2>&1 && bat --color=always --style=plain --paging=never {} || cat {}" -- "$EDITOR" -- "$@"
 }
 
 gdf() {
