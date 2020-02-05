@@ -270,7 +270,7 @@ gcommit() {
     fi
 
     # Go to the repository root, otherwise we may miss staged files
-    pushd `git rev-parse --show-toplevel` >/dev/null || return 1
+    pushd "$(git rev-parse --show-toplevel)" >/dev/null || return 1
 
     # TODO: change `git reset HEAD` to `git restore --staged` once common
     local statusfunc='git --no-pager diff --name-only --relative --staged | sed "s/^/A /"; git --no-pager ls-files -m -o -v -d --exclude-standard'
@@ -509,12 +509,12 @@ gfixup() {
 
 # Pick a commit and revert it
 grevert() {
-    _fzfgitcommitcmd '' 'git revert' 'Revert Commit' -- "$@"
+    _fzfgitcommitcmd '' 'git revert' 'Revert Commit' "$@"
 }
 
 # Pick a commit to check out
 gcheckoutc() {
-    _fzfgitcommitcmd '' 'git checkout' 'Checkout Commit' -- "$@"
+    _fzfgitcommitcmd '' 'git checkout' 'Checkout Commit' "$@"
 }
 
 # Pick a commit to check out
