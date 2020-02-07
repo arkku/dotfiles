@@ -559,6 +559,10 @@ let g:Tlist_Compact_Format=1
 " Fallback if there is no fzf
 nmap <LocalLeader>z <C-P>
 
+" cd to current file's directory
+command! CD lcd %:p:h
+command! CDC cd %:p:h
+
 if executable('fzf')
     " Add fzf if installed
     if !empty(glob(expand("~/.fzf")))

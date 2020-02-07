@@ -171,6 +171,12 @@ These bindings are for the normal mode, preceded by the local leader (<kbd>Space
 * `T` – open tag search (if CtrlP plugin is installed)
 * `z` – open `fzf` fuzzy search for files (powered by `fd` if installed)
 
+#### Commands
+
+* `CD` – change the current window's working directory to that of the current
+  file
+* `CD!` – change every window's working directory to that of the current file
+
 ### Shell
 
 I have switched my default shell on most computers from `bash` to `zsh`. Many
@@ -369,6 +375,11 @@ these same features in my zsh configuration…
 * `gsur` – `git submodule update --remote --recursive`
 * `gls` – `git ls-files --exclude-standard`
 * `glsm` – `git ls-files -m -o --exclude-standard` (modified files)
+* `gbranch` – `git checkout -b`
+* `gresetmb` – `git reset` to merge base of `HEAD` and the commit or branch
+  (default `master`) given as argument (e.g., `gresetmb develop` will reset the
+  current feature branch to the point where it diverged from the branch
+  `develop`, and all changes since will show as changes to the working copy)
 
 The following aliases have an interactive, fuzzy-searchable selection which
 requires `fzf`, and most are only for zsh. Where applicable, there
@@ -397,13 +408,25 @@ intentionally doesn't close after selection).
 * `gcheckoutt` or `gcotag` – check out a tag
 * `gcheckoutc` or `gcocommit` – check out a commit
 * `grebase` – select branch and rebase
+* `grebasei` – select branch and rebase interactively
+* `grebasec` – select commit and rebase interactively
 * `gmerge` – select branch and merge
+* `gmergef` – select branch and merge, no fast forward (e.g., merge a feature
+  branch and force there to be a new commit)
+* `greset` – select a branch and reset to its state
 * `glog` – view individual commits and their logs
 * `gcherry` – cherry-pick an individual commit (this can take a branch as the
   first argument, other arguments are passed to the `git commit` command)
 * `gfixup` – select a commit to fix-up with a new commit
 * `grevert` – select a commit to revert
 * `gbranchdel` – select a branch to remove
+* `gmovetobranch newbranch` – move the current state to the new branch
+  `newbranch` (also stashing any changes to working copy and moving them),
+  then interactively pick a commit and _hard reset_ the current branch to that
+  commit (i.e., the chosen commit is the last one to _keep_ on the current
+  branch), then switch to the new branch (e.g., realize that the most
+  recent commits should have been on a new feature branch, and retroactively
+  move them to one)
 * `gtagdel` – select a tag to remove
 * `gissues` – view GitHub issues interactively (requires `hub`)
 * `gissuecommit` – select an issue and pre-populate "Closes #" into the message
@@ -428,6 +451,18 @@ intentionally doesn't close after selection).
   part of other commands)
 * `fzpullr` – select a GitHub pull request and print its number (e.g., to be
   used as part of other commands)
+
+Most of the commands will take arguments, which will generally be passed on to
+the eventual git command (e.g., `gmerge --squash` will result in `git merge
+--squash`). Most of commands that select a commit can take a branch name to
+choose commits from a branch other than the current, e.g., `gcherry master`
+would cherry-pick from commits on `master`. In cases where the argument doesn't
+make sense otherwise, it is used as the initial search, e.g., `gco origin`
+would start the branch selection with `origin` already written into the
+search. This is handy when you know that a given search term will only give one
+result, then you can just do `gco f/bar`<kbd>Enter</kbd><kbd>Enter</kbd>
+(although it is identical to `gco`<kbd>Enter</kbd>`f/bar`<kbd>Enter</kbd>, the
+former retains the search string in shell command history).
 
 #### Global Aliases
 

@@ -179,12 +179,40 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
     fi
 
     # Aliases
+
+    # Grep while excluding version control dirs
     alias gr='grep --color=auto --exclude-dir={.git,.hg,.svn,.bzr}'
+
+    # Git status
     alias gs='git status --show-stash'
+
+    # Git ubdate submodules, recursively
     alias gsu='git submodule update --init --recursive'
-    alias gsur='git submodule update --remote --recursive'
+
+    # Git update submodules from remote, recursively
+    alias gsur='git submodule update --init --remote --recursive'
+
+    # Git list files
     alias gls='git ls-files --exclude-standard'
+
+    # Git list modified files
     alias glsm='git ls-files -m -o --exclude-standard'
+
+    # Git new branch
+    alias gbranch='git checkout -b'
+
+    # Git reset to merge base
+    gresetmb() {
+        local trunk="$1"
+        [ -z "$1" ] && trunk='master'
+        local base="$(git merge-base "$trunk" HEAD)"
+        if [ -n "$base" ]; then
+            git reset "$base"
+        else
+            echo "Error: HEAD does not have a common ancestor with $trunk" >&2
+            return 1
+        fi
+    }
 
     # cd to the root of the git repository
     cdr() {

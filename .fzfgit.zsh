@@ -410,9 +410,22 @@ grebase() {
     fzfgitbranchcmd remotes 'git rebase' 'Rebase' "$@"
 }
 
+# Pick a branch and rebase interactively
+grebasei() {
+    fzfgitbranchcmd remotes 'git rebase --interactive' 'Rebase Interactive' "$@"
+}
+
 # Pick a branch and merge
 gmerge() {
-    fzfgitbranchcmd '' 'git merge' 'Merge' "$@"
+    fzfgitbranchcmd remotes 'git merge' 'Merge' "$@"
+}
+
+# Pick a branch and merge, no fast forward
+alias gmergef='gmerge --no-ff'
+
+# Pick a branch and reset to its state
+greset() {
+    fzfgitbranchcmd remotes 'git reset' 'Reset to Branch' "$@"
 }
 
 # Pick a branch to remove
@@ -532,6 +545,46 @@ gcheckoutc() {
 
 # Pick a commit to check out
 alias gcocommit='gcheckoutc'
+
+# Pick a commit to reset the current branch to it
+gresetc() {
+    _fzfgitcommitcmd '' 'git reset' 'Reset to Commit' -- "$@"
+}
+
+# Pick a commit and move everything after it to a new branch
+gmovetobranch() {
+    local newbranch="$1"
+    if [ -z "$newbranch" ]; then
+        echo "Usage: $0 newbranch"
+        return 1
+    fi
+    shift
+    local oldhead="$(git rev-parse HEAD)"
+    git branch "$newbranch" || return 1
+    local stashed=''
+    if ! git diff-index --quiet HEAD --; then
+        if git stash; then
+            stashed=1
+        else
+            echo "Could not stash changes in working copy" >&2
+            git branch -D "$newbranch"
+        fi
+    fi
+    _fzfgitcommitcmd '' 'git reset --hard' "Pick LAST commit to KEEP on $(git branch --show)" -- "$@"
+    if [ "$(git rev-parse HEAD)" = "$oldhead" ]; then
+        echo "No change, abort move to branch" >&2
+        set -x; git branch -D "$newbranch"
+        git branch --show
+    else
+        set -x; git switch "$newbranch"
+    fi
+    [ -n "$stashed" ] && git stash pop
+}
+
+# Pick a commit and interactively rebase
+grebasec() {
+    _fzfgitcommitcmd '' 'git rebase --interactive' 'Rebase on Commit' "$@"
+}
 
 # Pick git commits, e.g.: git rebase --onto `fzc`<TAB>
 fzc() {
