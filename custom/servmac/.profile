@@ -1,3 +1,5 @@
+[ -z "$SUDO_USER" -a ! "$UID" -eq 0 ] && umask 027 || umask 022
+
 export LANG=en_US.UTF-8
 export LC_CTYPE=en_US.UTF-8
 export LC_MESSAGES=en_US.UTF-8

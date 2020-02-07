@@ -1,6 +1,6 @@
 # ~/.profile: executed by the command interpreter for login shells.
 
-umask 027
+[ -z "$SUDO_USER" -a ! "$UID" -eq 0 ] && umask 027 || umask 022
 
 export MAIL="$HOME/Maildir"
 export CONCURRENCY_LEVEL=2

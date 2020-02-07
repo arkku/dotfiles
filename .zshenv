@@ -1,6 +1,6 @@
 # UTF-8 combining characters
 setopt combiningchars
 
-umask 027
+[ -z "$SUDO_USER" -a ! "$UID" -eq 0 ] || umask 022
 
 [ -e "$HOME/.zshenv_private" ] && . "$HOME/.zshenv_private"

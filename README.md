@@ -202,6 +202,14 @@ The profiles generally ensure that `rvm` is loaded if installed, and that
 installed in `/usr/local/bin` override older versions shipped with the OS, and
 `~/bin` can be used to override both.
 
+On machines where I set `umask 027` (i.e., no default permissions for others),
+it is also helpful to add to `sudoers` or `/etc/sudoers.d`:
+
+```
+Defaults umask_override
+Defaults umask=0022
+```
+
 #### Prompt
 
 * the prompt truncates the current working directory in various ways, e.g., the
