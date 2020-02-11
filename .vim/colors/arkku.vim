@@ -66,8 +66,7 @@ hi Structure term=none cterm=bold gui=bold guifg=#000000
 hi Typedef term=none cterm=bold gui=bold guifg=#3F6E74
 hi StorageClass term=none cterm=bold gui=bold guifg=#000000
 hi clear Type
-"hi Type term=none cterm=bold gui=bold guifg=#48286D
-hi Type term=none cterm=bold gui=bold guifg=#4B3366
+hi Type term=none cterm=bold gui=bold guifg=#0B4F79
 
 hi clear SpecialChar
 hi clear Delimiter
@@ -213,7 +212,10 @@ if &background == "dark"
     hi Include term=none cterm=bold ctermfg=lightgreen gui=none guifg=#00ff66
     hi Macro term=none cterm=bold ctermfg=lightgreen gui=none guifg=#00ff66
 
-    hi Type term=none cterm=bold gui=bold guifg=#f0f0ff
+    hi Structure term=none cterm=bold gui=bold guifg=#ffffff
+    hi StorageClass term=none cterm=bold gui=bold guifg=#ffffff
+    hi Typedef term=none cterm=bold gui=bold guifg=#5dd8ff
+    hi Type term=none cterm=bold gui=bold guifg=#99ccff
 
     hi Special term=bold cterm=none ctermfg=cyan gui=none guifg=#99bbff
 

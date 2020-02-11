@@ -117,6 +117,8 @@ anymore).
   i.e., jump to newer cursor position (such as after jumping to an older
   position with <kbd>Ctrl</kbd>–<kbd>O</kbd>, which is also conveniently
   adjacent in Dvorak)
+* <kbd>Ctrl</kbd>-<kbd>Q</kbd> – in insert mode inserts the previously inserted
+  text, i.e., the original behaviour of <kbd>Ctrl</kbd>–<kbd>A</kbd>
 
 #### Unimpaired-style Bindings
 
