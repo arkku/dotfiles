@@ -319,12 +319,12 @@ gstash() {
             --query="$@" --reverse \
             --preview='git --no-pager stash show --color=always --stat -- {1}; echo; git --no-pager stash show --color=always -p {1}' \
             --preview-window='top:50%:wrap' \
-            --bind "ctrl-a:execute(set -x; git stash pop -- {2})+abort" \
+            --bind "ctrl-a:execute(set -x; git stash pop {2})+abort" \
             --bind "ctrl-b:execute(set -x; git stash branch stash-{1} {1})+abort" \
-            --bind "ctrl-x:execute(set -x; git stash drop -- {2})+abort" \
+            --bind "ctrl-x:execute[set -x; git stash drop {2}]+abort" \
             --header "Esc: Close | Enter: Diff | ^A: Apply/Pop | ^B: Branch | ^X: DROP" \
             | _drop_n_fields0 -1 \
-            | xargs -0 git stash show --color=always -p 
+            | xargs -0 git diff
 }
 
 # List branches and/or tags
