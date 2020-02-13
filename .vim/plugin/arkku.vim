@@ -10,7 +10,7 @@ silent! set encoding=utf-8
 
 syntax on
 
-set belloff=all
+silent! set belloff=all
 set backspace=indent,eol,start
 set nostartofline       " Try to stay in the same column
 
@@ -75,8 +75,8 @@ set cino+=J1            " Indent JavaScript object declarations
 
 set updatetime=521      " Update swap file more often
 set hidden              " Hide, rather than unload, abandoned buffers
-set shortmess+=c        " Don't show completion menu info messages
-set signcolumn=yes      " Always show the sign column
+silent! set shortmess+=c        " Don't show completion menu info messages
+silent! set signcolumn=yes      " Always show the sign column
 
 " Return in insert mode: accept autocompletion (endwise- and closer-compatible)
 let g:endwise_no_mappings=1
