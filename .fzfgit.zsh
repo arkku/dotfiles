@@ -563,11 +563,11 @@ gmovetobranch() {
     git branch "$newbranch" || return 1
     local stashed=''
     if ! git diff-index --quiet HEAD --; then
-        if git stash; then
-            stashed=1
-        else
+        stashed="move-$oldhead-to-$newbranch"
+        if ! git stash push -m "$stashed"; then
             echo "Could not stash changes in working copy" >&2
             git branch -D "$newbranch"
+            return 1
         fi
     fi
     _fzfgitcommitcmd '' 'git reset --hard' "Pick LAST commit to KEEP on $(git branch --show)" -- "$@"
@@ -575,10 +575,13 @@ gmovetobranch() {
         echo "No change, abort move to branch" >&2
         set -x; git branch -D "$newbranch"
         git branch --show
+        return 1
     else
-        set -x; git switch "$newbranch"
+        git switch "$newbranch"
     fi
-    [ -n "$stashed" ] && git stash pop
+    if [ -n "$stashed" ] && [[ $(git --no-pager stash list --pretty='%gs' -n 1) == *"$stashed"* ]]; then
+        git stash pop
+    fi
 }
 
 # Pick a commit and interactively rebase
