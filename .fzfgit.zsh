@@ -517,7 +517,7 @@ _fzfgitcommitcmd() {
 
 # Show the git log interactively
 glog() {
-    _fzfgitcommitcmd '' 'git --no-pager show --pretty=fuller --color=always' 'Show' "$@"
+    _fzfgitcommitcmd '' 'git show --pretty=fuller --color=always' 'Show' "$@"
 }
 
 # Show the git log interactively
