@@ -106,7 +106,7 @@ if [ -n "$PS1" -a -z "$ENVONLY" ]; then
 
     # Aliases
     alias gr='grep --color=auto --exclude-dir={.git,.hg,.svn,.bzr}'
-    alias gs='git status --show-stash'
+    alias gs='git status'
     alias gsu='git submodule update --init --recursive'
     alias gsur='git submodule update --remote --recursive'
 

@@ -184,7 +184,7 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
     alias gr='grep --color=auto --exclude-dir={.git,.hg,.svn,.bzr}'
 
     # Git status
-    alias gs='git status --show-stash'
+    alias gs='git status'
 
     # Git ubdate submodules, recursively
     alias gsu='git submodule update --init --recursive'
