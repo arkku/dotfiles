@@ -344,7 +344,7 @@ if [ -n "$PS1" -a -z "$ENVONLY" ]; then
 
     if ls --version 2>/dev/null | grep -q GNU; then
         alias ls='ls -F --color=auto --group-directories-first'
-    elif [ "$CLICOLOR" = 1 ]; then
+    elif [ "$CLICOLOR" = 1 ] && ls -G "$HOME" >/dev/null 2>&1; then
         if [ "$BACKGROUND" = 'light' ]; then
             export LSCOLORS='AxfxHehecxegehBDBDAhaD'
         else
