@@ -28,6 +28,8 @@
 #
 # For example: ./link-files -f -c local/myconfig
 #
+# The default custom configuration name is read from `.dotfiles_custom`.
+#
 # By Kimmo Kulovesi <https://arkku.dev/>
 # Distribute freely, use at your own risk only!
 
@@ -39,6 +41,8 @@ cmd_prefix=''
 verbose=''
 force=''
 custom=''
+
+[ -r '.dotfiles_custom' ] && custom="$(cat '.dotfiles_custom')"
 
 while [ -n "$1" ]; do
     case "$1" in
@@ -91,8 +95,12 @@ Options:
     --source=PATH   Use the directory at PATH as the source for files.
     -d D
     --destination=D Use the directory D as the destination (default "\$HOME")
+    -c PATH
+    --custom=PATH   Use the directory at PATH as an additional source for files
+                    that takes precedence over other places. This option is
+                    read from ".dotfiles_custom" if it exists.
 
-    Options cannot be combined, i.e., use "-v -f" instead of "-vf".
+    Note: Options must be space-separated, i.e., use "-v -f" instead of "-vf".
 
 Example:
     $(basename "$0") -v -f
@@ -135,7 +143,7 @@ find . -type f -print0 | while read -d '' file; do
     dst=''
 
     case "$src" in
-        *DS_Store|*.swp)
+        *DS_Store|*.swp|*.dotfiles_custom)
             continue
             ;;
         $platform/*)    # Platform-specific file for the current platform
