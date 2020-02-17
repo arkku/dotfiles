@@ -378,6 +378,12 @@ these same features in my zsh configuration…
 * `gls` – `git ls-files --exclude-standard`
 * `glsm` – `git ls-files -m -o --exclude-standard` (modified files)
 * `gbranch` – `git checkout -b`
+* `gfeature` – make a new branch, prefixing the name given as argument with
+  `feature/`, and push the branch to upstream (default `origin`, but may be
+  given as the second argument)
+* `gfeaturedone` – push and then delete the current branch if its name starts
+  with `feature/` and check out `master` (or the branch given as argument)
+* `gtag` – create a new signed tag, and push tags
 * `gresetmb` – `git reset` to merge base of `HEAD` and the commit or branch
   (default `master`) given as argument (e.g., `gresetmb develop` will reset the
   current feature branch to the point where it diverged from the branch
@@ -597,6 +603,7 @@ The shared configuration enables a global ignorefile `~/.gitignore_global`
 * `mt` – mergetool
 * `subu` – `submodule update --init --recursive`
 * `subr` – `submodule update --remote --recursive`
+* `pushu` – `push -u origin HEAD`
 
 The `.gitconfig_shared` also contains a difftool and mergetool definitions for
 `nvim`, as well as an additional mergetool definition for `nvimfugitive` for

@@ -201,6 +201,40 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
     # Git new branch
     alias gbranch='git checkout -b'
 
+    # Git new feature branch on remote
+    gfeature() {
+        local branch="$1"
+        if [ -z "$branch" ] ; then
+            echo "Usage: $0 new_feature_branch [remote]"
+            return 1
+        fi
+        [[ "$branch" != "feature/"* ]] && branch="feature/$branch"
+        local remote="$2"
+        [ -z "$remote" ] && remote='origin'
+        git checkout -b "$branch" && git push -u "$remote" HEAD
+    }
+
+    # Git push and then close/delete the current feature branch
+    gfeaturedone() {
+        local branch="$(git rev-parse --abbrev-ref HEAD)"
+        local trunk='master'
+        [ -z "$1" ] && master="$1"
+        if [ -z "$branch" -o "$branch" = "$trunk" ] || ! [[ "$branch" == "feature/"* ]]; then
+            echo 'Must be run on a feature branch!'
+            return 1
+        fi
+        git push && git checkout "$trunk" && git branch -D "$branch"
+    }
+
+    # Git new tag, pushed to remote
+    gtag() {
+        if [ -z "$1" ]; then
+            echo "Usage: $0 new_tag"
+            return 1
+        fi
+        git tag -s "$@" && git push --tags
+    }
+
     # Git reset to merge base
     gresetmb() {
         local trunk="$1"

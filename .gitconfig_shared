@@ -9,6 +9,7 @@
         l = log --abbrev-commit --pretty=\"format:%C(yellow)%h %C(white)%G?%Creset %an %C(white)(%ar)%Creset\t%s\"
         subu = submodule update --init --recursive
         subr = submodule update --init --remote --recursive
+        pushu = push -u origin HEAD
         dt = difftool
         mt = mergetool
 [push]
