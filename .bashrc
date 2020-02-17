@@ -106,9 +106,71 @@ if [ -n "$PS1" -a -z "$ENVONLY" ]; then
 
     # Aliases
     alias gr='grep --color=auto --exclude-dir={.git,.hg,.svn,.bzr}'
+
+    # Git status
     alias gs='git status'
+
+    # Git ubdate submodules, recursively
     alias gsu='git submodule update --init --recursive'
-    alias gsur='git submodule update --remote --recursive'
+
+    # Git update submodules from remote, recursively
+    alias gsur='git submodule update --init --remote --recursive'
+
+    # Git list files
+    alias gls='git ls-files --exclude-standard'
+
+    # Git list modified files
+    alias glsm='git ls-files -m -o --exclude-standard'
+
+    # Git new branch
+    alias gbranch='git checkout -b'
+
+    # Git new feature branch on remote
+    gfeature() {
+        local branch="$1"
+        if [ -z "$branch" ] ; then
+            echo "Usage: $0 new_feature_branch [remote]"
+            return 1
+        fi
+        [[ "$branch" != "feature/"* ]] && branch="feature/$branch"
+        local remote="$2"
+        [ -z "$remote" ] && remote='origin'
+        git checkout -b "$branch" && git push -u "$remote" HEAD
+    }
+
+    # Git push and then close/delete the current feature branch
+    gfeaturedone() {
+        local branch="$(git rev-parse --abbrev-ref HEAD)"
+        local trunk='master'
+        [ -z "$1" ] && master="$1"
+        if [ -z "$branch" -o "$branch" = "$trunk" ] || ! [[ "$branch" == "feature/"* ]]; then
+            echo 'Must be run on a feature branch!'
+            return 1
+        fi
+        git push && git checkout "$trunk" && git branch -D "$branch"
+    }
+
+    # Git new tag, pushed to remote
+    gtag() {
+        if [ -z "$1" ]; then
+            echo "Usage: $0 new_tag"
+            return 1
+        fi
+        git tag -s "$@" && git push --tags
+    }
+
+    # Git reset to merge base
+    gresetmb() {
+        local trunk="$1"
+        [ -z "$1" ] && trunk='master'
+        local base="$(git merge-base "$trunk" HEAD)"
+        if [ -n "$base" ]; then
+            git reset "$base"
+        else
+            echo "Error: HEAD does not have a common ancestor with $trunk" >&2
+            return 1
+        fi
+    }
 
     # cd to the root of the current git repository
     cdr() {
