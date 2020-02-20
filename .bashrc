@@ -249,10 +249,20 @@ if [ -n "$PS1" -a -z "$ENVONLY" ]; then
     # Copy symlink-resolved path to current directory
     alias cpath='( cd -P "$PWD" && echo -n "$PWD" | clipcopy "$PWD" ) && echo "$PWD"'
 
+    # sudo-edit
+    alias svi='sudo -e'
+
     # Neovim
     if [ -n "$(command -v nvim)" ]; then
         alias vi='nvim'
         alias nvimdiff='nvim -d'
+        nvis() {
+            if [ -e "Session.vim" ]; then
+                nvim -S Session.vim "$@"
+            else
+                nvim "$@"
+            fi
+        }
     fi
 
     if [ "`uname`" = "IRIX" ]; then

@@ -136,7 +136,7 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
 
     # Each line is pasted and escaped as a separate argument,
     # whitespace is trimmed, and already quoted (' or ") are not escaped
-    escape-and-paste-input() {
+    _escape-and-paste-input() {
         local IFS=$'\n'
         local pasted
         if [ -z "$1" ]; then
@@ -158,24 +158,24 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
         done
         LBUFFER="${LBUFFER/% }"
     }
-    zle -N escape-and-paste-input
+    zle -N _escape-and-paste-input
 
     if [ -n "$CLIPPASTE" ]; then
         eval 'clippaste() { '"$CLIPPASTE"' }'
 
         # Bind ^B to paste ("Baste"?) and escape from system clipboard
-        zle -N escape-and-paste-input
-        bindkey '\C-B' escape-and-paste-input
+        zle -N _escape-and-paste-input
+        bindkey '\C-B' _escape-and-paste-input
     fi
 
     if [ -n "$TMUX" -a -n "$TMUXPASTE" ]; then
         eval 'tmuxpaste() { '"$TMUXPASTE"' }'
 
-        paste-tmux-input() {
-            zle escape-and-paste-input "$(tmuxpaste)"
+        _paste-tmux-input() {
+            zle _escape-and-paste-input "$(tmuxpaste)"
         }
-        zle -N paste-tmux-input
-        bindkey '\C-T' paste-tmux-input
+        zle -N _paste-tmux-input
+        bindkey '\C-T' _paste-tmux-input
     fi
 
     # Aliases
@@ -324,6 +324,9 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
 
     # Copy symlink-resolved path to current directory
     alias cpath='( cd -P "$PWD" && clipcopy "$PWD" && echo "$PWD" )'
+
+    # sudo-edit
+    alias svi='sudo -e'
 
     # Neovim
     if [ -n "$(command -v nvim)" ]; then
@@ -660,11 +663,11 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
     zsh-check-changes true
 
     # Smarter kill word
-    smart-backward-kill-word() {
+    _smart-backward-kill-word() {
         local WORDCHARS='-_'
         zle backward-kill-word
     }
-    zle -N smart-backward-kill-word
+    zle -N _smart-backward-kill-word
 
     local mode
 
@@ -675,8 +678,8 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
     bindkey '\e[6~' history-search-forward
     bindkey '\e[1;5A' up-line
     bindkey '\e[1;5B' down-line
-    bindkey '\C-W' smart-backward-kill-word
-    bindkey '\e\C-?' smart-backward-kill-word
+    bindkey '\C-W' _smart-backward-kill-word
+    bindkey '\e\C-?' _smart-backward-kill-word
     bindkey '\C-K' kill-word
     bindkey '\C-U' kill-whole-line
     bindkey '\C-Y' yank
@@ -734,7 +737,8 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
     bindkey '\C- ' edit-command-line
     bindkey -a '\C- ' edit-command-line
 
-    zle-insmode-ctrlz() {
+    # Execute `fg` on Ctrl-Z if the buffer is empty
+    _zle-insmode-ctrlz() {
         if [ -z "$BUFFER" ]; then
             if zle push-line-or-edit && [ -z "$BUFFER" ]; then
                 LBUFFER=' fg'
@@ -744,8 +748,8 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
             zle self-insert
         fi
     }
-    zle -N zle-insmode-ctrlz
-    bindkey -M viins '\C-Z' zle-insmode-ctrlz
+    zle -N _zle-insmode-ctrlz
+    bindkey -M viins '\C-Z' _zle-insmode-ctrlz
 
     # Vim-like surround
     autoload -Uz surround
@@ -768,11 +772,34 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
     done
     unset m c
 
+    # Toggle "sudo" at the beginning of the command line
+    _toggle-sudo() {
+        if [[ -z $BUFFER ]]; then
+            LBUFFER='please'
+        elif [[ $BUFFER == please ]]; then
+            LBUFFER=''
+        elif [[ $BUFFER == sudo\ * ]]; then
+            LBUFFER="${LBUFFER#sudo }"
+        elif [[ $BUFFER == svi\ * ]]; then
+            LBUFFER="${LBUFFER#svi }"
+            LBUFFER="$EDITOR $LBUFFER"
+        elif [[ $BUFFER == $EDITOR\ * ]]; then
+            LBUFFER="${LBUFFER#$EDITOR }"
+            LBUFFER="svi $LBUFFER"
+        elif [[ $BUFFER == vi\ * ]]; then
+            LBUFFER="${LBUFFER#vi }"
+            LBUFFER="svi $LBUFFER"
+        else
+            LBUFFER="sudo $LBUFFER"
+        fi
+    }
+    zle -N _toggle-sudo
+    bindkey -M viins '\C-S' _toggle-sudo
+
     # Expand uppercase aliases as we type (credit: Pat Regan)
     expand-global-alias() {
-        if [[ $LBUFFER =~ ' [:][A-Z0-9]+$' ]]; then # Only expand uppercase aliases
+        if [[ $LBUFFER =~ ' [:][A-Z0-9]+$' ]]; then # Only expand :ALIASes
          zle _expand_alias
-         #zle expand-word
        fi
        zle self-insert
     }
@@ -872,13 +899,13 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
     zle -N zle-line-init
     zle -N zle-keymap-select
 
-    accept-line-vicmd() {
+    _accept-line-vicmd() {
         prompt_vi_mode=''
         zle reset-prompt
         zle accept-line
     }
-    zle -N accept-line-vicmd
-    bindkey -M vicmd '\C-M' accept-line-vicmd
+    zle -N _accept-line-vicmd
+    bindkey -M vicmd '\C-M' _accept-line-vicmd
 
     # Prompt
     pwd_prompt=''
