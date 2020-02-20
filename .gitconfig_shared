@@ -7,6 +7,11 @@
 	last = log -1 -p HEAD
         ll = log --abbrev-commit --pretty=\"format:%h - %an, %ar:\t%s\"
         l = log --abbrev-commit --pretty=\"format:%C(yellow)%h %C(white)%G?%Creset %an %C(white)(%ar)%Creset\t%s\"
+        gl = log --oneline --decorate --graph --all
+        pur = pull --rebase -v
+        pura = pull --rebase --autostash -v
+        puf = push --force-with-lease
+        put = push --tags
         subu = submodule update --init --recursive
         subr = submodule update --init --remote --recursive
         pushu = push -u origin HEAD

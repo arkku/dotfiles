@@ -230,30 +230,44 @@ gdf() {
         color=never
     fi
     local gargs='--no-pager diff --name-only --relative -z --color=always'
-    local staged=''
+    local diffargs=''
     local stagedprompt='^A: Add'
-    if [ "$1" = '--staged' -o "$1" = '--cached' ]; then
-        staged=" $1"
-        stagedprompt='^U: Unstage'
+    local query=''
+    while [ $# -ge 1 ]; do
+        local arg="$1"
         shift
-    fi
+        case "$arg" in
+            (--staged|--cached)
+                diffargs="$diffargs $arg"
+                stagedprompt='^U: Unstage'
+                ;;
+            (-*)
+                diffargs="$diffargs $arg"
+                ;;
+            (*)
+                query="$query $arg"
+                ;;
+        esac
+    done
+    query="${query## }"
+
     # TODO: change `git reset HEAD` to `git restore --staged` once common
-    local diffcmd="reset; git diff$staged --color=$color {} | $pager"
-    gargs="$gargs$staged"
+    local diffcmd="reset; git diff$diffargs --color=$color {} | $pager"
+    gargs="$gargs$diffargs"
     git ${gargs} | fzf -0 --read0 --no-multi \
-        --query="$@" --reverse \
-        --preview="git --no-pager diff --color=always ${staged} -- {} 2>/dev/null" \
+        --query="$query" --reverse \
+        --preview="git --no-pager diff --color=always $diffargs -- {} 2>/dev/null" \
         --preview-window='top:50%:wrap' \
         --bind "enter:execute[$diffcmd]" \
         --bind "double-click:execute[$diffcmd]" \
         --bind "ctrl-a:execute(set -x; git add -- {})+reload(git $gargs 2>/dev/null)" \
         --bind "ctrl-u:execute(set -x; git reset HEAD -- {})+reload(git $gargs 2>/dev/null)" \
-        --bind "ctrl-g:execute(git difftool -y$staged -- {})" \
+        --bind "ctrl-g:execute(git difftool -y$diffargs -- {})" \
         --bind "ctrl-o:execute(set -x; git commit)+abort" \
         --bind "ctrl-c:execute(echo -n {} | clipcopy)" \
         --bind "ctrl-e:execute($EDITOR {})+reload(git $gargs 2>/dev/null)" \
         --bind "ctrl-r:reload(git $gargs 2>/dev/null)+clear-screen" \
-        --header "Esc: Close | $stagedprompt | ^E: Edit | ^G: Git difftool | ^R: Reload${staged:+ | ^O: Commit} | ^C: Copy"
+        --header "Esc: Close | $stagedprompt | ^E: Edit | ^G: Git difftool | ^R: Reload${diffargs:+ | ^O: Commit} | ^C: Copy"
 }
 
 # Interactive git diff of staged changes

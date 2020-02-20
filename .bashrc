@@ -105,16 +105,45 @@ if [ -n "$PS1" -a -z "$ENVONLY" ]; then
     bind '"\C-U": kill-whole-line'
 
     # Aliases
+
+    # Grep while excluding version control dirs
     alias gr='grep --color=auto --exclude-dir={.git,.hg,.svn,.bzr}'
 
     # Git status
     alias gs='git status'
 
+    # Git show last commit
+    alias glast='git log -1 -p HEAD'
+
+    # Git clone
+    alias gcl='git clone --recurse-submodules'
+
+    # Git fetch all
+    alias gfa='git fetch --all --prune'
+
+    # Git update from remote
+    alias gupdate='git pull --rebase --autostash -v'
+
+    # Git pull
+    alias gpull='git pull'
+
+    # Git push
+    alias gpush='git push'
+
+    # Git push with tags
+    alias gpusht='git push && git push --tags'
+
+    # Git push all
+    alias gpusha='git push --all && git push --tags'
+
     # Git ubdate submodules, recursively
-    alias gsu='git submodule update --init --recursive'
+    alias gsubu='git submodule update --init --recursive'
 
     # Git update submodules from remote, recursively
-    alias gsur='git submodule update --init --remote --recursive'
+    alias gsubr='git submodule update --init --remote --recursive'
+
+    # Git log with a graph
+    alias ggl='git log --oneline --decorate --graph --all'
 
     # Git list files
     alias gls='git ls-files --exclude-standard'

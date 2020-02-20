@@ -373,8 +373,16 @@ these same features in my zsh configuration…
 * `cdrr` – `cd` to the root of the outermost repository (from submodules at any
   depth)
 * `gs` – `git status`
-* `gsu` – `git submodule update --init --recursive`
-* `gsur` – `git submodule update --remote --recursive`
+* `glast` – show the last commit
+* `ggl` – `git log` with a branching graph
+* `gcl` – `git clone --recurse-submodules`
+* `gpull` – `git pull`
+* `gupdate` – `git pull --rebase --autostash -v`
+* `gpush` – `git push`
+* `gpusht` – `git push && git push --tags`
+* `gpusha` – `git push --all && git push --tags`
+* `gsubu` – `git submodule update --init --recursive`
+* `gsubr` – `git submodule update --remote --recursive`
 * `gls` – `git ls-files --exclude-standard`
 * `glsm` – `git ls-files -m -o --exclude-standard` (modified files)
 * `gbranch` – `git checkout -b`
@@ -599,8 +607,13 @@ The shared configuration enables a global ignorefile `~/.gitignore_global`
 * `last` – show the last commit
 * `l` – pretty-print the log with colors
 * `ll` – pretty-print the log
+* `gl` – log with branching graph
 * `dt` – difftool
 * `mt` – mergetool
+* `pur` – `pull --rebase`
+* `pura` – `pull --rebase --autostash`
+* `puf` – `push --force-with-lease`
+* `put` – `push --tags`
 * `subu` – `submodule update --init --recursive`
 * `subr` – `submodule update --remote --recursive`
 * `pushu` – `push -u origin HEAD`
