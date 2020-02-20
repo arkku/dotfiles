@@ -62,6 +62,12 @@ path_force_order() {
     fi
 }
 
+if id -Gn 2>&1 | grep -q -E '(^| )(staff|admin|sudoers|sudo|wheel)( |$)' >/dev/null 2>&1; then
+    path_add_tail '/usr/local/sbin'
+    path_add_tail '/usr/sbin'
+    path_add_tail '/sbin'
+fi
+
 path_force_order '/usr/local/bin' '/usr/bin'
 path_force_order "$HOME/bin" '/usr/local/bin'
 

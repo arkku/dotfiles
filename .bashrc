@@ -38,6 +38,13 @@ path_add_tail() {
         export PATH="${PATH:+"$PATH:"}$1"
     fi
 }
+
+if id -Gn 2>&1 | grep -q -E '(^| )(staff|admin|sudoers|sudo|wheel)( |$)' >/dev/null 2>&1; then
+    path_add_tail '/usr/local/sbin'
+    path_add_tail '/usr/sbin'
+    path_add_tail '/sbin'
+fi
+
 path_add_head '/usr/local/bin'
 path_add_head "$HOME/bin"
 
