@@ -104,8 +104,18 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
     # Turn on history if the file exists and is owned by this user
     if [ -O "$HISTFILE" ]; then
         chmod 600 "$HISTFILE" 2>/dev/null
-        setopt hist_expire_dups_first append_history hist_save_no_dups hist_reduce_blanks
-        export SAVEHIST=200
+        setopt hist_expire_dups_first append_history hist_reduce_blanks hist_save_no_dups inc_append_history
+        export SAVEHIST=500
+
+        # Refresh command history from other shell instances
+        update_history() {
+            fc -RI
+        }
+
+        # Share history between shell instances, but refresh it from other
+        # shells only on directory change so as not to mess up the up arrow
+        # while doing something in a specific directory
+        chpwd_functions+=( update_history )
     else
         unset HISTFILE
     fi

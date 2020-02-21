@@ -6,6 +6,33 @@ disable log
 # Add custom functions directory to fpath
 [ -e "$HOME/.zsh/functions" ] && fpath=( "$HOME/.zsh/functions" "${fpath[@]}" )
 
+# Try to determine the background color
+if [ -z "$BACKGROUND" ]; then
+    if [ -n "$COLORFGBG" ]; then
+        if [[ $COLORFGBG =~ '[,;][0-68]$' ]]; then
+            BACKGROUND=dark
+        elif [[ $COLORFGBG =~ '[,;](7|1[0-9])$' ]]; then
+            BACKGROUND=light
+        fi
+    else
+        case "$TERM" in
+            (linux*|ansi|vt*|dos*|bsd*|mach*|console*|con*)
+                BACKGROUND=dark
+                ;;
+            (*)
+                ;;
+        esac
+    fi
+    export BACKGROUND
+fi
+
+# The "faded" (hard to see) color for the background
+if [ "$BACKGROUND" = 'dark' ]; then
+    FADED_COLOR='8'
+else
+    FADED_COLOR='7'
+fi
+
 if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
     # Vi-mode
     bindkey -v
@@ -67,9 +94,8 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
 
     # History
     export HISTSIZE=1000
-    setopt hist_expire_dups_first
     setopt hist_find_no_dups
-    setopt hist_ignore_dups
+    setopt hist_expire_dups_first
     setopt hist_no_store
     setopt hist_reduce_blanks
 
@@ -109,7 +135,7 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
         # Bind ^X to copy the current input to system clipboard
         copy-input() {
             [ -n "$BUFFER" ] && clipcopy "$BUFFER"
-            prompt_vi_mode=' %F{white}(copied)%F{reset}'
+            prompt_vi_mode=" %F{$FADED_COLOR}(copied)%F{reset}"
             zle reset-prompt
         }
         zle -N copy-input
@@ -613,9 +639,9 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
     zstyle ':completion:*:options' description 'yes'
 
     # Theme
-    #zstyle ':completion:*:messages' format '%F{white}# %d'$DEFAULT
-    zstyle ':completion:*:warnings' format '%F{white}# No matches for: %d'$DEFAULT
-    #zstyle ':completion:*:descriptions' format '%F{white}# %B%d%b%f'$DEFAULT
+    #zstyle ':completion:*:messages' format "%F{$FADED_COLOR}# %d"$DEFAULT
+    zstyle ':completion:*:warnings' format "%F{$FADED_COLOR}# No matches for: %d"$DEFAULT
+    #zstyle ':completion:*:descriptions' format "%F{$FADED_COLOR}# %B%d%b%f"$DEFAULT
 
     # History (not used at the moment)
     #zstyle ':completion:*:historyevent' command 'fc -lr'
@@ -955,7 +981,7 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
         vcs_prompt=''
         vcs_status=''
         if [ -n "$vcs_info_msg_0_" ]; then
-            vcs_prompt='%F{white}'
+            vcs_prompt="%F{$FADED_COLOR}"
             trimmed="$vcs_info_msg_1_"
             [[ ${#trimmed} -gt 20 ]] && trimmed="${trimmed//#*\//}"
 
@@ -992,7 +1018,7 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
             [ -n "$vcs_info_msg_4_" ] && vcs_prompt+="%F{yellow}${vcs_info_msg_4_//\%/%%}"
 
             if [ -n "$vcs_info_msg_5_" -a ! "$vcs_info_msg_5_" = ' ' ]; then
-                vcs_status="%F{white}%-5>${ELLIPSIS:-...}>${vcs_info_msg_5_//\%/%%}%>>%F{reset}"
+                vcs_status="%F{$FADED_COLOR}%-5>${ELLIPSIS:-...}>${vcs_info_msg_5_//\%/%%}%>>%F{reset}"
             fi
 
             unset columns used pwd_truncated space
@@ -1090,7 +1116,7 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
     fi
     unset fasd_cache
 
-    zle_highlight=( 'isearch:underline' 'special:fg=cyan' 'paste:bold,fg=red' 'suffix:fg=white' 'region:standout' )
+    zle_highlight=( 'isearch:underline' 'special:fg=cyan' 'paste:bold,fg=red' "suffix:fg=$FADED_COLOR" 'region:standout' )
 
     # Left prompt:
     # Line 1: [$? on error] $! (vi mode) [user on sudo to non-root] [git misc]
@@ -1103,7 +1129,7 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
     export vcs_prompt=''
     export vcs_status=''
     export prompt_vi_mode=''
-    export PROMPT='%(?..%F{red}?$?%F{reset} )%F{white}!%! %(!__${SUDO_USER:+%n })${prompt_vi_mode}${vcs_status}
+    export PROMPT='%(?..%F{red}?$?%F{reset} )%F{'"$FADED_COLOR"'}!%! %(!__${SUDO_USER:+%n })${prompt_vi_mode}${vcs_status}
 %F{cyan}%-60<$ELLIPSIS<${pwd_prompt:-%~}%<<%F{reset}%(!_#_${PROMPTCHAR:-%#}) '
     export RPROMPT='    %F{magenta}%(1j.%j&.)$vcs_prompt%F{reset}'
 
@@ -1127,7 +1153,7 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
             ZSH_HIGHLIGHT_STYLES[$style]='fg=green'
         done
         for style in comment; do
-            ZSH_HIGHLIGHT_STYLES[$style]='fg=white'
+            ZSH_HIGHLIGHT_STYLES[$style]="fg=$FADED_COLOR"
         done
         for style in single-quoted-argument double-quoted-argument; do
             ZSH_HIGHLIGHT_STYLES[$style]='fg=yellow'
@@ -1150,6 +1176,8 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
             ZSH_HIGHLIGHT_STYLES[bracket-level-$style]='fg=green'
         done
 
+        ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=$FADED_COLOR"
+
         source "$hlpath/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
         ZSH_HIGHLIGHT_HIGHLIGHTERS=( main brackets cursor )
 
@@ -1159,7 +1187,21 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
     unset hlpath
 
     # If there is no syntax highlighting installed, make the prompt input bold
-    [ -z "$ZSH_HIGHLIGHT_HIGHLIGHTERS" ] && zle_highlight+=( 'default:bold' )
+    if [ -z "$ZSH_HIGHLIGHT_HIGHLIGHTERS" ]; then
+        zle_highlight+=( 'default:bold' )
+    else
+        local aspath
+        for aspath in "$HOME/.zsh" '/usr/local/share' '/usr/share'; do
+            [ -r "$aspath/zsh-autosuggestions/zsh-autosuggestions.zsh" ] || continue
+            ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
+            ZSH_AUTOSUGGEST_USE_ASYNC=1
+            ZSH_AUTOSUGGEST_MANUAL_REBIND=1
+            ZSH_AUTOSUGGEST_HISTORY_IGNORE="?(#c50,)"
+            ZSH_AUTOSUGGEST_STRATEGY=( completion )
+            source "$aspath/zsh-autosuggestions/zsh-autosuggestions.zsh"
+        done
+        unset aspath
+    fi
 
     unset is_root
     unset is_sudo
