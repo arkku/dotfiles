@@ -301,9 +301,12 @@ For `fasd`, the set of aliases is:
   kills the line and pastes it back on the next empty prompt (e.g., use this to
   get rid of an unfinished command while you look at `man`, then it comes back
   automatically on the next prompt)
-* <kbd>Ctrl</kbd>-<kbd>S</kbd> toggles `sudo` in the beginning of the
-  command-line (also toggles the alias `please` on an empty line, and the alias
-  `svi` and `vi`)
+* <kbd>Ctrl</kbd>-<kbd>R</kbd> in zsh Vi insert mode activates a fuzzy command
+  history search with the current command-line's contents and replaces the
+  command-line with the selection (mnemonic: Repeat command)
+* <kbd>Ctrl</kbd>-<kbd>S</kbd> in zsh Vi insert mode toggles `sudo` at the
+  beginning of the command-line (also toggles the alias `please` on an empty
+  line, and between `vi`/`$EDITOR` and the alias `svi` )
 * <kbd>Ctrl</kbd>-<kbd>Z</kbd> on an empty prompt in insert mode – if the
   on the first line, execute `fg` (i.e., bring suspended process to
   foreground, allowing to toggle suspend/resume with the same keystroke),

@@ -499,7 +499,7 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
         fi
 
         # Ctrl-F to find from insert mode
-        _zle-fzfind() {
+        _fuzzy-find() {
             local sels=( "${(@f)$(ffz --max-depth 4 \
                 --fzf --bind \
             --fzf 'ctrl-f:reload(fd -0 --color=always --hidden --max-depth 1 2>/dev/null)' \
@@ -513,9 +513,10 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
                 --fzf 'Esc: Close | Tab: Select | ^A: Show All | ^D: Directories | ^G: Git | ^F: Files in .' \
                 "$@")}" )
             LBUFFER+="${sels[@]:q} "
+            [ -n "$widgets[autosuggest-clear]" ] && zle autosuggest-clear
         }
-        zle -N _zle-fzfind
-        bindkey -M viins '\C-F' _zle-fzfind
+        zle -N _fuzzy-find
+        bindkey -M viins '\C-F' _fuzzy-find
 
         # fuzzy-find a directory and cd to it
         cdf() {
@@ -525,9 +526,21 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
 
         # fuzzy-find in history and paste to command-line
         fzh() {
-            local selh="$(history -1 0 | fzf --ansi --no-sort -m --height=50% --min-height=25 -n 2.. | awk '{ sub(/^[ ]*[^ ]*[ ]*/, ""); sub(/[ ]*$/, ""); print }')"
+            local selh="$(history -1 0 | fzf --query="$@" --ansi --no-sort -m --height=50% --min-height=25 -n 2.. | awk '{ sub(/^[ ]*[^ ]*[ ]*/, ""); sub(/[ ]*$/, ""); print }')"
             [ -n "$selh" ] && print -z -- ${selh}
         }
+
+        _fuzzy-history() {
+            local selh="$(history -1 0 | fzf --query="$BUFFER" --ansi --no-sort -m --height=50% --min-height=25 -n 2.. | awk '{ sub(/^[ ]*[^ ]*[ ]*/, ""); sub(/[ ]*$/, ""); print }')"
+            if [ -n "$selh" ]; then
+                LBUFFER="$selh"
+                RBUFFER=''
+            fi
+            [ -n "$widgets[autosuggest-clear]" ] && zle autosuggest-clear
+            zle reset-prompt
+        }
+        zle -N _fuzzy-history
+        bindkey -M viins '\C-R' _fuzzy-history
 
         # kill process selected with fzf
         fzk() {
@@ -543,6 +556,8 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
 
         # A bunch of git wrappers using fzf
         [ -s "$HOME/.fzfgit.zsh" ] && . "$HOME/.fzfgit.zsh"
+    else
+        bindkey -M viins '\C-R' history-beginning-search-backward
     fi
 
     # Pipe shortcuts
@@ -716,9 +731,7 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
     bindkey -M vicmd '/' history-incremental-pattern-search-backward
     bindkey -M vicmd '?' history-incremental-pattern-search-forward
     bindkey '\C-L' clear-screen
-    for mode in vicmd viins; do
-        bindkey -M "$mode" '\C-R' redo
-    done
+    bindkey -M vicmd '\C-R' redo
     for mode in '-M vicmd' '-M viins' ''; do
         # Make navigation the same for vi mode
         bindkey ${=mode} '\e[C' forward-char

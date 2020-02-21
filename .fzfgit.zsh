@@ -740,89 +740,92 @@ if [ -n "$(command -v hub)" ]; then
 fi
 
 # Bind Ctrl-G in vi insert mode to a Git object insertion menu (zsh only)
-if [ -z "$FZFGIT_NO_BINDINGS" -a -n "$ZSH_VERSION" ]; then
+if [ -n "$ZSH_VERSION" ]; then
     bindkey -N gitfind
 
-    _zle_gitcancel() {
+    _widget_gitcancel() {
         zle -R ''
         zle -K main
+        [ -n "$widgets[autosuggest-clear]" ] && zle autosuggest-clear
     }
-    zle -N _zle_gitcancel
-    bindkey -M gitfind '^C' _zle_gitcancel
-    bindkey -M gitfind '^[' _zle_gitcancel
+    zle -N _widget_gitcancel
+    bindkey -M gitfind '^C' _widget_gitcancel
+    bindkey -M gitfind '^[' _widget_gitcancel
 
     _gitfind_apply() {
         local sels=( "$@" )
         [ -n "$1" ] && LBUFFER+="${sels[@]:q} "
-        zle _zle_gitcancel
+        zle _widget_gitcancel
     }
 
-    _zle-gitcommits() {
+    _widget-gitcommits() {
         _gitfind_apply "${(@f)$(fzc)}"
     }
-    zle -N _zle-gitcommits
-    bindkey -M gitfind 'c' _zle-gitcommits
+    zle -N _widget-gitcommits
+    bindkey -M gitfind 'c' _widget-gitcommits
 
-    _zle-gitcommitson() {
+    _widget-gitcommitson() {
         local branch="$(fzbr '' -0 --header='Enter: Choose Branch of Commits | Esc: Current HEAD')"
         _gitfind_apply "${(@f)$(fzc "${branch:-HEAD}")}"
     }
-    zle -N _zle-gitcommitson
-    bindkey -M gitfind 'C' _zle-gitcommitson
+    zle -N _widget-gitcommitson
+    bindkey -M gitfind 'C' _widget-gitcommitson
 
-    _zle-gitbranches() {
+    _widget-gitbranches() {
         _gitfind_apply "${(@f)$(fzbrr)}"
     }
-    zle -N _zle-gitbranches
-    bindkey -M gitfind 'b' _zle-gitbranches
+    zle -N _widget-gitbranches
+    bindkey -M gitfind 'b' _widget-gitbranches
 
-    _zle-gitbranchestags() {
+    _widget-gitbranchestags() {
         _gitfind_apply "${(@f)$(fzbrt)}"
     }
-    zle -N _zle-gitbranchestags
-    bindkey -M gitfind 'B' _zle-gitbranchestags
+    zle -N _widget-gitbranchestags
+    bindkey -M gitfind 'B' _widget-gitbranchestags
 
-    _zle-gitfiles() {
+    _widget-gitfiles() {
         _gitfind_apply "${(@f)$(fzgf)}"
     }
-    zle -N _zle-gitfiles
-    bindkey -M gitfind 'f' _zle-gitfiles
+    zle -N _widget-gitfiles
+    bindkey -M gitfind 'f' _widget-gitfiles
 
-    _zle-gitchangedfiles() {
+    _widget-gitchangedfiles() {
         _gitfind_apply "${(@f)$(fzgcf)}"
     }
-    zle -N _zle-gitchangedfiles
-    bindkey -M gitfind 'F' _zle-gitchangedfiles
+    zle -N _widget-gitchangedfiles
+    bindkey -M gitfind 'F' _widget-gitchangedfiles
 
-    _zle-gitfilesr() {
+    _widget-gitfilesr() {
         _gitfind_apply "${(@f)$(fzgfr)}"
     }
-    zle -N _zle-gitfilesr
-    bindkey -M gitfind 'r' _zle-gitfilesr
+    zle -N _widget-gitfilesr
+    bindkey -M gitfind 'r' _widget-gitfilesr
 
-    _zle-gittags() {
+    _widget-gittags() {
         _gitfind_apply "${(@f)$(fztag)}"
     }
-    zle -N _zle-gittags
-    bindkey -M gitfind 't' _zle-gittags
+    zle -N _widget-gittags
+    bindkey -M gitfind 't' _widget-gittags
 
-    _zle-gitissues() {
+    _widget-gitissues() {
         _gitfind_apply "${(@f)$(fziss)}"
     }
-    zle -N _zle-gitissues
-    bindkey -M gitfind 'i' _zle-gitissues
+    zle -N _widget-gitissues
+    bindkey -M gitfind 'i' _widget-gitissues
 
-    _zle-gitpullrs() {
+    _widget-gitpullrs() {
         _gitfind_apply "${(@f)$(fzpullr)}"
     }
-    zle -N _zle-gitpullrs
-    bindkey -M gitfind 'p' _zle-gitpullrs
+    zle -N _widget-gitpullrs
+    bindkey -M gitfind 'p' _widget-gitpullrs
 
-    _zle-gitfind() {
+    _widget-gitfind() {
         zle -K gitfind
         zle -M '? (c)ommits (C)ommits on (b)ranches (t)ags (B)oth (F)iles (i)ssues (p)ull reqs'
     }
-    zle -N _zle-gitfind
+    zle -N _widget-gitfind
 
-    bindkey -M viins '^G' _zle-gitfind
+    if [ -z "$FZFGIT_NO_BINDINGS" ]; then
+        bindkey -M viins '^G' _widget-gitfind
+    fi
 fi
