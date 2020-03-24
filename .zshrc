@@ -498,21 +498,52 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
             ff.() { ffz -depth 1 "$@" }
         fi
 
+        _last_argument() {
+            echo 
+        }
+
         # Ctrl-F to find from insert mode
         _fuzzy-find() {
-            local sels=( "${(@f)$(ffz --max-depth 4 \
+            local dir=''
+            local fdargs=''
+            local -a args
+            args=(${(z)LBUFFER})
+            local buf=$args[-1]
+            buf="${buf/#\~/$HOME}"
+            if [ -d "${buf:Q}" ]; then
+                dir="${buf:Q}"
+                fdargs=' .'
+            else
+                buf=''
+            fi
+            local sels=( "${(@f)$(ffz --max-depth 4 ${dir:-.} \
                 --fzf --bind \
-            --fzf 'ctrl-f:reload(fd -0 --color=always --hidden --max-depth 1 2>/dev/null)' \
+                --fzf 'ctrl-f:reload(fd -0'"$fdargs"' --color=always --hidden --type=file --max-depth 1 '"${buf:-.}"' 2>/dev/null)' \
                 --fzf --bind \
-                --fzf 'ctrl-d:reload(fd -0 --color=always --hidden --exclude .git --type=directory 2>/dev/null)' \
+                --fzf 'ctrl-d:reload(fd -0'"$fdargs"' --color=always --hidden --exclude .git --type=directory '"${buf:-.}"' 2>/dev/null)' \
                 --fzf --bind \
-                --fzf 'ctrl-a:reload(fd -0 --color=always --hidden --max-depth 4 --exclude .git 2>/dev/null)' \
+                --fzf 'ctrl-a:reload(fd -0'"$fdargs"' --color=always --hidden --max-depth 4 --exclude .git '"${buf:-.}"' 2>/dev/null)' \
                 --fzf --bind \
-                --fzf 'ctrl-g:reload(git ls-files -c -z --exclude-standard --recurse-submodules 2>/dev/null)' \
+                --fzf 'ctrl-g:reload(git -C '"${buf:-}"' ls-files -c -z --exclude-standard --recurse-submodules 2>/dev/null)' \
                 --fzf --header \
-                --fzf 'Esc: Close | Tab: Select | ^A: Show All | ^D: Directories | ^G: Git | ^F: Files in .' \
+                --fzf 'Esc: Close | Tab: Select | ^A: Show All | ^D: Directories | ^G: Git | ^F: Files' \
                 "$@")}" )
-            LBUFFER+="${sels[@]:q} "
+
+            local quoted="${sels[@]:q}"
+            [ -z "$quoted" ] && return
+
+            if [ -n "$dir" ]; then
+                local oldbuf="$LBUFFER"
+                LBUFFER="${LBUFFER%$buf}"
+                if [ "$oldbuf" = "$LBUFFER" ]; then
+                    buf="${buf/#$HOME/~}"
+                    LBUFFER="${LBUFFER/%$buf}"
+                    quoted=" $quoted"
+                    quoted="${quoted// $HOME\// ~/}"
+                    quoted="${quoted/# /}"
+                fi
+            fi
+            LBUFFER+="$quoted "
             [ -n "$widgets[autosuggest-clear]" ] && zle autosuggest-clear
         }
         zle -N _fuzzy-find
