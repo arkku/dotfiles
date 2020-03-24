@@ -92,7 +92,11 @@ let g:SuperTabLongestEnhanced=1
 
 function! GitStatuslineBranch()
     if exists('g:loaded_fugitive')
-        let l:branch = split(fugitive#statusline(),'[()]')
+        let l:fstatus = fugitive#statusline()
+        if len(l:fstatus) < 3
+            return ''
+        endif
+        let l:branch = split(l:fstatus, '[()]')
         if len(l:branch) > 2
             return '[' . join(l:branch[1:-2], '/') . '] '
         elseif len(l:branch) == 2
@@ -113,7 +117,17 @@ function! SyntaxErrorsStatus()
         endif
     endif
     if exists('g:coc_enabled') && g:coc_enabled
-        let status = ' ' . coc#status()
+        let info = get(b:, 'coc_diagnostic_info', {})
+        if !empty(info)
+            let msgs = []
+            if get(info, 'error', 0)
+                call add(msgs, 'E' . info['error'])
+            endif
+            if get(info, 'warning', 0)
+                call add(msgs, 'W' . info['warning'])
+            endif
+            let status = ' ' . join(msgs, ' ')
+        endif
     endif
     if exists('g:ale_enabled') && g:ale_enabled
         let counts = ale#statusline#Count(bufnr(''))
@@ -146,7 +160,7 @@ endfunction
 
 function! FilenameMiddleTruncated(maxlen)
     let str = expand('%:t')
-    if len(str) <= a:maxlen || a:maxlen < 2
+    if empty(str) || len(str) <= a:maxlen || a:maxlen < 2
         return str
     endif
     let halflen = a:maxlen / 2
