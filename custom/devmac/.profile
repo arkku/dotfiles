@@ -44,6 +44,7 @@ fi
 [ -d "$HOME/go" ] && export GOPATH="$HOME/go"
 [ -d "$HOME/google-cloud-sdk" ] && export GCLOUD="$HOME/google-cloud-sdk"
 [ -d "$GCLOUD/bin" ] && export PATH="$PATH:$GCLOUD/bin"
+[ -x "$HOME/flutter/bin/flutter" ] && export PATH="$PATH:$HOME/flutter/bin"
 
 . "$HOME/.profile_shared"
 
