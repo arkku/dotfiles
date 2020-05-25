@@ -555,6 +555,12 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
             [ -n "$seld" ] && pushd "$seld" >/dev/null
         }
 
+        # fuzzy-find a file and cd to its directory
+        cdff() {
+            local seld="$(fff "$@")"
+            [ -n "$seld" ] && pushd "$(dirname "$seld")"
+        }
+
         # fuzzy-find in history and paste to command-line
         fzh() {
             local selh="$(history -1 0 | fzf --query="$@" --ansi --no-sort -m --height=50% --min-height=25 -n 2.. | awk '{ sub(/^[ ]*[^ ]*[ ]*/, ""); sub(/[ ]*$/, ""); print }')"
@@ -630,6 +636,15 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
     alias ll='ls -kl'
     alias la='ls -kla'
     alias l.='ls -d .*'
+
+    # cd to the directory of a file
+    fcd() {
+        if [ -d "$1" ]; then
+            cd "$1"
+        else
+            cd "$(dirname "$1")"
+        fi
+    }
 
     [ -n "$COLORTERM" -a -z "$CLICOLOR" ] && export CLICOLOR=1
 
@@ -1267,3 +1282,6 @@ fi
 
 # Make path unique
 typeset -aU path
+
+# Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
+export PATH="$PATH:$HOME/.rvm/bin"

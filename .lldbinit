@@ -1,1 +1,7 @@
 settings set target.x86-disassembly-flavor intel
+command alias ec expression -l c
+command alias eoc expression -l objc
+command alias poc expression -l objc -O --
+command alias caf expression -l objc -- (void)[CATransaction flush]
+command alias frv frame variable
+command alias j1 thread jump --by 1

@@ -335,6 +335,7 @@ For `fasd`, the set of aliases is:
 * `l.` – list hidden files only
 * `md` – make a directory, including the parent directories (`mkdir -p`) and
   `cd` to it
+* `fcd` – `cd` to the directory containing the argument file
 * `please` – re-run the entire previous command with `sudo` (note: this is
   _not_ just putting `sudo ` in front of the command, but rather the entire
   command is executed under `sudo` so any pipes and redirects also gain
@@ -355,6 +356,7 @@ For `fasd`, the set of aliases is:
 * `cdf` – open `fzf` to fuzzily search for directories and `cd` to the selected
   one (can take arguments, e.g., `cdf /` will search from the root instead of
   from the current directory)
+* `cdff` – as `cdf`, but select a file and `cd` to the directory containing it
 * `fzh` – use `fzf` to fuzzily search command history, and paste the selection
   on the command-line (but do not execute it)
 * `fzk` – use `fzf` to fuzzily search running processes, and pass them (and any

@@ -283,6 +283,15 @@ if [ -n "$PS1" -a -z "$ENVONLY" ]; then
     alias la='ls -kla'
     alias l.='ls -d .*'
 
+    # cd to the directory of a file
+    fcd() {
+        if [ -d "$1" ]; then
+            cd "$1"
+        else
+            cd "$(dirname "$1")"
+        fi
+    }
+
     if [ -n "$(command -v fzf)" ]; then
         # use fd with fzf (note: symlink /usr/bin/fdfind to ~/bin/fd)
         if [ -n "$(command -v fd)" ]; then
@@ -547,3 +556,6 @@ fi
 [ -e "$HOME/.bashrc_private" ] && . "$HOME/.bashrc_private"
 
 path_force_tail "$HOME/.rvm/bin"
+
+# Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
+export PATH="$PATH:$HOME/.rvm/bin"
