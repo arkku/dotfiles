@@ -196,7 +196,7 @@ fzgf() {
 fzgcf() {
     git ls-files -m -o --exclude-standard -z \
         | fzf --read0 --reverse -m --query="$@" \
-        --preview="git --no-pager diff --color=always {}" \
+        --preview="git --no-pager diff --name-only --relative --color=always {}" \
         --preview-window='top:50%:wrap' \
         --bind "ctrl-a:select-all" \
         --bind "ctrl-d:deselect-all" \
@@ -245,7 +245,11 @@ gdf() {
                 diffargs="$diffargs $arg"
                 ;;
             (*)
-                query="$query $arg"
+                if git rev-parse --verify --quiet "$arg" >/dev/null 2>&1; then
+                    diffargs="$diffargs $arg"
+                else
+                    query="$query $arg"
+                fi
                 ;;
         esac
     done

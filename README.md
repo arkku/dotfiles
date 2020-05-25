@@ -417,7 +417,8 @@ intentionally doesn't close after selection).
 * `gdf` – view the diff of modified files without leaving the selection, with
   a live preview of the diff (this supports multiple keyboard shortcuts, shown
   on the screen, to perform various actions, such as staging/unstaging files,
-  opening them in the editor or difftool, etc.)
+  opening them in the editor or difftool, etc.), branch names given as argument
+  also work (e.g. `gdf master`)
 * `gdfs` or `gstaged` – view staged files and diff, unstage, or commit them
 * `ge` – open a file in `$EDITOR`
 * `gadd` – select modified files to stage (`git add`)
