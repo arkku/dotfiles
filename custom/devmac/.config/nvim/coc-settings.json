@@ -10,7 +10,7 @@
             "directory": "/tmp/ccls"
          },
         "clang": {
-            "resourceDir": "/Library/Developer/CommandLineTools/usr/lib/clang/11.0.0",
+            "resourceDir": "/Library/Developer/CommandLineTools/usr/lib/clang/11.0.3",
             "extraArgs": [
                 "-isystem",
                 "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1",

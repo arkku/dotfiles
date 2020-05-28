@@ -55,6 +55,9 @@ fi
 if [ -d "/Library/Developer/Toolchains/swift-latest.xctoolchain/usr/bin" ]; then
     export PATH="$PATH:/Library/Developer/Toolchains/swift-latest.xctoolchain/usr/bin"
 fi
+if [ -d "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/" ]; then
+    export PATH="$PATH:/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin"
+fi
 
 for vscpath in "$HOME/" '/'; do
     if [ -d "${vscpath}Application/Visual Studio Code.app/Contents/Resources/app/bin" ]; then
