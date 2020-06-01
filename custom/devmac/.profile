@@ -45,6 +45,7 @@ fi
 [ -d "$HOME/google-cloud-sdk" ] && export GCLOUD="$HOME/google-cloud-sdk"
 [ -d "$GCLOUD/bin" ] && export PATH="$PATH:$GCLOUD/bin"
 [ -x "$HOME/flutter/bin/flutter" ] && export PATH="$PATH:$HOME/flutter/bin"
+[ -e "$NPM_PACKAGES" -a -d "$NPM_PACKAGES/bin" ] && export PATH="$PATH:$NPM_PACKAGES/bin"
 
 . "$HOME/.profile_shared"
 
