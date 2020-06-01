@@ -58,7 +58,7 @@ set formatoptions=cl1
 set formatoptions+=q    " Allow formatting of comments
 set formatoptions+=n    " Recognize numbered lists
 silent! set formatoptions+=p    " Don't break one word alone on a line
-set formatoptions+=j    " Join comment lines
+silent! set formatoptions+=j    " Join comment lines
 set formatoptions+=r    " Auto-insert comment leader on return
 set formatoptions-=t
 set splitbelow          " Split new windows below current
