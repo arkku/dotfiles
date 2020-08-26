@@ -196,7 +196,7 @@ fzgf() {
 fzgcf() {
     git ls-files -m -o --exclude-standard -z \
         | fzf --read0 --reverse -m --query="$@" \
-        --preview="git --no-pager diff --name-only --relative --color=always {}" \
+        --preview="git --no-pager diff --relative --color=always {}" \
         --preview-window='top:50%:wrap' \
         --bind "ctrl-a:select-all" \
         --bind "ctrl-d:deselect-all" \
@@ -270,8 +270,9 @@ gdf() {
         --bind "ctrl-o:execute(set -x; git commit)+abort" \
         --bind "ctrl-c:execute(echo -n {} | clipcopy)" \
         --bind "ctrl-e:execute($EDITOR {})+reload(git $gargs 2>/dev/null)" \
+        --bind "ctrl-x:execute(git restore -- {})+reload(git $gargs 2>/dev/null)" \
         --bind "ctrl-r:reload(git $gargs 2>/dev/null)+clear-screen" \
-        --header "Esc: Close | $stagedprompt | ^E: Edit | ^G: Git difftool | ^R: Reload${diffargs:+ | ^O: Commit} | ^C: Copy"
+        --header "Esc: Close | $stagedprompt | ^E: Edit | ^G: Git difftool | ^R: Reload${diffargs:+ | ^O: Commit} | ^C: Copy | ^X: Discard"
 }
 
 # Interactive git diff of staged changes
@@ -409,7 +410,7 @@ alias gco='gcheckout'
 
 # Pick and check out a branch
 gcheckoutb() {
-    fzfgitbranchcmd remotes 'git checkout' 'Checkout' "$@"
+    fzfgitbranchcmd remotes 'git checkout -t' 'Checkout' "$@"
 }
 
 # Pick and check out a branch
@@ -543,7 +544,20 @@ alias gll='glog'
 
 # Pick commit(s) to cherry-pick (give branch of commits as first argument)
 gcherry() {
-    _fzfgitcommitcmd 'multi' 'git cherry-pick' 'Pick | Tab: Toggle' "$@"
+    local branch=''
+    [ -n "$1" ] && case "$1" in
+        (-*)
+        ;;
+        (*)
+            branch="$1"
+            shift
+        ;;
+    esac
+    if [ -z "$branch" ]; then
+        branch="$(fzbr '' -0 --header='Enter: Choose Branch of Commits | Esc: master')"
+        [ -z "$branch" ] && branch='master'
+    fi
+    _fzfgitcommitcmd 'multi' 'git cherry-pick' 'Pick | Tab: Toggle' "$branch" "$@"
 }
 
 # Pick a commit and make a new commit as a fix-up to it
@@ -658,7 +672,7 @@ if [ -n "$(command -v hub)" ]; then
         done
         [ "$query" = '--' ] && query=''
 
-        hub issue -f '%sC%<(6)%I%Creset %t    %Cwhite[%l%Cwhite] %U%n' --color=always "${largs[@]}" \
+        hub issue -f '%sC%<(6)%Cyellow%I%Creset %t    %Cwhite[%l%Cwhite] %U%n' --color=always "${largs[@]}" \
             | fzf --ansi -0 --reverse --query="$query" \
                 --nth=..-2 --with-nth=..-2 \
                 --preview='hub issue show --color=always \
@@ -684,7 +698,7 @@ if [ -n "$(command -v hub)" ]; then
     }
 
     # A substitution alias for selecting a GitHub issue
-    alias fziss='hub issue -f "%sC%<(6)%I%Creset %t    %Cwhite[%l%Cwhite]%n" --color=always -o updated -L 100 | fzf --ansi -m | awk "{ printf(\"%s\", \$1) }"'
+    alias fziss='hub issue -f "%sC%<(6)%Cyellow%I%Creset %t    %Cwhite[%l%Cwhite]%n" --color=always -o updated -L 100 | fzf --ansi -m | awk "{ printf(\"%s\", \$1) }"'
 
     # A helper for selecting interactively from GitHub pull requests
     fzhubpr() {
@@ -719,7 +733,7 @@ if [ -n "$(command -v hub)" ]; then
         done
         [ "$query" = '--' ] && query=''
 
-        hub pr list -f '%sC%<(6)%I %Creset %t    %Cwhite[%l%Cwhite] %U%n' --color=always "${largs[@]}" \
+        hub pr list -f '%sC%<(6)%Cyellow%I %Creset %t    %Cwhite[%l%Cwhite] %U%n' --color=always "${largs[@]}" \
             | fzf --ansi -0 --reverse --query="$query" \
                 --nth=..-2 --with-nth=..-2 \
                 --preview='hub pr show --color=always \
@@ -740,7 +754,57 @@ if [ -n "$(command -v hub)" ]; then
     }
 
     # A substitution alias for selecting a GitHub pull request
-    alias fzpullr='hub pr list -f "%sC%<(6)%I%Creset %t    %Cwhite[%l%Cwhite]%n" --color=always -L 100 | fzf --ansi -m | awk "{ printf(\"%s\", \$1) }"'
+    alias fzpullr='hub pr list -f "%sC%<(6)%Cyellow%I%Creset %t    %Cwhite[%l%Cwhite]%n" --color=always -L 100 | fzf --ansi -m | awk "{ printf(\"%s\", \$1) }"'
+fi
+
+if [ -n "$(command -v jira)" ]; then
+    # A helper for selecting interactively from Jira issues
+    fzjira() {
+        local action="$1"
+        local name="$2"
+        shift 2
+        local query=''
+        local largs=( -l 500 -s status )
+        local linit=${#largs}
+        while [ $# -ge 1 ]; do
+            local arg="$1"
+            shift
+            case "$arg" in
+                (--)
+                    if [ -z "$query" ]; then
+                        query='--'
+                    else
+                        largs+=( "$arg" )
+                    fi
+                    ;;
+                (-*)
+                    largs+=( "$arg" )
+                    ;;
+                (*)
+                    if [ -z "$query" -a ${#largs} -eq $linit ]; then
+                        query="$arg"
+                    else
+                        largs+=( "$arg" )
+                    fi
+                    ;;
+            esac
+        done
+        [ "$query" = '--' ] && query=''
+
+        jira list "${largs[@]}" | sed 's/:/ /' \
+            | fzf --ansi -0 --reverse --query="$query" \
+                --preview='jira view {1}' \
+                --preview-window='top:50%:wrap' \
+                --bind "enter:execute($action)+abort" \
+                --bind "double-click:execute($action)+abort" \
+                --bind "ctrl-c:execute(echo -n {1} | clipcopy)" \
+                --header "Esc: Close | Enter: $name | ^C: Copy #"
+    }
+
+    # View Jira issues interactively
+    gjira() {
+        fzjira 'echo' 'Show' "$@"
+    }
 fi
 
 # Bind Ctrl-G in vi insert mode to a Git object insertion menu (zsh only)

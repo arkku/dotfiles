@@ -4,4 +4,4 @@ command alias eoc expression -l objc
 command alias poc expression -l objc -O --
 command alias caf expression -l objc -- (void)[CATransaction flush]
 command alias frv frame variable
-command alias j1 thread jump --by 1
+command alias skip1 thread jump --by 1

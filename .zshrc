@@ -236,6 +236,9 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
     # Git push all
     alias gpusha='git push --all && git push --tags'
 
+    # Git push and set upstream
+    alias gpushup='git push -u origin HEAD'
+
     # Git ubdate submodules, recursively
     alias gsubu='git submodule update --init --recursive'
 
@@ -261,7 +264,7 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
             echo "Usage: $0 new_feature_branch [remote]"
             return 1
         fi
-        [[ "$branch" != "feature/"* ]] && branch="feature/$branch"
+        [[ "$branch" != "feature/"* && "$branch" != "fix/"* ]] && branch="feature/$branch"
         local remote="$2"
         [ -z "$remote" ] && remote='origin'
         git checkout -b "$branch" && git push -u "$remote" HEAD
