@@ -194,8 +194,8 @@ fzgf() {
 
 # Fuzzy-pick changed git files
 fzgcf() {
-    git ls-files -m -o --exclude-standard -z \
-        | fzf --read0 --reverse -m --query="$@" \
+    git ls-files -m -o --exclude-standard | uniq \
+        | fzf --reverse -m --query="$@" \
         --preview="git --no-pager diff --relative --color=always {}" \
         --preview-window='top:50%:wrap' \
         --bind "ctrl-a:select-all" \
@@ -229,7 +229,7 @@ gdf() {
         pager='viless -c "set ft=diff"'
         color=never
     fi
-    local gargs='--no-pager diff --name-only --relative -z --color=always'
+    local gargs='--no-pager diff --name-only --relative --color=always'
     local diffargs=''
     local stagedprompt='^A: Add'
     local query=''
@@ -258,21 +258,23 @@ gdf() {
     # TODO: change `git reset HEAD` to `git restore --staged` once common
     local diffcmd="reset; git diff$diffargs --color=$color {} | $pager"
     gargs="$gargs$diffargs"
-    git ${gargs} | fzf -0 --read0 --no-multi \
+    local greload="git $gargs 2>/dev/null | uniq"
+    git ${gargs} | uniq | fzf -0 --no-multi \
         --query="$query" --reverse \
         --preview="git --no-pager diff --color=always $diffargs -- {} 2>/dev/null" \
         --preview-window='top:50%:wrap' \
         --bind "enter:execute[$diffcmd]" \
         --bind "double-click:execute[$diffcmd]" \
-        --bind "ctrl-a:execute(set -x; git add -- {})+reload(git $gargs 2>/dev/null)" \
-        --bind "ctrl-u:execute(set -x; git reset HEAD -- {})+reload(git $gargs 2>/dev/null)" \
+        --bind "ctrl-a:execute(set -x; git add -- {})+reload($greload)" \
+        --bind "ctrl-u:execute(set -x; git reset HEAD -- {})+reload($greload)" \
+        --bind "ctrl-t:execute(set -x; git checkout --theirs -- {})+reload($greload)" \
+        --bind "ctrl-o:execute(set -x; git checkout --ours -- {})+reload($greload)" \
         --bind "ctrl-g:execute(git difftool -y$diffargs -- {})" \
-        --bind "ctrl-o:execute(set -x; git commit)+abort" \
         --bind "ctrl-c:execute(echo -n {} | clipcopy)" \
-        --bind "ctrl-e:execute($EDITOR {})+reload(git $gargs 2>/dev/null)" \
-        --bind "ctrl-x:execute(git restore -- {})+reload(git $gargs 2>/dev/null)" \
-        --bind "ctrl-r:reload(git $gargs 2>/dev/null)+clear-screen" \
-        --header "Esc: Close | $stagedprompt | ^E: Edit | ^G: Git difftool | ^R: Reload${diffargs:+ | ^O: Commit} | ^C: Copy | ^X: Discard"
+        --bind "ctrl-e:execute($EDITOR {})+reload($greload)" \
+        --bind "ctrl-x:execute(git restore -- {})+reload($greload)" \
+        --bind "ctrl-r:reload($greload)+clear-screen" \
+        --header "Esc: Close | $stagedprompt | ^Edit | ^Git difftool | ^Reload | ^C: Copy | ^X: Discard | ^Theirs | ^Ours"
 }
 
 # Interactive git diff of staged changes
@@ -554,7 +556,7 @@ gcherry() {
         ;;
     esac
     if [ -z "$branch" ]; then
-        branch="$(fzbr '' -0 --header='Enter: Choose Branch of Commits | Esc: master')"
+        branch="$(fzbrr '' -0 --header='Enter: Choose Branch of Commits | Esc: master')"
         [ -z "$branch" ] && branch='master'
     fi
     _fzfgitcommitcmd 'multi' 'git cherry-pick' 'Pick | Tab: Toggle' "$branch" "$@"
