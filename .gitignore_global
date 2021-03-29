@@ -7,3 +7,5 @@ Thumbs.db
 *.tmp
 /.tags
 /doc/tags
+.tags.lock
+.tags.temp

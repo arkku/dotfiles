@@ -38,6 +38,7 @@ export NVIM_TUI_ENABLE_TRUE_COLOR=0
 
 if [ -n "$PS1" ]; then
     export GPG_TTY=`tty`
+    #pgrep -q gpg-agent && export SSH_AUTH_SOCK=`gpgconf --list-dirs agent-ssh-socket`
 fi
 
 [ -d "$HOME/.npm-packages" ] && export NPM_PACKAGES="$HOME/.npm-packages"
@@ -46,6 +47,7 @@ fi
 [ -d "$GCLOUD/bin" ] && export PATH="$PATH:$GCLOUD/bin"
 [ -x "$HOME/flutter/bin/flutter" ] && export PATH="$PATH:$HOME/flutter/bin"
 [ -e "$NPM_PACKAGES" -a -d "$NPM_PACKAGES/bin" ] && export PATH="$PATH:$NPM_PACKAGES/bin"
+[ -d "/usr/local/share/dotnet" ] && export PATH="$PATH:/usr/local/share/dotnet"
 
 . "$HOME/.profile_shared"
 
