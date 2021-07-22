@@ -635,11 +635,6 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
             ;;
     esac
 
-    # ls
-    alias ll='ls -kl'
-    alias la='ls -kla'
-    alias l.='ls -d .*'
-
     # cd to the directory of a file
     fcd() {
         if [ -d "$1" ]; then
@@ -654,6 +649,21 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
     if [ -r "$HOME/.dir_colors" -a -n "$(command -v dircolors)" ]; then
         eval `dircolors -b "$HOME/.dir_colors"`
     fi
+
+    if [ -n "$(command -v exa)" -a "$CLICOLOR" -eq 1 ]; then
+        # use exa instead of ls for long listings when available w/ colours
+        alias exa='exa --group-directories-first --sort=name'
+        alias l='exa -Fx'
+        alias ll='exa -lgFH --git'
+        alias la='ll -a -@'
+        export EXA_COLORS="da=37:Makefile=0;33:README*=0;33:lm=4:uu=0:un=1:gu=0:gn=1:${EXA_COLORS:+:$EXA_COLORS}"
+    else
+        # ls
+        alias l='ls'
+        alias ll='ls -kl'
+        alias la='ls -kla'
+    fi
+    alias l.='ls -d .*'
 
     if ls --version 2>/dev/null | grep -q GNU; then
         alias ls='ls -F --color=auto --group-directories-first'

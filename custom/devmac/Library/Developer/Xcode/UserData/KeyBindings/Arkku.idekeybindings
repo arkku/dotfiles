@@ -6,6 +6,10 @@
 	<dict>
 		<key>Key Bindings</key>
 		<dict>
+			<key></key>
+			<array>
+				<string>deleteToEndOfParagraph:</string>
+			</array>
 			<key></key>
 			<string>cancelOperation:</string>
 			<key>$</key>
@@ -18,6 +22,8 @@
 			<string>moveExpressionForward:</string>
 			<key>^[</key>
 			<string>cancelOperation:</string>
+			<key>^k</key>
+			<string>deleteSubWordForward:</string>
 			<key>^m</key>
 			<string>setMark:</string>
 			<key>^n</key>
@@ -47,6 +53,8 @@
 			<string>scrollLineUp:</string>
 			<key>^</key>
 			<string>scrollLineDown:</string>
+			<key>^</key>
+			<string>deleteSubWordForward:</string>
 			<key>~l</key>
 			<string>selectLine:</string>
 			<key></key>
