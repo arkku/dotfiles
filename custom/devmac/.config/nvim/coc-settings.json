@@ -21,6 +21,6 @@
       }
     }
   },
-  "sourcekit.targetArch":"x86_64-apple-ios14.7-simulator",
+  "sourcekit.targetArch":"x86_64-apple-ios14.5-simulator",
   "sourcekit.sdk":"iphonesimulator"
 }
