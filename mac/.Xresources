@@ -52,6 +52,7 @@ xterm*VT100.geometry: 88x50
 *VT100.colorAttrMode: false
 *VT100.colorBDMode: false
 *VT100.colorBD: rgb:00/00/00
+*VT100.boldColors: false
 *VT100.colorULMode: false
 *VT100.colorUL: FF/99/00
 *VT100.underLine: true

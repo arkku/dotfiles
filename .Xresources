@@ -1,15 +1,17 @@
 *customization: color
 *font: fixed
 
-*faceSize: 9
-*faceSize1: 4
-*faceSize2: 6
-*faceSize3: 8
-*faceSize4: 9
+*faceSize: 10
+*faceSize1: 6
+*faceSize2: 8
+*faceSize3: 9
+*faceSize4: 10
 *faceSize5: 12
 *faceSize6: 18
 
 xterm*loginShell: true
+!xterm*renderFont: true
+!xterm*faceName: Noto Mono Regular
 
 xterm*boldFont: -misc-fixed-bold-r-normal-*-13-*-*-*-*-iso10646-1
 xterm*font: -misc-fixed-medium-r-normal-*-13-*-*-*-iso10646-1
@@ -24,6 +26,8 @@ xterm*wideChars: true
 xterm*charClass: 37-38:48,43:48,45-47:48,58-59:48,61:48,63-64:48,95:48,126:48
 
 xterm*sessionMgt: false
+
+xterm*termName: xterm-16color
 
 xterm*ttyModes: erase ^H
 xterm*backarrowKey: true
@@ -56,6 +60,7 @@ xterm*VT100.geometry: 88x50
 *VT100.colorAttrMode: false
 *VT100.colorBDMode: false
 *VT100.colorBD: rgb:00/00/00
+*VT100.boldColors: false
 *VT100.colorULMode: false
 *VT100.colorUL: FF/99/00
 *VT100.underLine: true
@@ -96,14 +101,14 @@ xterm*VT100.geometry: 88x50
 *VT100.color15: rgb:FF/FF/FF
 
 *VT100.translations: #override\n\
-    Ctrl<Key>Right: string(0x1b) string("[5C") \n\
-    Ctrl<Key>Left: string(0x1b) string("[5D") \n\
-    Ctrl<Key>Up: string(0x1b) string("[5A") \n\
-    Ctrl<Key>Down: string(0x1b) string("[5B") \n\
-    Meta<Key>Right: string(0x1b) string(0x1b) string("[C") \n\
-    Meta<Key>Left: string(0x1b) string(0x1b) string("[D") \n\
-    Meta<Key>Up: string(0x1b) string(0x1b) string("[A") \n\
-    Meta<Key>Down: string(0x1b) string(0x1b) string("[B") \n\
+    Ctrl<Key>Right: string(0x1b) string("[1;5C") \n\
+    Ctrl<Key>Left: string(0x1b) string("[1;5D") \n\
+    Ctrl<Key>Up: string(0x1b) string("[1;5A") \n\
+    Ctrl<Key>Down: string(0x1b) string("[1;5B") \n\
+    Meta<Key>Right: string(0x1b) string("[1;3C") \n\
+    Meta<Key>Left: string(0x1b) string("[1;3D") \n\
+    Meta<Key>Up: string(0x1b) string("[1;3A") \n\
+    Meta<Key>Down: string(0x1b) string("[1;3B") \n\
     Ctrl<Key>BackSpace: string(0x17) \n
 
 Xedit*international: true
