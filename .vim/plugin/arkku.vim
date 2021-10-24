@@ -274,7 +274,7 @@ let g:vim_markdown_auto_insert_bullets=0
 
 let g:syntastic_mode_map = {
     \ "mode": "active",
-    \ "active_filetypes": ["ruby","c","swift","zsh","bash","sh"],
+    \ "active_filetypes": ["zsh","bash","sh"],
     \ "passive_filetypes": [] }
 
 let g:syntastic_always_populate_loc_list = 0

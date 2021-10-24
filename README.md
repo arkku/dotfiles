@@ -141,10 +141,12 @@ These bindings are for the normal mode, preceded by the leader (<kbd>\\</kbd>):
 * `q` – delete buffer
 * `x` – wipeout buffer
 * `d` – jump to definition of thing under cursor (if coc installed)
+* `i` – jump to implementation of thing under cursor (if coc installed)
 * `r` – show references to the thing under cursor (if coc installed)
+* `e` – show errors/diagnostics (if coc installed)
+* `o` – show code outline (if coc installed)
 * `c` – coc code action (if installed)
-* `cf` – coc autofix (if installed)
-* `R` or `cr` – coc rename (if installed)
+* `R` – coc rename (if installed)
 * `s` – run [Syntastic](https://github.com/vim-syntastic/syntastic) check, and
   open the location list if there are errors
 * `S` – reset Syntastic, clearing all errors
@@ -169,6 +171,7 @@ These bindings are for the normal mode, preceded by the local leader (<kbd>Space
 * `W` – close warnings/errors list
 * `h` – open `fzf` fuzzy search for "recently opened files" (if plugin installed)
 * `/` – open `fzf` search for lines in this buffer
+* `s` – open search for symbols (if coc is installed)
 * `t` – open tag search (if fzf plugin is installed)
 * `T` – open tag search (if CtrlP plugin is installed)
 * `z` – open `fzf` fuzzy search for files (powered by `fd` if installed)
