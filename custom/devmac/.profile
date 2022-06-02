@@ -1,12 +1,8 @@
 # .profile
 
-for rvmdir in "$HOME/.rvm" '/usr/local/rvm'; do
-    if [ -s "$rvmdir/scripts/rvm" ]; then
-        export rvmsudo_secure_path=0
-        source "$rvmdir/scripts/rvm"
-        break
-    fi
-done
+if command -v pyenv 1>/dev/null 2>&1; then
+    eval "`pyenv init -`"
+fi
 
 # disallow messages
 mesg n 2>/dev/null || true
@@ -69,3 +65,11 @@ for vscpath in "$HOME/" '/'; do
 done
 
 [ -e "$HOME/.profile_private" ] && . "$HOME/.profile_private"
+
+for rvmdir in "$HOME/.rvm" '/usr/local/rvm'; do
+    if [ -s "$rvmdir/scripts/rvm" ]; then
+        export rvmsudo_secure_path=0
+        source "$rvmdir/scripts/rvm"
+        break
+    fi
+done
