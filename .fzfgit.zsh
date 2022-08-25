@@ -316,7 +316,8 @@ gcommit() {
         --bind "ctrl-r:reload($statusfunc)" \
         --bind "ctrl-a:select-all" \
         --bind "ctrl-d:deselect-all" \
-        --bind "ctrl-x:execute(set -x; git rm --cached -- {+2..})+reload($statusfunc)" \
+        --bind "ctrl-x:execute(set -x; git restore -- {+2..})+reload($statusfunc)" \
+        --bind "ctrl-l:execute(set -x; git rm --cached -- {+2..})+reload($statusfunc)" \
         --bind "ctrl-s:execute(set -x; git add -- {+2..})+reload($statusfunc)" \
         --bind 'ctrl-t:execute[git `test x{1} = xA && echo reset HEAD || echo add` -- {2..}]+'"reload($statusfunc)" \
         --bind "ctrl-u:execute(set -x; git reset HEAD -- {+2..})+reload($statusfunc)" \
@@ -326,7 +327,7 @@ gcommit() {
         --bind 'ctrl-v:execute[test x{1} = "x?" && '"$viewer"' {2..} | less -R || git --no-pager diff --color='"$color"' $(test x{1} = xA && echo --staged) -- {2..} 2>/dev/null | '"$pager"']' \
         --preview='test x{1} = "x?" && '"$viewer"' {2..} || git --no-pager diff --color=always $(test x{1} = xA && echo --staged) -- {2..} 2>/dev/null' \
         --preview-window='top:50%:wrap' \
-        --header "^Stage ^Unstage ^Toggle ^Edit | <Enter> Commit Staged / ^Override | ^All ^Deselect ^X Delete ^Copy ^Git difftool ^View"
+        --header "^Stage ^Unstage ^Toggle ^Edit | <Enter> Commit Staged / ^Override | ^All ^Deselect ^X Discard ^Copy ^Git difftool ^View"
 
     popd >/dev/null
 }
