@@ -2,6 +2,11 @@
   "coc.preferences.hoverTarget": "float",
   "suggest.preferCompleteThanJumpPlaceholder": false,
   "suggest.noselect": false,
+  "suggest.enablePreview": true,
+  "suggest.autoTrigger": "always",
+  "suggest.selection": "recentlyUsedByPrefix",
+  "suggest.timeout": 2000,
+  "suggest.removeDuplicateItems": true,
   "languageserver": {
     "ccls": {
       "command": "ccls",

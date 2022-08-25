@@ -98,7 +98,8 @@ endfunction
 " Return in insert mode: accept autocompletion (endwise- and closer-compatible)
 let g:endwise_no_mappings=1
 let g:closer_no_mappings=1
-imap <silent><expr> <CR> PumVisible() ? coc#pum#confirm() : closer#close(EndwiseAppend(EunuchNewLine("\r")))
+"imap <silent><expr> <CR> PumVisible() ? coc#pum#confirm() : closer#close(EndwiseAppend(EunuchNewLine("\r")))
+imap <silent><expr> <CR> closer#close(EndwiseAppend(EunuchNewLine("\r")))
 
 let g:SuperTabMappingForward="<C-N>"
 let g:SuperTabMappingBackward="<C-P>"
