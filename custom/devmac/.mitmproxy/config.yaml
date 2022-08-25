@@ -1,0 +1,5 @@
+console_palette: "light"
+console_palette_transparent: False
+console_mouse: True
+console_focus_follow: False
+ignore_hosts: []
