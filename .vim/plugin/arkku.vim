@@ -78,15 +78,36 @@ set hidden              " Hide, rather than unload, abandoned buffers
 silent! set shortmess+=c        " Don't show completion menu info messages
 silent! set signcolumn=yes      " Always show the sign column
 
+function! PumVisible()
+    if exists("*coc#pum#visible")
+        return coc#pum#visible()
+    else
+        return 0
+    endif
+endfunction
+
+function! IsCocJumpable()
+    if exists("*coc#pum#visible")
+        return coc#jumpable()
+    else
+        return 0
+    endif
+endfunction
+
+
 " Return in insert mode: accept autocompletion (endwise- and closer-compatible)
 let g:endwise_no_mappings=1
-imap <silent><expr> <Plug>CloserClose ""
-imap <silent><expr> <Plug>DiscretionaryEnd ""
-imap <silent><expr> <Plug>AlwaysEnd ""
-imap <C-X><CR> <CR><Plug>AlwaysEnd
-imap <silent><expr> <CR> (pumvisible() ? "\<C-Y>" : "\<CR>\<Plug>DiscretionaryEnd\<Plug>CloserClose")
+let g:closer_no_mappings=1
+imap <silent><expr> <CR> PumVisible() ? coc#pum#confirm() : closer#close(EndwiseAppend(EunuchNewLine("\r")))
 
-let g:SuperTabDefaultCompletionType="<C-N>"
+let g:SuperTabMappingForward="<C-N>"
+let g:SuperTabMappingBackward="<C-P>"
+imap <silent><expr> <Tab> PumVisible() ? coc#pum#confirm() : (IsCocJumpable() ? "\<C-J>" : "\<Tab>")
+imap <silent><expr> <S-Tab> PumVisible() ? coc#pum#cancel() : (IsCocJumpable() ? "\<C-K>" : "\<S-Tab>")
+"imap <silent><expr> <Esc> PumVisible() ? coc#pum#cancel() : "\<Esc>"
+
+"let g:SuperTabDefaultCompletionType="<C-N>"
+let g:SuperTabDefaultCompletionType="context"
 let g:SuperTabContextDefaultCompletionType="<C-N>"
 let g:SuperTabLongestEnhanced=1
 
@@ -334,7 +355,7 @@ noremap! <C-A> <Home>
 noremap! <C-Q> <C-A>
 
 " Map C-E to end of line or close any open pop-up menu
-inoremap <expr> <C-E> pumvisible() ? "\<C-E>" : "\<End>"
+inoremap <silent><expr> <C-E> PumVisible() ? coc#pum#cancel() : "\<End>"
 inoremap <C-B> <C-E>
 " ^- map the unused C-B to the old C-E, even the mnemonic makes more sense
 "

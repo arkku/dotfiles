@@ -1279,6 +1279,9 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
     unset is_sudo
 fi
 
+[ -e "$HOME/.yarn/bin" ] && path_force_tail "$HOME/.yarn/bin"
+[ -e "$HOME/.yarn/global/node_modules/bin" ] && path_force_tail "$HOME/.yarn/global/node_modules/.bin"
+
 [ -e "$HOME/.zshrc_private" ] && . "$HOME/.zshrc_private"
 
 if command -v path_force_order >/dev/null 2>&1; then

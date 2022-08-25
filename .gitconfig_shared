@@ -19,6 +19,7 @@
         mt = mergetool
 [push]
 	default = simple
+	autoSetupRemote = true
 [mergetool "nvim"]
 	cmd = nvim -d \"$BASE\" \"$LOCAL\" \"$REMOTE\" \"$MERGED\" -c '$wincmd w' -c 'wincmd J'
 [mergetool "nvimfugitive"]

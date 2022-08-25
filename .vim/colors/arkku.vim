@@ -168,6 +168,7 @@ hi CocErrorFloat term=standout cterm=none ctermfg=white ctermbg=red gui=none gui
 hi CocWarningFloat term=standout cterm=none ctermfg=white ctermbg=darkyellow gui=none guifg=#ffffff guibg=#cc6600
 hi CocInfoFloat term=standout cterm=none ctermfg=white ctermbg=green gui=none guifg=#ffffff guibg=#00aa99
 hi CocHintFloat term=standout cterm=none ctermfg=white ctermbg=green gui=none guifg=#ffffff guibg=#339999
+hi CocMenuSel term=standout cterm=none ctermbg=cyan gui=none guibg=#66ccff
 hi link CocErrorHighlight SpellBad
 hi link CocWarningHighlight SpellCap
 hi link CocInfoHighlight SpellLocal
@@ -293,6 +294,7 @@ if &background == "dark"
     endif
 
     hi CocFloating term=standout cterm=none ctermfg=white ctermbg=blue gui=none guibg=#001144
+    hi CocMenuSel term=standout cterm=none ctermbg=cyan gui=none guibg=#003399
 
     " Only set the fg white if we are very sure that the bg is dark:
     " a false positive means important text will be potentially invisible,
