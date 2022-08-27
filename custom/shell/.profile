@@ -50,4 +50,6 @@ fi
 
 . "$HOME/.profile_shared"
 
+[ -d "$HOME/.local/bin" ] && export PATH="$PATH:$HOME/.local/bin"
+
 [ -e "$HOME/.profile_private" ] && . "$HOME/.profile_private"
