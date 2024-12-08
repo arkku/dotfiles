@@ -3,14 +3,14 @@ if [ -n "$1" ]; then
     export MANPAGER="$0"
     exec man -P "$0" "$@"
 fi
-VIM=vim
 if [ -x "`command -v nvim`" ]; then
-    COL='cat'
     VIM='nvim'
+    COL='col -bpx'
 else
+    VIM='vim'
     COL='col -bpx'
 fi
-$COL | $VIM -R -c 'set ft=man nomod nolist nonumber' \
+$COL | $VIM -M -R -c 'set ft=man nomod nolist nonumber' \
     -c 'noremap q :quit<CR>' \
     -c 'noremap <SPACE> <C-D><C-G>' \
     -c 'noremap b <C-U><C-G>' \
