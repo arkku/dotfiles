@@ -17,6 +17,7 @@
         pushu = push -u origin HEAD
         dt = difftool
         mt = mergetool
+        fma = fetch origin master:master
 [push]
 	default = simple
 	autoSetupRemote = true

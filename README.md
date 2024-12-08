@@ -699,6 +699,7 @@ export PATH="/Library/Developer/Toolchains/swift-latest.xctoolchain/usr/bin:$PAT
 * [universal-ctags](https://github.com/universal-ctags/ctags)
 * [ccls](https://github.com/MaskRay/ccls)
 * [solargraph](https://github.com/castwide/solargraph) (gem)
+* [solargraph-syntax-suggest](https://github.com/CKolkey/solargraph-syntax-suggest) (gem)
 
 ``` vim
 :CocInstall coc-json

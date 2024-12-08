@@ -8,6 +8,17 @@
   "suggest.timeout": 2000,
   "suggest.removeDuplicateItems": true,
   "languageserver": {
+    "solargraph": {
+      "command": "solargraph",
+      "args": ["stdio"],
+      "filetypes": ["ruby"],
+      "rootPatterns": [".solargraph.yml", "Gemfile", ".git"],
+      "settings": {
+        "solargraph": {
+          "diagnostics": true
+        }
+      }
+    },
     "ccls": {
       "command": "ccls",
       "filetypes": ["c", "cpp", "cuda", "objc", "objcpp"],
@@ -17,7 +28,7 @@
             "directory": "/tmp/ccls"
          },
         "clang": {
-            "resourceDir": "/Library/Developer/CommandLineTools/usr/lib/clang/13.0.0",
+            "resourceDir": "/Library/Developer/CommandLineTools/usr/lib/clang/16",
             "extraArgs": [
                 "-isystem",
                 "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1",

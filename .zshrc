@@ -224,6 +224,12 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
     # Git pull
     alias gpull='git pull'
 
+    # Print the git main branch name (master, main)
+    alias gitmainbranch='git branch -l master main | awk '\''{print $1}'\' 
+
+    # Get pull master
+    alias gpullm='git fetch origin `gitmainbranch`:`gitmainbranch`'
+
     # Git update from remote
     alias gupdate='git pull --rebase --autostash -v'
 
@@ -1287,6 +1293,7 @@ fi
 if command -v path_force_order >/dev/null 2>&1; then
     path_force_order '/usr/local/bin' '/usr/bin'
     path_force_order "$HOME/bin" '/usr/local/bin'
+    [ -e "$HOME/.local/bin" ] && path_force_order "$HOME/.local/bin" '/usr/local/bin'
 
     for rvmdir in "$HOME/.rvm/bin" '/usr/local/rvm/bin'; do
         if [ -d "$rvmdir" ]; then

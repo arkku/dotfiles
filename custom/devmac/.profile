@@ -45,13 +45,15 @@ fi
 [ -d "$GCLOUD/bin" ] && export PATH="$PATH:$GCLOUD/bin"
 [ -x "$HOME/flutter/bin/flutter" ] && export PATH="$PATH:$HOME/flutter/bin"
 [ -e "$NPM_PACKAGES" -a -d "$NPM_PACKAGES/bin" ] && export PATH="$PATH:$NPM_PACKAGES/bin"
-[ -d "/usr/local/share/dotnet" ] && export PATH="$PATH:/usr/local/share/dotnet"
+[ -d '/usr/local/share/dotnet' ] && export PATH="$PATH:/usr/local/share/dotnet"
+
+if [ -d "$HOME/.pyenv" ]; then
+    export PYENV_ROOT="$HOME/.pyenv"
+    command -v pyenv >/dev/null || export PATH="$PATH:$PYENV_ROOT/bin"
+    command -v pyenv >/dev/null && eval "$(pyenv init -)"
+fi
 
 . "$HOME/.profile_shared"
-
-#if [ -n "$PS1" -a -z "$ENVONLY" -a -t 0 ]; then
-#    tabs -4
-#fi
 
 if [ -d "/Library/Developer/Toolchains/swift-latest.xctoolchain/usr/bin" ]; then
     export PATH="$PATH:/Library/Developer/Toolchains/swift-latest.xctoolchain/usr/bin"
