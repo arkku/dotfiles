@@ -105,7 +105,8 @@ endfunction
 " Return in insert mode: accept autocompletion (endwise- and closer-compatible)
 let g:endwise_no_mappings=1
 let g:closer_no_mappings=1
-imap <silent><expr> <CR> PumVisible() ? coc#pum#confirm() : HasCloser() ? closer#close(EndwiseAppend(EunuchNewLine("\r"))) : "\<CR>"
+"imap <silent><expr> <CR> PumVisible() ? coc#pum#confirm() : HasCloser() ? closer#close(EndwiseAppend(EunuchNewLine("\r"))) : "\<CR>"
+imap <silent><expr> <CR> HasCloser() ? closer#close(EndwiseAppend(EunuchNewLine("\r"))) : "\<CR>"
 
 let g:SuperTabMappingForward="<C-N>"
 let g:SuperTabMappingBackward="<C-P>"
@@ -239,9 +240,10 @@ if has("autocmd")
     filetype indent on
 
     " Use my settings for various programming languages instead of filetype
-    au FileType ruby,eruby,yaml,json setlocal ai sw=2 sts=2 ts=4 et
-    au FileType c,swift,cc,cs,cxx,cpp,h,hpp,java,python,sh,bash,zsh,eiffel,elixir,erlang,awk,javascript,dart,kotlin,rust,d,vim,typescript setlocal ai sw=4 ts=4 sts=4 et
-    au FileType swift,objcpp,kotlin,dart,haskell let b:closer = 1 | let b:closer_flags = '([{'
+    au FileType ruby,eruby,yaml,json,crystal,elixir setlocal ai sw=2 sts=2 ts=4 et
+    au FileType c,swift,cc,cs,cxx,cpp,h,hpp,java,python,sh,bash,zsh,eiffel,erlang,awk,javascript,dart,kotlin,rust,d,vim,typescript setlocal ai sw=4 ts=4 sts=4 et
+    au FileType go setlocal noet ts=4 sw=4 sts=4
+    au FileType swift,objcpp,kotlin,dart,haskell,go let b:closer = 1 | let b:closer_flags = '([{'
 
     " Fix formatting of lists in markdown
     au FileType text,markdown setlocal formatlistpat=^\\s*\\d\\+[.\)]\\s\\+\\\|^\\s*[*+~-]\\s\\+\\\|^\\(\\\|[*#]\\)\\[^[^\\]]\\+\\]:\\s | setlocal comments=n:> | setlocal formatoptions+=tcn | setlocal indentexpr= autoindent smartindent
@@ -275,7 +277,7 @@ if !exists('g:markdown_fenced_languages')
             call add(g:markdown_fenced_languages, 'bash=sh')
         endif
 
-        for pl in [ 'c', 'ruby', 'swift', 'html', 'javascript', 'python', 'make', 'yaml', 'json', 'cs', 'css', 'cpp', 'rust', 'kotlin', 'dart', 'haskell', 'scheme', 'lisp', 'ada', 'eiffel', 'clojure', 'latex' ]
+        for pl in [ 'c', 'ruby', 'swift', 'html', 'javascript', 'python', 'make', 'yaml', 'json', 'cs', 'css', 'cpp', 'rust', 'kotlin', 'dart', 'haskell', 'scheme', 'lisp', 'ada', 'eiffel', 'clojure', 'latex', 'crystal', 'go' ]
             if index(getcompletion(pl, 'filetype'), pl) >= 0
                 call add(g:markdown_fenced_languages, pl)
             endif
