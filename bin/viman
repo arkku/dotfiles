@@ -1,5 +1,6 @@
 #!/bin/sh
 if [ -n "$1" ]; then
+    export MANROFFOPT='-c'
     export MANPAGER="$0"
     exec man -P "$0" "$@"
 fi
