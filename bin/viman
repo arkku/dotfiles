@@ -11,10 +11,11 @@ else
     VIM='vim'
     COL='col -bpx'
 fi
-$COL | $VIM -M -R -c 'set ft=man nomod nolist nonumber' \
-    -c 'noremap q :quit<CR>' \
-    -c 'noremap <SPACE> <C-D><C-G>' \
-    -c 'noremap b <C-U><C-G>' \
-    -c 'nnoremap <Up> <C-Y>' \
-    -c 'nnoremap <Down> <C-E>' \
-    -c 'nnoremap K :Man <C-R>=expand("<cword>")<CR><CR>' - "$@"
+$COL | $VIM -M -R \
+    -c 'set ft=man nomod nolist nonumber' \
+    -c 'nnoremap <silent> <buffer> q :quit<CR>' \
+    -c 'noremap <silent> <buffer> b <C-U><C-G>' \
+    -c 'nnoremap <silent> <buffer> <Up> <C-Y>' \
+    -c 'nnoremap <silent> <buffer> <Down> <C-E>' \
+    -c 'nnoremap <silent> <buffer> <Space> <C-D><C-G>' \
+    -c 'nnoremap <silent> <buffer> K :Man <C-R>=expand("<cword>")<CR><CR>' - "$@"
