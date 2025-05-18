@@ -607,6 +607,8 @@ nmap <LocalLeader>z <C-P>
 command! CD lcd %:p:h
 command! CDC cd %:p:h
 
+command! Fmt :call CocActionAsync('format')
+
 if executable('fzf')
     " Add fzf if installed
     if !empty(glob(expand("~/.fzf")))
