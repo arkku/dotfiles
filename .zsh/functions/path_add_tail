@@ -1,0 +1,6 @@
+# Add the argument dir to the tail of path unless already in path
+path_add_tail() {
+    if [ -d "$1" ] && [[ ":$PATH:" != *":$1:"* ]]; then
+        export PATH="${PATH:+"$PATH:"}$1"
+    fi
+}

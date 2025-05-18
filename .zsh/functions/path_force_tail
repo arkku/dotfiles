@@ -1,0 +1,12 @@
+# Add or move the argument dir to the tail of path
+path_force_tail() {
+    [ ! -d "$1" ] && return
+    if [[ ":$PATH:" == *":$1:"* ]]; then
+        local tmppath=":$PATH:"
+        tmppath="${tmppath/:$1:/:}$1"
+        tmppath="${tmppath//::/:}"
+        export PATH="${tmppath/#:/}"
+    else
+        export PATH="${PATH:+"$PATH:"}$1"
+    fi
+}

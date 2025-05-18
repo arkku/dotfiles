@@ -4,7 +4,10 @@
 disable log
 
 # Add custom functions directory to fpath
-[ -e "$HOME/.zsh/functions" ] && fpath=( "$HOME/.zsh/functions" "${fpath[@]}" )
+if [ -e "$HOME/.zsh/functions" ]; then
+    fpath=( "$HOME/.zsh/functions" "${fpath[@]}" )
+    autoload -Uz ${${(f)"$(print -l "$HOME/.zsh/functions"/*)"}##*/}
+fi
 
 # Try to determine the background color
 if [ -z "$BACKGROUND" ]; then
@@ -370,7 +373,10 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
         alias -g :VI='| nvim -R -'
         alias -g :VIM='|& nvim -R -'
         if [ -n "$(command -v viman)" ]; then
-            [ -z "$MANPAGER" ] && export MANPAGER='viman'
+            if [ -z "$MANPAGER" -a -z "$MANROFFOPT" ]; then
+                export MANROFFOPT='-c'
+                export MANPAGER='viman'
+            fi
         fi
         nvis() {
             if [ -e "Session.vim" ]; then

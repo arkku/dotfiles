@@ -1,0 +1,12 @@
+# Add or move the argument dir to the head of path
+path_force_head() {
+    [ ! -d "$1" ] && return
+    if [[ ":$PATH:" == *":$1:"* ]]; then
+        local tmppath=":$PATH:"
+        tmppath="$1${tmppath/:$1:/:}"
+        tmppath="${tmppath//::/:}"
+        export PATH="${tmppath/%:/}"
+    else
+        export PATH="$1${PATH:+":$PATH"}"
+    fi
+}
