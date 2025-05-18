@@ -5,20 +5,33 @@
   "suggest.selection": "recentlyUsedByPrefix",
   "suggest.timeout": 2000,
   "suggest.removeDuplicateItems": true,
+  "semanticTokens.enable": true,
+  "solargraph.diagnostics": true,
+  "inlayHint.enable": true,
+  "inlayHint.display": true,
+  "inlayHint.position": "eol",
   "python.linting.pylintArgs": [
     "--disable=missing-module-docstring,missing-function-docstring"
   ],
+  "clangd.arguments": [
+    "--background-index",
+    "--clang-tidy",
+    "--completion-style=detailed"
+  ],
   "languageserver": {
-    "solargraph": {
-      "command": "solargraph",
+    "ruby": {
+      "command": "ruby-lsp",
       "args": ["stdio"],
-      "filetypes": ["ruby"],
-      "rootPatterns": [".solargraph.yml", "Gemfile", ".git"],
+      "filetypes": [],
+      "rootPatterns": ["Gemfile", ".git/"],
       "settings": {
-        "solargraph": {
-          "diagnostics": true
-        }
       }
+    },
+    "gleam": {
+      "command": "gleam",
+      "args": ["lsp"],
+      "filetypes": ["gleam"],
+      "rootPatterns": ["gleam.toml"]
     },
     "crystal": {
       "command": "crystalline",
@@ -28,47 +41,45 @@
       "filetypes": [
         "crystal"
       ],
-      "rootPatterns": ["shard.yml", ".git"]
+      "rootPatterns": ["shard.yml", ".git/"]
     },
     "golang": {
       "command": "gopls",
       "args": [],
       "filetypes": ["go"],
-      "rootPatterns": ["go.mod", ".git"],
+      "rootPatterns": ["go.mod", ".git/"],
       "initializationOptions": {},
-      "settings": {}
+      "settings": {
+        "gopls": {
+          "analyses": {
+            "unusedparams": true,
+             "nilness": true,
+             "shadow": true
+          },
+          "staticcheck": true,
+          "env": {
+            "CGO_ENABLED": "0"
+          }
+        }
+      }
     },
     "rust": {
       "command": "rust-analyzer",
       "filetypes": ["rust"],
-      "rootPatterns": ["Cargo.toml", "rust-project.json", ".git"],
+      "rootPatterns": ["Cargo.toml", "rust-project.json", ".git/"],
       "initializationOptions": {},
       "settings": {}
     },
     "swift": {
       "command": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/sourcekit-lsp",
       "filetypes": ["swift"],
-      "rootPatterns": ["Package.swift", ".git"],
+      "rootPatterns": ["Package.swift", ".git/"],
       "initializationOptions": {}
     },
-    "ccls": {
-      "command": "ccls",
-      "filetypes": ["c", "cpp", "cuda", "objc", "objcpp"],
-      "rootPatterns": [".git", ".hg", ".ccls-root", "compile_commands.json"],
-      "initializationOptions": {
-        "cache": {
-            "directory": "/tmp/ccls"
-         },
-        "clang": {
-            "resourceDir": "/Library/Developer/CommandLineTools/usr/lib/clang/16",
-            "extraArgs": [
-                "-isystem",
-                "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1",
-                "-I",
-                "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include"        
-            ]
-        }
-      }
+    "zls": {
+      "command": "zls",
+      "filetypes": ["zig"],
+      "rootPatterns": ["build.zig", ".git/"]
     }
   },
   "sourcekit.sdk":"iphonesimulator"
