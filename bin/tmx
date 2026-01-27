@@ -1,10 +1,10 @@
 #!/bin/sh
 # A wrapper for running tmux. Takes on (optional) main session name as
 # argument, creates it if it doesn't exist. Then (in either case),
-# a new slave session is created and attached to the main session.
-# The slave session is configured to be destroyed automatically when
+# a new child session is created and attached to the main session.
+# The child session is configured to be destroyed automatically when
 # detached, but the main session stays active. This arrangement allows
-# each slave session to have independent control over active windows/panes.
+# each child session to have independent control over active windows/panes.
 #
 # (Make sure ~/.tmux.conf does not interfere by having something like
 #  `new-session` or `attach-session` in it.)
@@ -13,6 +13,11 @@
 # Distribute freely, use at your own risk only.
 
 tmux=tmux
+if [ -x '/usr/bin/systemd-run' ]; then
+    systemd_run='/usr/bin/systemd-run --scope --user'
+else
+    systemd_run=''
+fi
 
 [ "$1" = "ls" ] && exec $tmux ls
 
@@ -41,15 +46,15 @@ fi
 
 if ! $tmux ls 2>/dev/null | grep -q "^$main_session:"; then
     echo "New session: $main_session" >&2
-    $tmux new-session -s "$main_session" -d 2>/dev/null
+    $systemd_run $tmux new-session -s "$main_session" -d 2>/dev/null
 fi
 
 if [ -z "$2" ]; then
-    slave_session="${main_session}_$$"
+    child_session="${main_session}_$$"
 else
-    slave_session="${main_session}_$2"
-    #if $tmux ls 2>/dev/null | grep -q "^$slave_session:"; then
-    #    slave_session="${slave_session}_$$"
+    child_session="${main_session}_$2"
+    #if $tmux ls 2>/dev/null | grep -q "^$child_session:"; then
+    #    child_session="${child_session}_$$"
     #fi
 fi
 
@@ -58,8 +63,8 @@ if [ "$TERM_PROGRAM" = "Apple_Terminal" ]; then
     printf '\eP\e]7;\a'
 fi
 
-echo "Attaching to $main_session as $slave_session" >&2
-exec $tmux  new-session -A -D -d -t "$main_session" -s "$slave_session" \; \
-            set-option destroy-unattached \; \
-            attach-session -t "$slave_session" $more_args
+echo "Attaching to $main_session as $child_session" >&2
+exec $systemd_run $tmux  new-session -A -D -d -t "$main_session" -s "$child_session" \; \
+                    set-option destroy-unattached \; \
+                    attach-session -t "$child_session" $more_args
 
