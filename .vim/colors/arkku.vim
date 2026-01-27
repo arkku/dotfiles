@@ -328,7 +328,7 @@ else " Light background
     let g:terminal_color_14 = '#0099ff'
     let g:terminal_color_15 = '#ffffff'
 
-    hi CocInlayHint term=none guifg=#00ddff guibg=none ctermfg=cyan ctermbg=none
+    hi CocInlayHint guifg=#00ddff guibg=none ctermfg=cyan ctermbg=none
 
     " vim-buffet
     function! g:BuffetSetCustomColors()
