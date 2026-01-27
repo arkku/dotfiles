@@ -40,7 +40,7 @@ if [ -n "$PS1" ]; then
 fi
 
 [ -d "$HOME/.npm-packages" ] && export NPM_PACKAGES="$HOME/.npm-packages"
-[ -d "$HOME/go" ] && export GOPATH="$HOME/go"
+#[ -d "$HOME/go" ] && export GOPATH="$HOME/go"
 [ -d "$HOME/google-cloud-sdk" ] && export GCLOUD="$HOME/google-cloud-sdk"
 [ -d "$GCLOUD/bin" ] && export PATH="$PATH:$GCLOUD/bin"
 [ -x "$HOME/flutter/bin/flutter" ] && export PATH="$PATH:$HOME/flutter/bin"
