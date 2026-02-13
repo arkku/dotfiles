@@ -54,12 +54,12 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
     # Test for UTF-8
     if [ -z "$NOUTF8" ] && locale 2>/dev/null | grep -qi -e 'LC_CTYPE.*UTF-8' -e 'LC_CTYPE.*utf8'; then
         [ -z "$UTF8" ] && export UTF8=1
-        [ -z "$ELLIPSIS" ] && export ELLIPSIS='…'
-        [ -z "$PROMPTCHAR" ] && export PROMPTCHAR='%F{blue}❯%F{reset}'
+        export ELLIPSIS='…'
+        export PROMPTCHAR='%F{blue}❯%F{reset}'
     else
         unset UTF8
-        [ -z "$ELLIPSIS" ] && export ELLIPSIS='...'
-        [ -z "$PROMPTCHAR" ] && export PROMPTCHAR='>'
+        export ELLIPSIS='...'
+        export PROMPTCHAR='>'
     fi
 
     # Options
