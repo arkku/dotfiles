@@ -113,6 +113,8 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
         CLIPCOPY="$CLIPCOPY"
     elif [ -z "$SSH_CONNECTION" -a -n "$(command -v pbcopy)" ]; then
         CLIPCOPY='pbcopy'
+    elif [ -z "$SSH_CONNECTION" -a -n "$(command -v clip.exe)" ]; then
+        CLIPCOPY='clip.exe'
     elif [ -n "$DISPLAY" ]; then
         if [ -n "$(command -v xclip)" ]; then
             CLIPCOPY='xclip -selection c'

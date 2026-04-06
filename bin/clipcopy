@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-if [ -n "$CLIPCOPY" -a -n "$(command -v "${CLIPCOPY/% *}")" ]; then
-    exec $CLIPCOPY
-elif [ -z "$SSH_CONNECTION" -a -n "$(command -v pbcopy)" ]; then
+if [ -z "$SSH_CONNECTION" -a -n "$(command -v pbcopy)" ]; then
     exec pbcopy
+elif [ -z "$SSH_CONNECTION" -a -n "$(command -v clip.exe)" ]; then
+    exec clip.exe
 elif [ -n "$DISPLAY" ]; then
     if [ -n "$(command -v xclip)" ]; then
         exec xclip -selection c
