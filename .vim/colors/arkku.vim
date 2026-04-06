@@ -295,7 +295,7 @@ if &background == "dark"
 
     hi CocFloating term=standout cterm=none ctermfg=white ctermbg=blue gui=none guibg=#001144
     hi CocMenuSel term=standout cterm=none ctermbg=cyan gui=none guibg=#003399
-    hi CocInlayHint term=none guifg=#001133 guibg=none ctermfg=blue ctermbg=none
+    hi CocInlayHint term=none guifg=#001133 ctermfg=blue
 
     " Only set the fg white if we are very sure that the bg is dark:
     " a false positive means important text will be potentially invisible,
@@ -328,7 +328,7 @@ else " Light background
     let g:terminal_color_14 = '#0099ff'
     let g:terminal_color_15 = '#ffffff'
 
-    hi CocInlayHint guifg=#00ddff guibg=none ctermfg=cyan ctermbg=none
+    hi CocInlayHint guifg=#00ddff ctermfg=cyan
 
     " vim-buffet
     function! g:BuffetSetCustomColors()
