@@ -117,6 +117,7 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
         CLIPCOPY='clip.exe'
     elif [ -n "$DISPLAY" ]; then
         if [ -n "$(command -v xclip)" ]; then
+            echo xclip
             CLIPCOPY='xclip -selection c'
         elif [ -n "$(command -v xsel)" ]; then
             CLIPCOPY='xsel -i -b'
@@ -1211,13 +1212,21 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
     # Right prompt:
     # [git repo/branch] [markers if there are local changes]
 
+    if [ -n "$SSH_CONNECTION" -o -e '/dev/incus' -o -e '/dev/.lxc' ]; then
+        SHORT_HOSTNAME="${HOST:-${HOSTNAME:-$(hostname)}}"
+        SHORT_HOSTNAME="${SHORT_HOSTNAME/%.*/}"
+        export host_prompt="${SHORT_HOSTNAME:+@}${SHORT_HOSTNAME}"
+    else
+        export host_prompt=''
+    fi
+
     export pwd_prompt="$PWD"
     export vcs_prompt=''
     export vcs_status=''
     export prompt_vi_mode=''
     export PROMPT='%(?..%F{red}?$?%F{reset} )%F{'"$FADED_COLOR"'}!%! %(!__${SUDO_USER:+%n })${prompt_vi_mode}${vcs_status}
 %F{cyan}%-60<$ELLIPSIS<${pwd_prompt:-%~}%<<%F{reset}%(!_#_${PROMPTCHAR:-%#}) '
-    export RPROMPT='    %F{magenta}%(1j.%j&.)$vcs_prompt%F{reset}'
+    export RPROMPT='    %F{magenta}%(1j.%j&.)$vcs_prompt%F{cyan}${host_prompt:+${vcs_prompt:+ }}${host_prompt}%F{reset}'
 
     # Syntax highlighting
     local hlpath

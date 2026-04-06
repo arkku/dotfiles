@@ -400,7 +400,7 @@ if [ -n "$PS1" -a -z "$ENVONLY" ]; then
         # works on bash, we just miss out on the key bindings)
         [ -s "$HOME/.fzfgit.zsh" ] && . "$HOME/.fzfgit.zsh"
     fi
-    if [ -n "$SSH_CONNECTION" -o -n "$SUDO_USER" ]; then
+    if [ -n "$SSH_CONNECTION" -o -n "$SUDO_USER" -o -e '/dev/incus' -o -e '/dev/.lxc' ]; then
         PS1='\u@$SHORT_HOSTNAME:$SHORT_PWD\$ '
     else
         PS1='$SHORT_PWD\$ '
