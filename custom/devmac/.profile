@@ -2,9 +2,9 @@
 
 [ -x "/opt/homebrew/bin/brew" ] && eval `/opt/homebrew/bin/brew shellenv`
 
-if command -v pyenv 1>/dev/null 2>&1; then
-    eval "`pyenv init -`"
-fi
+#if command -v pyenv 1>/dev/null 2>&1; then
+#    eval "`pyenv init -`"
+#fi
 
 # disallow messages
 mesg n 2>/dev/null || true
