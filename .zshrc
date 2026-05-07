@@ -901,13 +901,13 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
     # In vi-mode, type vi" to select quoted text
     autoload -U select-quoted
     zle -N select-quoted
-    local m c
+    local m k
     for m in visual viopp; do
-        for c in {a,i}{\',\",\`}; do
-            bindkey -M $m $c select-quoted
+        for k in {a,i}{\',\",\`}; do
+            bindkey -M $m $k select-quoted
         done
     done
-    unset m c
+    unset m k
 
     # Toggle "sudo" at the beginning of the command line
     _toggle-sudo() {
