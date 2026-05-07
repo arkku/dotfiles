@@ -30,7 +30,6 @@ if [ -n "$TMUX" ]; then
         tmux*|screen*)
             # Nested tmux needs passthrough
             if command -v base64 >/dev/null 2>&1; then
-                echo nestedtmux >/tmp/clip
                 exec printf "\033Ptmux;\033]52;c;%s\033\\\033\\" "$(encode_osc52)" >"${client_tty:-/dev/stdout}"
             else
                 exec tmux load-buffer -
@@ -39,7 +38,6 @@ if [ -n "$TMUX" ]; then
         *)
             # Single layer of tmux, just use OSC 52
             if command -v base64 >/dev/null 2>&1; then
-                echo "$outer_term" >/tmp/clip
                 exec printf "\033]52;c;%s\033\\" "$(encode_osc52)" >"${client_tty:-/dev/stdout}"
             else
                 exec tmux load-buffer -
