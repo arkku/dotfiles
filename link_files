@@ -143,7 +143,7 @@ find . -type f -print0 | while read -d '' file; do
     dst=''
 
     case "$src" in
-        *DS_Store|*.swp|*.dotfiles_custom|.tags|*.lock)
+        *DS_Store|*.swp|*.dotfiles_custom|.tags|*.lock|*.temp)
             continue
             ;;
         $platform/*)    # Platform-specific file for the current platform
