@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/sh
 if [ -n "$CLIPPASTE" ] && command -v "${CLIPPASTE/% *}" >/dev/null 2>&1; then
     exec $CLIPPASTE
 elif [ -z "$SSH_CONNECTION" ] && command -v pbpaste >/dev/null 2>&1; then
