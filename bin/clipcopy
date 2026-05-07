@@ -18,7 +18,7 @@ elif [ -z "$SSH_CONNECTION" ]; then
 fi
 if [ -n "$TMUX" ]; then
     if command -v base64 >/dev/null 2>&1; then
-        exec printf "\033Ptmux;\033\033]52;c;%s\a\033\\" "$(base64 | tr -d '\n\r')"
+        exec printf "\033Ptmux;\033\033]52;c;%s\033\033\\\033\\" "$(base64 | tr -d '\n\r')"
     else
         exec tmux load-buffer -
     fi
