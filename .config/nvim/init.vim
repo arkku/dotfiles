@@ -41,3 +41,19 @@ nnoremap <Space> <Nop>
 let maplocalleader=" "
 
 colorscheme arkku
+
+" Fix clipboard over ssh/mosh
+if getenv('SSH_CONNECTION') != v:null || getenv('TMUX') != v:null
+  let g:clipboard = {
+    \ 'name': 'clipcopy',
+    \ 'copy': {
+    \   '+': [expand('~/bin/clipcopy')],
+    \   '*': [expand('~/bin/clipcopy')],
+    \ },
+    \ 'paste': {
+    \   '+': [expand('~/bin/clippaste')],
+    \   '*': [expand('~/bin/clippaste')],
+    \ },
+    \ 'cache_enabled': 0,
+    \ }
+endif
