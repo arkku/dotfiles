@@ -128,6 +128,8 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
         elif [ -w '/dev/clipboard' ]; then
             CLIPCOPY='cat >/dev/clipboard'
         fi
+    elif [ -x "$HOME/bin/clipcopy" ]; then
+        CLIPCOPY="$HOME/bin/clipcopy"
     fi
     if [ -z "$CLIPCOPY" -a -n "$TMUXCOPY" ]; then
         CLIPCOPY="$TMUXCOPY"
@@ -136,11 +138,11 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
 
     if [ -n "$CLIPCOPY" ]; then
         alias -g :CL="| $CLIPCOPY"
-        eval 'clipcopy() { echo -n "$*" | '"$CLIPCOPY"' }'
+        eval 'cbcopy() { echo -n "$*" | '"$CLIPCOPY"' }'
 
         # Bind ^X to copy the current input to system clipboard
         copy-input() {
-            [ -n "$BUFFER" ] && clipcopy "$BUFFER"
+            [ -n "$BUFFER" ] && cbcopy "$BUFFER"
             prompt_vi_mode=" %F{$FADED_COLOR}(copied)%F{reset}"
             zle reset-prompt
         }
@@ -160,6 +162,8 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
         fi
     elif [ -z "$SSH_CONNECTION" -a -r '/dev/clipboard' ]; then
         CLIPPASTE='cat /dev/clipboard'
+    elif [ -x "$HOME/bin/clippaste" ]; then
+        CLIPCOPY="$HOME/bin/clippaste"
     fi
     if [ -z "$CLIPPASTE" -a -n "$TMUXPASTE" ]; then
         CLIPPASTE="$TMUXPASTE"
@@ -172,7 +176,7 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
         local IFS=$'\n'
         local pasted
         if [ -z "$1" ]; then
-            pasted=("${(@f)$(clippaste)}")
+            pasted=("${(@f)$(cbpaste)}")
         else
             pasted=("${(@f)*}")
         fi
@@ -193,7 +197,7 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
     zle -N _escape-and-paste-input
 
     if [ -n "$CLIPPASTE" ]; then
-        eval 'clippaste() { '"$CLIPPASTE"' }'
+        eval 'cbpaste() { '"$CLIPPASTE"' }'
 
         # Bind ^B to paste ("Baste"?) and escape from system clipboard
         zle -N _escape-and-paste-input
@@ -353,18 +357,18 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
     alias agrep='alias | grep -i --color=auto'
 
     # Copy last command
-    alias clc='clipcopy "$(fc -ln -1)"'
+    alias clc='cbcopy "$(fc -ln -1)"'
     alias clct='tmuxcopy "$(fc -ln -1)"'
 
     # Paste command-line (mnemonic to match `clc`)
-    alias plc='print -z -- "$(clippaste)"'
+    alias plc='print -z -- "$(cbpaste)"'
     alias plct='print -z -- "$(tmuxpaste)"'
 
     # Copy current directory
-    alias cpwd='clipcopy "$PWD" && echo "$PWD"'
+    alias cpwd='cbcopy "$PWD" && echo "$PWD"'
 
     # Copy symlink-resolved path to current directory
-    alias cpath='( cd -P "$PWD" && clipcopy "$PWD" && echo "$PWD" )'
+    alias cpath='( cd -P "$PWD" && cbcopy "$PWD" && echo "$PWD" )'
 
     # sudo-edit
     alias svi='sudo -e'
@@ -1230,7 +1234,7 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
 
     # Syntax highlighting
     local hlpath
-    for hlpath in "$HOME/.zsh" '/usr/local/share' '/usr/share'; do
+    for hlpath in "$HOME/.zsh" '/usr/local/share' '/usr/share' '/opt/homebrew/share'; do
         [ -r "$hlpath/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ] || continue
         [ -n "$ZSH_NO_SYNTAX_HIGHLIGHT" ] && continue
         export ZSH_HIGHLIGHT_HIGHLIGHTERS_DIR="$hlpath/zsh-syntax-highlighting/highlighters"
@@ -1286,7 +1290,7 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
         zle_highlight+=( 'default:bold' )
     else
         local aspath
-        for aspath in "$HOME/.zsh" '/usr/local/share' '/usr/share'; do
+        for aspath in "$HOME/.zsh" '/usr/local/share' '/usr/share' '/opt/homebrew/share'; do
             [ -r "$aspath/zsh-autosuggestions/zsh-autosuggestions.zsh" ] || continue
             ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
             ZSH_AUTOSUGGEST_USE_ASYNC=1
@@ -1297,6 +1301,13 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
         done
         unset aspath
     fi
+
+    local vimodepath
+    for vimodepath in "$HOME/.zsh" '/usr/local/share' '/usr/share' '/opt/homebrew/share'; do
+        [ -r "$vimodepath/zsh-vi-mode/zsh-vi-mode.zsh" ] || continue
+        source "$vimodepath/zsh-vi-mode/zsh-vi-mode.zsh"
+    done
+    unset vimodepath
 
     unset is_root
     unset is_sudo

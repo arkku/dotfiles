@@ -27,12 +27,6 @@
       "settings": {
       }
     },
-    "gleam": {
-      "command": "gleam",
-      "args": ["lsp"],
-      "filetypes": ["gleam"],
-      "rootPatterns": ["gleam.toml"]
-    },
     "crystal": {
       "command": "crystalline",
       "args": [
