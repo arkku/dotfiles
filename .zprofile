@@ -1,9 +1,22 @@
 # .zprofile: Run instead of .profile by zsh
 
-# Add custom functions directory to fpath
-if [ -e "$HOME/.zsh/functions" ]; then
+# Path helpers: autoload from ~/.zsh/functions when reachable, else use
+# minimal add-if-absent fallbacks
+if [ -d "$HOME/.zsh/functions" ] && [ -r "$HOME/.zsh/functions/path_force_order" ]; then
     fpath=( "$HOME/.zsh/functions" "${fpath[@]}" )
     autoload -Uz ${${(f)"$(print -l "$HOME/.zsh/functions"/*)"}##*/}
+else
+    path_add_head() {
+        [ -d "$1" ] || return
+        case ":$PATH:" in *":$1:"*) ;; *) export PATH="$1${PATH:+:$PATH}" ;; esac
+    }
+    path_add_tail() {
+        [ -d "$1" ] || return
+        case ":$PATH:" in *":$1:"*) ;; *) export PATH="${PATH:+$PATH:}$1" ;; esac
+    }
+    path_force_head() { path_add_head "$1" }
+    path_force_tail() { path_add_tail "$1" }
+    path_force_order() { path_add_head "$2"; path_add_head "$1" }
 fi
 
 if id -Gn 2>&1 | grep -q -E '(^| )(staff|admin|sudoers|sudo|wheel)( |$)' >/dev/null 2>&1; then
@@ -31,7 +44,7 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
     alias irbb='command irb'
 
     # Obtain fzf if installed
-    if [ -n "$(command -v fzf)" ]; then
+    if command -v fzf >/dev/null 2>&1; then
         local fzfpath
         for fzfpath in "$HOME/.profile.d" "$HOME/opt/fzf/shell" "$HOME/.fzf/shell" '/usr/local/opt/fzf/shell' '/usr/share/doc/fzf/examples'; do
             if [[ -r "$fzfpath/completion.zsh" ]]; then

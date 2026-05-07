@@ -2,10 +2,6 @@
 
 [ -x "/opt/homebrew/bin/brew" ] && eval `/opt/homebrew/bin/brew shellenv`
 
-#if command -v pyenv 1>/dev/null 2>&1; then
-#    eval "`pyenv init -`"
-#fi
-
 # disallow messages
 mesg n 2>/dev/null || true
 
@@ -49,8 +45,8 @@ fi
 
 if [ -d "$HOME/.pyenv" ]; then
     export PYENV_ROOT="$HOME/.pyenv"
-    command -v pyenv >/dev/null || export PATH="$PATH:$PYENV_ROOT/bin"
-    command -v pyenv >/dev/null && eval "$(pyenv init -)"
+    command -v pyenv >/dev/null 2>&1 || export PATH="$PATH:$PYENV_ROOT/bin"
+    command -v pyenv >/dev/null 2>&1 && eval "$(pyenv init -)"
 fi
 
 . "$HOME/.profile_shared"

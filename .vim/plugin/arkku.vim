@@ -627,8 +627,6 @@ if executable('fzf')
             nnoremap <LocalLeader>z <Esc>:silent! NERDTREEClose<CR>:call fzf#run(fzf#wrap({'source': 'fd -c never -d 5 -- . 2>/dev/null'}))<CR>
         elseif executable('rg')
             nnoremap <LocalLeader>z <Esc>:silent! NERDTREEClose<CR>:call fzf#run(fzf#wrap({'source': 'rg --color never --max-depth 4 -l -- ""'}))<CR>
-        elseif executable('ag')
-            nnoremap <LocalLeader>z <Esc>:silent! NERDTREEClose<CR>:call fzf#run(fzf#wrap({'source': 'ag -l --nocolor --depth 4 -- "" 2>/dev/null'}))<CR>
         else
             " Space z to open FZF
             nnoremap <LocalLeader>z <Esc>:silent! NERDTREEClose<CR>:FZF<CR>
@@ -651,10 +649,6 @@ elseif executable('rg')
     " Use ripgrep in CtrlP for listing files
     let g:ctrlp_user_command='rg --color never -l --max-depth 3 -- "" %s'
     let g:ctrlp_use_caching=0
-elseif executable('ag')
-    " Use Ag in CtrlP for listing files
-    let g:ctrlp_user_command='ag --nocolor -l --depth 3 -- "" %s 2>/dev/null'
-    let g:ctrlp_use_caching=0
 endif
 
 if executable('rg')
@@ -662,9 +656,4 @@ if executable('rg')
     set grepprg=rg\ --vimgrep\ --no-heading\ --smart-case\ --multiline-dotall\ --hidden
     set grepformat=%f:%l:%c:%m,%f:%l:%m
     let g:ackprg='rg --vimgrep --no-heading'
-elseif executable('ag')
-    " Use Ag over grep
-    set grepprg=ag\ --vimgrep
-    set grepformat=%f:%l:%c:%m
-    let g:ackprg='ag --vimgrep'
 endif

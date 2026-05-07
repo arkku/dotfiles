@@ -143,7 +143,7 @@ find . -type f -print0 | while read -d '' file; do
     dst=''
 
     case "$src" in
-        *DS_Store|*.swp|*.dotfiles_custom)
+        *DS_Store|*.swp|*.dotfiles_custom|.tags|*.lock)
             continue
             ;;
         $platform/*)    # Platform-specific file for the current platform
@@ -165,7 +165,7 @@ find . -type f -print0 | while read -d '' file; do
                 continue
             fi
             ;;
-        .git/*|.gitignore|.gitmodules|.tags)    # Ignore git directory
+        .git/*|.gitignore|.gitmodules)    # Ignore git directory
             continue
             ;;
         .*|bin/*|share/*|man/*)          # Dotfiles and whitelisted paths

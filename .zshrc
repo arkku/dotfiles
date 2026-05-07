@@ -3,10 +3,23 @@
 
 disable log
 
-# Add custom functions directory to fpath
-if [ -e "$HOME/.zsh/functions" ]; then
+# Path helpers: autoload from ~/.zsh/functions when reachable, else use
+# minimal add-if-absent fallbacks
+if [ -d "$HOME/.zsh/functions" ] && [ -r "$HOME/.zsh/functions/path_force_order" ]; then
     fpath=( "$HOME/.zsh/functions" "${fpath[@]}" )
     autoload -Uz ${${(f)"$(print -l "$HOME/.zsh/functions"/*)"}##*/}
+else
+    path_add_head() {
+        [ -d "$1" ] || return
+        case ":$PATH:" in *":$1:"*) ;; *) export PATH="$1${PATH:+:$PATH}" ;; esac
+    }
+    path_add_tail() {
+        [ -d "$1" ] || return
+        case ":$PATH:" in *":$1:"*) ;; *) export PATH="${PATH:+$PATH:}$1" ;; esac
+    }
+    path_force_head() { path_add_head "$1" }
+    path_force_tail() { path_add_tail "$1" }
+    path_force_order() { path_add_head "$2"; path_add_head "$1" }
 fi
 
 # Try to determine the background color
@@ -37,9 +50,19 @@ else
 fi
 
 if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
-    # Vi-mode
+    # Vi-mode; load zsh-vi-mode here with ZVM_INIT_MODE=sourcing so later
+    # bindkey calls aren't clobbered
     bindkey -v
-    setopt vi
+
+    ZVM_INIT_MODE=sourcing
+    local vimodepath
+    for vimodepath in "$HOME/.zsh" '/usr/local/share' '/usr/share' '/opt/homebrew/share'; do
+        if [ -r "$vimodepath/zsh-vi-mode/zsh-vi-mode.zsh" ]; then
+            source "$vimodepath/zsh-vi-mode/zsh-vi-mode.zsh"
+            break
+        fi
+    done
+    unset vimodepath
 
     export KEYTIMEOUT=1
 
@@ -52,7 +75,7 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
     autoload -Uz zmv
 
     # Test for UTF-8
-    if [ -z "$NOUTF8" ] && locale 2>/dev/null | grep -qi -e 'LC_CTYPE.*UTF-8' -e 'LC_CTYPE.*utf8'; then
+    if [ -z "$NOUTF8" ] && [[ "${LANG}${LC_CTYPE}${LC_ALL}" == *[Uu][Tt][Ff]*8* ]]; then
         [ -z "$UTF8" ] && export UTF8=1
         export ELLIPSIS='…'
         export PROMPTCHAR='%F{blue}❯%F{reset}'
@@ -111,19 +134,19 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
 
     if [ -n "$CLIPCOPY" ]; then
         CLIPCOPY="$CLIPCOPY"
-    elif [ -z "$SSH_CONNECTION" -a -n "$(command -v pbcopy)" ]; then
+    elif [ -z "$SSH_CONNECTION" ] && command -v pbcopy >/dev/null 2>&1; then
         CLIPCOPY='pbcopy'
-    elif [ -z "$SSH_CONNECTION" -a -n "$(command -v clip.exe)" ]; then
+    elif [ -z "$SSH_CONNECTION" ] && command -v clip.exe >/dev/null 2>&1; then
         CLIPCOPY='clip.exe'
     elif [ -n "$DISPLAY" ]; then
-        if [ -n "$(command -v xclip)" ]; then
+        if command -v xclip >/dev/null 2>&1; then
             echo xclip
             CLIPCOPY='xclip -selection c'
-        elif [ -n "$(command -v xsel)" ]; then
+        elif command -v xsel >/dev/null 2>&1; then
             CLIPCOPY='xsel -i -b'
         fi
     elif [ -z "$SSH_CONNECTION" ]; then
-        if [ -n "$(command -v clip)" ]; then
+        if command -v clip >/dev/null 2>&1; then
             CLIPCOPY='clip'
         elif [ -w '/dev/clipboard' ]; then
             CLIPCOPY='cat >/dev/clipboard'
@@ -152,12 +175,12 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
 
     if [ -n "$CLIPPASTE" ]; then
         CLIPPASTE="$CLIPPASTE"
-    elif [ -z "$SSH_CONNECTION" -a -n "$(command -v pbpaste)" ]; then
+    elif [ -z "$SSH_CONNECTION" ] && command -v pbpaste >/dev/null 2>&1; then
         CLIPPASTE='pbpaste'
     elif [ -n "$DISPLAY" ]; then
-        if [ -n "$(command -v xclip)" ]; then
+        if command -v xclip >/dev/null 2>&1; then
             CLIPPASTE='xclip -o -selection c'
-        elif [ -n "$(command -v xsel)" ]; then
+        elif command -v xsel >/dev/null 2>&1; then
             CLIPPASTE='xsel -o -b'
         fi
     elif [ -z "$SSH_CONNECTION" -a -r '/dev/clipboard' ]; then
@@ -374,12 +397,12 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
     alias svi='sudo -e'
 
     # Neovim
-    if [ -n "$(command -v nvim)" ]; then
+    if command -v nvim >/dev/null 2>&1; then
         alias vi='nvim'
         alias nvimdiff='nvim -d'
         alias -g :VI='| nvim -R -'
         alias -g :VIM='|& nvim -R -'
-        if [ -n "$(command -v viman)" ]; then
+        if command -v viman >/dev/null 2>&1; then
             if [ -z "$MANPAGER" -a -z "$MANROFFOPT" ]; then
                 export MANROFFOPT='-c'
                 export MANPAGER='viman'
@@ -396,12 +419,12 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
         alias -g :VI='| vim -R -'
         alias -g :VIM='|& vim -R -'
     fi
-    if [ -n "$(command -v viless)" ]; then
+    if command -v viless >/dev/null 2>&1; then
         alias -g :VL='| viless'
     fi
 
     # bat
-    if [ -n "$(command -v bat)" ]; then
+    if command -v bat >/dev/null 2>&1; then
         bat() {
             if [ "$1" = 'cache' ]; then
                 command bat "$@"
@@ -430,7 +453,7 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
     fi
 
     # fzf
-    if [ -n "$(command -v fzf)" ]; then
+    if command -v fzf >/dev/null 2>&1; then
         # Type ~~<Tab> to start fzf completion
         export FZF_COMPLETION_TRIGGER='~~'
         export FZF_COMPLETION_OPTS='+c -x'
@@ -444,7 +467,7 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
         fi
 
         # use fd with fzf (note: symlink /usr/bin/fdfind to ~/bin/fd)
-        if [ -n "$(command -v fd)" ]; then
+        if command -v fd >/dev/null 2>&1; then
             export FZF_DEFAULT_COMMAND='fd --color=always --exclude .git'
 
             fzfind() {
@@ -638,10 +661,7 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
     alias -g :NUL='>/dev/null 2>&1'
     alias -g :WC='| wc -l'
 
-    if [ -n "$(command -v ag)" ]; then
-        alias -g :AG='| ag'
-    fi
-    if [ -n "$(command -v rg)" ]; then
+    if command -v rg >/dev/null 2>&1; then
         alias -g :RG='| rg --smart-case'
     fi
 
@@ -665,17 +685,17 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
 
     [ -n "$COLORTERM" -a -z "$CLICOLOR" ] && export CLICOLOR=1
 
-    if [ -r "$HOME/.dir_colors" -a -n "$(command -v dircolors)" ]; then
+    if [ -r "$HOME/.dir_colors" ] && command -v dircolors >/dev/null 2>&1; then
         eval `dircolors -b "$HOME/.dir_colors"`
     fi
 
-    if [ -n "$(command -v exa)" -a "$CLICOLOR" -eq 1 ]; then
-        # use exa instead of ls for long listings when available w/ colours
-        alias exa='exa --group-directories-first --sort=name'
-        alias l='exa -Fx'
-        alias ll='exa -lgFH --git'
+    if [ "$CLICOLOR" -eq 1 ] && command -v eza >/dev/null 2>&1; then
+        # use eza instead of ls for long listings when available w/ colours
+        alias eza='eza --group-directories-first --sort=name'
+        alias l='eza -Fx'
+        alias ll='eza -lgFH --git'
         alias la='ll -a -@'
-        export EXA_COLORS="da=37:Makefile=0;33:README*=0;33:lm=4:uu=0:un=1:gu=0:gn=1:${EXA_COLORS:+:$EXA_COLORS}"
+        export EZA_COLORS="da=37:Makefile=0;33:README*=0;33:lm=4:uu=0:un=1:gu=0:gn=1:${EZA_COLORS:+:$EZA_COLORS}"
     else
         # ls
         alias l='ls'
@@ -1122,16 +1142,24 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
     }
     precmd_functions+=( format_pwd )
 
-    # Load fasd if it is installed and ~/.fasd-init-zsh exists (touch it!)
-    local fasd_cache="$HOME/.fasd-init-zsh"
-    if [ -w "$fasd_cache" -a -n "$(command -v fasd )" ]; then
+    # Directory jumping: prefer zoxide, fall back to fasd, then z.sh
+    if command -v zoxide >/dev/null 2>&1; then
+        eval "$(zoxide init zsh)"
+        # zoxide provides `z` (jump) and `zi` (interactive, uses fzf when present)
+        unalias zz 2>/dev/null
+        alias zz='zi'
+        unalias sd 2>/dev/null
+        sd() { zoxide query -i -- "$@" }
+    elif [ -w "$HOME/.fasd-init-zsh" ] && command -v fasd >/dev/null 2>&1; then
+        # Load fasd (~/.fasd-init-zsh must exist — touch it!)
+        local fasd_cache="$HOME/.fasd-init-zsh"
         if [ "$(command -v fasd)" -nt "$fasd_cache" -o ! -s "$fasd_cache" ]; then
             fasd --init posix-alias zsh-hook zsh-ccomp zsh-ccomp-install zsh-wcomp zsh-wcomp-install >| "$fasd_cache"
         fi
         source "$fasd_cache"
         unset fasd_cache
 
-        if [ -n "$(command -v nvim)" ]; then
+        if command -v nvim >/dev/null 2>&1; then
             alias v='f -e nvim'
             alias vv='sf -e nvim'
         else
@@ -1139,7 +1167,7 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
             alias vv='sf -e vim'
         fi
 
-        if [ -n "$(command -v fzf)" ]; then
+        if command -v fzf >/dev/null 2>&1; then
             fasd_fzf() {
                 local fargs="$1"
                 shift
@@ -1195,7 +1223,7 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
             }
         fi
     elif [ -e "$HOME/.z" ]; then
-        # If fasd didn't exist, then load z.sh if both it and ~/.z exist
+        # If neither zoxide nor fasd are present, load z.sh if it and ~/.z exist
         local zdir
         for zdir in "$HOME/.profile.d" '/usr/local/etc/profile.d' '/etc/profile.d'; do
             if [ -r "$zdir/z.sh" ]; then
@@ -1205,7 +1233,6 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
         done
         unset zdir
     fi
-    unset fasd_cache
 
     zle_highlight=( 'isearch:underline' 'special:fg=cyan' 'paste:bold,fg=red' "suffix:fg=$FADED_COLOR" 'region:standout' )
 
@@ -1302,13 +1329,6 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
         unset aspath
     fi
 
-    local vimodepath
-    for vimodepath in "$HOME/.zsh" '/usr/local/share' '/usr/share' '/opt/homebrew/share'; do
-        [ -r "$vimodepath/zsh-vi-mode/zsh-vi-mode.zsh" ] || continue
-        source "$vimodepath/zsh-vi-mode/zsh-vi-mode.zsh"
-    done
-    unset vimodepath
-
     unset is_root
     unset is_sudo
 fi
@@ -1318,18 +1338,9 @@ fi
 
 [ -e "$HOME/.zshrc_private" ] && . "$HOME/.zshrc_private"
 
-if command -v path_force_order >/dev/null 2>&1; then
-    path_force_order '/usr/local/bin' '/usr/bin'
-    path_force_order "$HOME/bin" '/usr/local/bin'
-    [ -e "$HOME/.local/bin" ] && path_force_order "$HOME/.local/bin" '/usr/local/bin'
-
-    for rvmdir in "$HOME/.rvm/bin" '/usr/local/rvm/bin'; do
-        if [ -d "$rvmdir" ]; then
-            path_force_tail "$rvmdir"
-            break
-        fi
-    done
-fi
+path_force_order '/usr/local/bin' '/usr/bin'
+path_force_order "$HOME/bin" '/usr/local/bin'
+[ -e "$HOME/.local/bin" ] && path_force_order "$HOME/.local/bin" '/usr/local/bin'
 
 # Make path unique
 typeset -aU path

@@ -5,7 +5,7 @@ if [ -r "$1" ]; then
     shift
 fi
 VIM=vim
-if [ -x "`command -v nvim`" ]; then
+if command -v nvim >/dev/null 2>&1; then
     VIM=nvim
 fi
 "$VIM" -R -c 'set nomod nolist nonumber' \

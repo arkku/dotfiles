@@ -33,7 +33,8 @@ This is a checklist for me when I set up a new machine.
 * [zsh-syntax-highlighting](https://github.com/zsh-users/zsh-syntax-highlighting)
 * [hub](https://hub.github.com)
 * [fzf](https://github.com/junegunn/fzf)
-* [fasd](https://github.com/clvv/fasd)
+* [zoxide](https://github.com/ajeetdsouza/zoxide) (preferred)
+* [fasd](https://github.com/clvv/fasd) (fallback if zoxide is not installed)
     - in my config, remember to `touch ~/.fasd-init-zsh`
 * [ripgrep](https://github.com/BurntSushi/ripgrep)
 * [fd](https://github.com/sharkdp/fd)
@@ -262,13 +263,20 @@ Autocompletion is set to be case-, hyphen-, and underscore-insensitive. If
 
 #### Directory Jumping
 
-If `fasd` or `z.sh` is installed (in that order) _and_ the initially empty file
-`~/.fasd-init-zsh` (or `~/.z` for `z.sh`) exists, then it is loaded and its
-aliases setup. Both include at least `z`, which jumps to a directory matching
-the partial name, e.g., `z dot` probably jumps to `~/.dotfiles` if you have
-been using that directory.
+If `zoxide`, `fasd`, or `z.sh` is installed (in that order of preference) it
+is loaded and its aliases set up. For `fasd` and `z.sh`, the initially empty
+file `~/.fasd-init-zsh` (or `~/.z` for `z.sh`) must also exist. All three
+include at least `z`, which jumps to a directory matching the partial name,
+e.g., `z dot` probably jumps to `~/.dotfiles` if you have been using that
+directory.
 
-If `fasd` and `fzf` are both enabled, then all interactive selections in `fzf`
+For `zoxide`, the additional aliases are:
+
+* `zi` – interactively pick a directory (uses `fzf` when available) and `cd`
+* `zz` – alias for `zi`
+* `sd` – interactively pick a directory and print its path
+
+If `fasd` and `fzf` are both enabled, then all interactive selections in `fasd`
 are replaced by `fzf`.
 
 For `fasd`, the set of aliases is:

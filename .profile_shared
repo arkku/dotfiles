@@ -1,5 +1,5 @@
 for editor in nvim vim vi; do
-    if [ -n "`command -v $editor`" ]; then
+    if command -v "$editor" >/dev/null 2>&1; then
         EDITOR="$editor"
         VISUAL="$editor"
         break
@@ -24,6 +24,50 @@ elif [ -n "$TMPDIR" -a -z "$TMP" ]; then
     TMP="$TMPDIR"
     export TMPDIR TMP
 fi
+
+# fallback support for some terminals that do not have terminfo on every
+# platform (e.g. xterm-ghostty)
+term_known() {
+    if command -v infocmp >/dev/null 2>&1; then
+        infocmp -- "$1" >/dev/null 2>&1
+    elif command -v tput >/dev/null 2>&1; then
+        tput -T "$1" longname >/dev/null 2>&1
+    else
+        return 0
+    fi
+}
+case "$TERM" in
+    xterm-*|ghostty|alacritty|wezterm|foot|foot-extra|contour|rio)
+        fallback_term=xterm-256color ;;
+    tmux-*|screen-*)
+        fallback_term=screen-256color ;;
+    *)
+        fallback_term='' ;;
+esac
+if [ -n "$fallback_term" ] && ! term_known "$TERM"; then
+    if term_known "$fallback_term"; then
+        export TERM="$fallback_term"
+    elif [ "$fallback_term" = 'screen-256color' ] && term_known 'screen'; then
+        export TERM=screen
+    elif [ "$fallback_term" = 'xterm-256color' ] && term_known 'xterm'; then
+        export TERM=xterm
+    fi
+fi
+unset fallback_term
+unset -f term_known
+
+# Add rvm to PATH if installed
+for rvmdir in "$HOME/.rvm/bin" '/usr/local/rvm/bin'; do
+    if [ -d "$rvmdir" ]; then
+        case ":$PATH:" in
+            *":$rvmdir:"*) ;;
+            *) PATH="$PATH:$rvmdir" ;;
+        esac
+        export PATH
+        break
+    fi
+done
+unset rvmdir
 
 if [ -n "$PS1" -a -z "$ENVONLY" ]; then
     if [ -t 0 ]; then

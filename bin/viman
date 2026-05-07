@@ -4,7 +4,7 @@ if [ -n "$1" ]; then
     export MANPAGER="$0"
     exec man -P "$0" "$@"
 fi
-if [ -x "`command -v nvim`" ]; then
+if command -v nvim >/dev/null 2>&1; then
     VIM='nvim'
     COL='col -bpx'
 else

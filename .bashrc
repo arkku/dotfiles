@@ -260,7 +260,7 @@ if [ -n "$PS1" -a -z "$ENVONLY" ]; then
     alias svi='sudo -e'
 
     # Neovim
-    if [ -n "$(command -v nvim)" ]; then
+    if command -v nvim >/dev/null 2>&1; then
         alias vi='nvim'
         alias nvimdiff='nvim -d'
         nvis() {
@@ -292,9 +292,9 @@ if [ -n "$PS1" -a -z "$ENVONLY" ]; then
         fi
     }
 
-    if [ -n "$(command -v fzf)" ]; then
+    if command -v fzf >/dev/null 2>&1; then
         # use fd with fzf (note: symlink /usr/bin/fdfind to ~/bin/fd)
-        if [ -n "$(command -v fd)" ]; then
+        if command -v fd >/dev/null 2>&1; then
             export FZF_DEFAULT_COMMAND='fd --color=always --exclude .git'
 
             fzfind() {
@@ -455,7 +455,7 @@ if [ -n "$PS1" -a -z "$ENVONLY" ]; then
 
     [ -n "$COLORTERM" -a -z "$CLICOLOR" ] && export CLICOLOR=1
 
-    if [ -r "$HOME/.dir_colors" -a -n "$(command -v dircolors)" ]; then
+    if [ -r "$HOME/.dir_colors" ] && command -v dircolors >/dev/null 2>&1; then
         eval `dircolors -b "$HOME/.dir_colors"`
     fi
 
@@ -474,7 +474,7 @@ if [ -n "$PS1" -a -z "$ENVONLY" ]; then
 
     # Load fasd if it is installed and ~/.fasd-init-bash exists (touch it!)
     fasd_cache="$HOME/.fasd-init-bash"
-    if [ -e "$fasd_cache" -a -n "$(command -v fasd)" ]; then
+    if [ -e "$fasd_cache" ] && command -v fasd >/dev/null 2>&1; then
         if [ "$(command -v fasd)" -nt "$fasd_cache" -o ! -s "$fasd_cache" ]; then
             fasd --init posix-alias bash-hook bash-ccomp bash-ccomp-install >| "$fasd_cache"
         fi
@@ -484,7 +484,7 @@ if [ -n "$PS1" -a -z "$ENVONLY" ]; then
         alias v='f -e vi'
         alias vv='sf -e vi'
 
-        if [ -n "$(command -v fzf)" ]; then
+        if command -v fzf >/dev/null 2>&1; then
             fasd_fzf() {
                 local fargs="$1"
                 shift
@@ -554,5 +554,3 @@ if [ -n "$PS1" -a -z "$ENVONLY" ]; then
 fi
 
 [ -e "$HOME/.bashrc_private" ] && . "$HOME/.bashrc_private"
-
-path_force_tail "$HOME/.rvm/bin"
