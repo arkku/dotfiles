@@ -181,9 +181,9 @@ hi SyntasticStyleErrorSign term=standout ctermfg=darkyellow ctermbg=black guibg=
 hi SyntasticStyleWarningSign term=standout ctermfg=darkmagenta ctermbg=black guibg=#222222 guifg=#996633
 
 if &background == "dark"
-    hi Normal term=none cterm=none gui=none guifg=#aaaaaa guibg=#080811
+    hi Normal term=none cterm=none gui=none guifg=#aaaaaa guibg=#222228
     hi NormalNC term=none cterm=none gui=none guifg=#999999
-    hi Terminal term=none cterm=none gui=none guifg=#aaaaaa guibg=#080811
+    hi Terminal term=none cterm=none gui=none guifg=#aaaaaa guibg=#222228
 
     hi LineNr term=reverse cterm=none ctermbg=black ctermfg=darkgray gui=none guibg=#222222 guifg=#666666
 
@@ -256,15 +256,15 @@ if &background == "dark"
     hi PMenuThumb term=reverse,bold cterm=none ctermfg=gray ctermbg=darkred gui=none guibg=#660000 guifg=#ff6600
 
     hi qfLineNr term=none cterm=none ctermfg=lightmagenta gui=none guifg=#cc00cc
-    hi qfError term=bold cterm=bold ctermfg=lightred gui=bold guifg=#cc0000
+    hi qfError term=bold cterm=bold ctermfg=lightred gui=bold guifg=#dd2200
 
     let g:terminal_color_0 = '#000000'
-    let g:terminal_color_1 = '#cc0000'
-    let g:terminal_color_2 = '#009900'
+    let g:terminal_color_1 = '#dd2200'
+    let g:terminal_color_2 = '#11bb11'
     let g:terminal_color_3 = '#cc6600'
-    let g:terminal_color_4 = '#0033cc'
-    let g:terminal_color_5 = '#aa00aa'
-    let g:terminal_color_6 = '#6699cc'
+    let g:terminal_color_4 = '#1144dd'
+    let g:terminal_color_5 = '#bb33bb'
+    let g:terminal_color_6 = '#66aadd'
     let g:terminal_color_7 = '#bbbbbb'
     let g:terminal_color_8 = '#333333'
     let g:terminal_color_9 = '#ff6633'

@@ -36,7 +36,7 @@ if [ -e "$kittypath/$kittyshared" ]; then
         cat <<EOFKITTY
 # .config/kitty/$kittyshared
 
-echo 'include $kittyshared' >>~/.config/kitty/kitty.conf
+printf '\ninclude %s\n' '$kittyshared' >>~/.config/kitty/kitty.conf
 
 EOFKITTY
     fi
@@ -57,7 +57,7 @@ if [ -e "$ghosttypath/$ghosttyshared" ]; then
         cat <<EOFGHOSTTY
 # .config/ghostty/$ghosttyshared
 
-echo 'config-file = $ghosttyshared' >>~/.config/ghostty/$ghosttymain
+printf '\nconfig-file = %s\n' '$ghosttyshared' >>~/.config/ghostty/$ghosttymain
 
 EOFGHOSTTY
     fi
