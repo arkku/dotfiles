@@ -189,7 +189,7 @@ if &background == "dark"
 
     hi SpecialKey term=reverse cterm=bold ctermfg=cyan gui=bold guibg=#0066cc guifg=#f0f0ff
     hi WhiteSpace term=standout cterm=none ctermfg=darkblue gui=none guifg=#330066
-    hi Conceal term=underline cterm=none ctermfg=darkgray gui=none guifg=#333333
+    hi Conceal term=underline cterm=none ctermfg=darkgray gui=none guifg=#444444
 
     hi Comment term=underline cterm=none ctermfg=darkgray gui=none guifg=#666666
     hi SpecialComment term=underline cterm=none ctermfg=darkcyan gui=none guifg=#666699
@@ -231,7 +231,7 @@ if &background == "dark"
 
     hi WarningMsg term=standout cterm=bold ctermfg=yellow gui=bold guifg=#ff9900
 
-    hi CursorLine guibg=#333333
+    hi CursorLine guibg=#222233
     hi CursorColumn guibg=#030303
     hi NonText term=bold cterm=none ctermfg=darkgray gui=none guifg=#666666 guibg=#222228
 
@@ -266,7 +266,7 @@ if &background == "dark"
     let g:terminal_color_5 = '#bb33bb'
     let g:terminal_color_6 = '#66aadd'
     let g:terminal_color_7 = '#bbbbbb'
-    let g:terminal_color_8 = '#333333'
+    let g:terminal_color_8 = '#444444'
     let g:terminal_color_9 = '#ff6633'
     let g:terminal_color_10 = '#00cc33'
     let g:terminal_color_11 = '#ff9900'
