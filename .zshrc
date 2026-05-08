@@ -24,35 +24,99 @@ fi
 
 # Try to determine the background color
 if [ -z "$BACKGROUND" ]; then
-    if [ -n "$COLORFGBG" ]; then
+    if [ -n "$TMUX" ]; then
+        local _tmux_theme="$(tmux display -p '#{client_theme}' 2>/dev/null)"
+        case "$_tmux_theme" in
+            dark|light) BACKGROUND="$_tmux_theme" ;;
+        esac
+        unset _tmux_theme
+    fi
+    if [ -z "$BACKGROUND" ] && [ -n "$COLORFGBG" ]; then
         if [[ $COLORFGBG =~ '[,;][0-68]$' ]]; then
             BACKGROUND=dark
         elif [[ $COLORFGBG =~ '[,;](7|1[0-9])$' ]]; then
             BACKGROUND=light
         fi
-    else
+    fi
+    if [ -z "$BACKGROUND" ]; then
         case "$TERM" in
-            (linux*|ansi|vt*|dos*|bsd*|mach*|console*|con*)
+            (linux*|ansi|vt*|dos*|bsd*|con*)
                 BACKGROUND=dark
-                ;;
-            (*)
                 ;;
         esac
     fi
     export BACKGROUND
 fi
 
-# The "faded" (hard to see) color for the background
-if [ "$BACKGROUND" = 'dark' ]; then
-    FADED_COLOR='8'
-else
-    FADED_COLOR='7'
-fi
+# Update BACKGROUND on each prompt when inside tmux (checks client_theme
+# which reflects the terminal's light/dark mode via DECRPM 2031).
+_update_background() {
+    [ -z "$TMUX" ] && return
+    local _new_theme="$(tmux display -p '#{client_theme}' 2>/dev/null)"
+    [ -z "$_new_theme" ] && return
+    [ "$_new_theme" = "$BACKGROUND" ] && return
+    export BACKGROUND="$_new_theme"
+    unset _new_theme
+    _apply_background
+}
+precmd_functions+=( _update_background )
+
+_apply_background() {
+    [ "$BACKGROUND" = "$LAST_BACKGROUND" ] && return
+    LAST_BACKGROUND="$BACKGROUND"
+
+    if [ "$BACKGROUND" = 'dark' ]; then
+        FADED_COLOR='8'
+    else
+        FADED_COLOR='7'
+    fi
+
+    [ -n "$_using_macos_ls" ] && {
+        if [ "$BACKGROUND" = 'light' ]; then
+            export LSCOLORS='AxfxHehecxegehBDBDAhaD'
+        else
+            export LSCOLORS='ExfxHehecxegehBDBDAhaD'
+        fi
+    }
+
+    (( ${+ZSH_HIGHLIGHT_STYLES} )) && ZSH_HIGHLIGHT_STYLES[comment]="fg=$FADED_COLOR"
+    [ -n "$ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE" ] && ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=$FADED_COLOR"
+    zmodload -e zsh/zle && zle_highlight=( 'isearch:underline' 'special:fg=cyan' 'paste:bold,fg=red' "suffix:fg=$FADED_COLOR" 'region:standout' )
+    zstyle ':completion:*:warnings' format "%F{$FADED_COLOR}# No matches for: %d"$DEFAULT
+}
+_apply_background
 
 if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
     # Vi-mode; load zsh-vi-mode here with ZVM_INIT_MODE=sourcing so later
     # bindkey calls aren't clobbered
     bindkey -v
+
+    # Bind terminal light/dark mode responses (mode 2031 / DECRPM) for
+    # terminals that send unsolicited theme change reports (e.g. kitty,
+    # ghostty).  Not needed inside tmux where we poll client_theme instead.
+    if [ -z "$TMUX" ]; then
+        _on_terminal_dark() {
+            [ "$BACKGROUND" = dark ] && return
+            export BACKGROUND=dark
+            export COLORFGBG='7;0'
+            _apply_background
+            zle reset-prompt
+        }
+        _on_terminal_light() {
+            [ "$BACKGROUND" = light ] && return
+            export BACKGROUND=light
+            export COLORFGBG='0;15'
+            _apply_background
+            zle reset-prompt
+        }
+        zle -N _on_terminal_dark
+        zle -N _on_terminal_light
+        # Bind light/dark mode notifications
+        bindkey '\e[?997;1n' _on_terminal_dark
+        bindkey '\e[?997;2n' _on_terminal_light
+        # Subscribe to terminal mode change notifications (mode 2031)
+        print -n '\e[?2031h'
+    fi
 
     ZVM_INIT_MODE=sourcing
     local vimodepath
@@ -694,10 +758,9 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
     [ -z "$SSH_CONNECTION" ] && cli_hyperlinks=1 || cli_hyperlinks=
 
     # Pick the most capable ls implementation for bare `ls` and `l.`.
-    # GNU ls (whether at `ls` on Linux or as homebrew's `gls` on macOS) is
+    # GNU ls (whether as `ls` on Linux or as homebrew's `gls` on macOS) is
     # preferred for --hyperlink and feature parity; eza next; BSD ls / plain
-    # ls last. The shell `gls` alias for `git ls-files` is unaffected:
-    # `whence -p` resolves the executable itself, bypassing aliases.
+    # ls last.
     if ls --version 2>/dev/null | grep -q GNU; then
         ls_cmd="ls -F --color=auto --group-directories-first${cli_hyperlinks:+ --hyperlink=auto}"
     elif gls_path=$(whence -p gls 2>/dev/null) && [ -n "$gls_path" ] && "$gls_path" --version 2>/dev/null | grep -q GNU; then
@@ -713,6 +776,7 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
             export LSCOLORS='ExfxHehecxegehBDBDAhaD'
         fi
         ls_cmd='ls -F -G'
+        _using_macos_ls=1
     else
         ls_cmd='ls -F'
     fi
@@ -1287,7 +1351,7 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
     export vcs_prompt=''
     export vcs_status=''
     export prompt_vi_mode=''
-    export PROMPT='%(?..%F{red}?$?%F{reset} )%F{'"$FADED_COLOR"'}!%! %(!__${SUDO_USER:+%n })${prompt_vi_mode}${vcs_status}
+    export PROMPT='%(?..%F{red}?$?%F{reset} )%F{${FADED_COLOR}}!%! %(!__${SUDO_USER:+%n })${prompt_vi_mode}${vcs_status}
 %F{cyan}%-60<$ELLIPSIS<${pwd_prompt:-%~}%<<%F{reset}%(!_#_${PROMPTCHAR:-%#}) '
     export RPROMPT='    %F{magenta}%(1j.%j&.)$vcs_prompt%F{cyan}${host_prompt:+${vcs_prompt:+ }}${host_prompt}%F{reset}'
 

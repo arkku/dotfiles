@@ -231,8 +231,9 @@ if &background == "dark"
 
     hi WarningMsg term=standout cterm=bold ctermfg=yellow gui=bold guifg=#ff9900
 
-    hi CursorLine guibg=#222233
+    hi CursorLine guibg=#222230
     hi CursorColumn guibg=#030303
+    hi ColorColumn term=reverse cterm=none ctermbg=darkblue gui=none guibg=#222230
     hi NonText term=bold cterm=none ctermfg=darkgray gui=none guifg=#666666 guibg=#222228
 
     hi Folded term=reverse cterm=none ctermfg=yellow ctermbg=darkblue gui=none guifg=#ff9966 guibg=#222228
@@ -245,7 +246,6 @@ if &background == "dark"
     hi DiffText term=reverse ctermfg=lightcyan ctermbg=darkblue gui=none guibg=#444444
 
     hi Directory term=bold cterm=bold ctermfg=white gui=bold guifg=#ffffff
-    hi ColorColumn term=reverse cterm=none ctermbg=darkblue gui=none guibg=#080808
 
     hi TabLine term=reverse cterm=none ctermfg=gray ctermbg=darkblue gui=none guibg=#222228 guifg=#999999
     hi TabLineSel term=bold,reverse cterm=underline,bold ctermfg=white ctermbg=blue gui=underline guibg=#bbbbbb guifg=#330000

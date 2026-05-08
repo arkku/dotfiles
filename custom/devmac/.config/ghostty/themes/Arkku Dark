@@ -16,3 +16,4 @@ palette = 14=#00ccff
 palette = 15=#ffffff
 background = #222228
 foreground = #bbaaaa
+env = COLORFGBG=15;0

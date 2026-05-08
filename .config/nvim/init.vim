@@ -9,20 +9,36 @@ set packpath+=~/.vim
 " Note that that the settings shared between Vim and Neovim have been moved to
 " the file ~/.vim/plugin/arkku.vim
 
-" Try to determine the terminal background color
-if $BACKGROUND == 'dark'
-    set background=dark
-elseif $BACKGROUND == 'light'
-    set background=light
-elseif $COLORFGBG =~ '.*[,;][0-68]$'
-    set background=dark
-elseif $COLORFGBG =~ '.*[,;]\(7\|1[0-9]\)$'
-    set background=light
-elseif $TERM =~ '.*\(linux\|ansi\|vt[0-9]\|dos\|bsd\|mach\|console\|con[0-9]\).*'
-    set background=dark
-else
-    set background=light
+" Decide whether we should set 'background' manually
+let s:should_set_bg = 1
+
+if $TERM =~# '^\(xterm-kitty\|xterm-ghostty\)'
+    " These terminals should be able to tell their BG color
+    let s:should_set_bg = 0
+elseif $TERM =~# '^tmux'
+    let s:tmux_theme = trim(system("tmux display -p '#{client_theme}' 2>/dev/null"))
+    if s:tmux_theme ==# 'light' || s:tmux_theme ==# 'dark'
+        " tmux returns a client_theme
+        let s:should_set_bg = 0
+    endif
 endif
+
+if s:should_set_bg
+    if $BACKGROUND ==# 'dark'
+        set background=dark
+    elseif $BACKGROUND ==# 'light'
+        set background=light
+    elseif $COLORFGBG =~# '.*[,;][0-68]$'
+        set background=dark
+    elseif $COLORFGBG =~# '.*[,;]\(7\|1[0-9]\)$'
+        set background=light
+    elseif $TERM =~# '.*\(linux\|ansi\|vt[0-9]\|dos\|bsd\|mach\|console\|con[0-9]\).*'
+        set background=dark
+    else
+        set background=light
+    endif
+endif
+
 
 if ($TERM =~ '.*-256color.*' && ($TERM_PROGRAM != "Apple_Terminal" || !empty($TMUX))) || !empty($TERMGUICOLORS)
     set termguicolors
