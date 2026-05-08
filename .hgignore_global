@@ -1,3 +1,5 @@
+# .hgignore_global
+# dependencies: hg
 syntax: glob
 
 *~

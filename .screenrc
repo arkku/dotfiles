@@ -1,3 +1,5 @@
+# .screenrc
+# dependencies: screen
 autodetach on
 startup_message off
 bell_msg '%n: Pling!'

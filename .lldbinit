@@ -1,3 +1,4 @@
+# dependencies: lldb
 settings set target.x86-disassembly-flavor intel
 command alias ec expression -l c
 command alias eoc expression -l objc

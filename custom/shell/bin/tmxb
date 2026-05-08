@@ -1,2 +1,5 @@
 #!/bin/sh
+# tmxb: Calls `tmx` but changes the prefix to `^b`, I use it for nesting such
+# that the outer tmux uses ^t and the inner uses ^b.
+# dependencies: tmux
 exec "$HOME/bin/tmx" prefix '^b'

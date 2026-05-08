@@ -138,6 +138,30 @@ fi
 platform="$(uname -s | tr '[A-Z]' '[a-z]')"
 [ "$platform" = "darwin" ] && platform=mac
 
+# Check a script for a "# dependencies: name1, name2 ..." magic comment;
+# return 0 if all listed commands are on PATH (or no such comment exists),
+# non-zero on the first missing dependency.
+check_deps() {
+    local file=$1 deps dep
+    deps=$(awk '
+        NR > 10 || !/^[ ]*#/ { exit }
+        /^#[ ]*[Dd]ependencies:[ ]*/ {
+            sub(/^.*:[ ]*/, "")
+            gsub(/,[ ]*/, " ")
+            print
+            exit
+        }
+    ' "$file" 2>/dev/null)
+    [ -z "$deps" ] && return 0
+    for dep in $deps; do
+        if ! command -v "$dep" >/dev/null 2>&1; then
+            [ -n "$verbose" ] && echo "$file: skipping, missing dependency: $dep" >&2
+            return 1
+        fi
+    done
+    return 0
+}
+
 find . -type f -print0 | while read -d '' file; do
     src="${file/#.\//}"
     dst=''
@@ -185,6 +209,9 @@ find . -type f -print0 | while read -d '' file; do
 
     [ -z "$dst" ] && continue
     dst="${dst_dir}/$dst"
+    # Only enforce dependencies for not-yet-linked targets; leave existing
+    # links alone even if a dep has gone missing since they were created.
+    [ ! -e "$dst" ] && ! check_deps "$src" && continue
 
     if [ -e "${dst}_local" -a -e "$dst" ]; then
         [ -n "$verbose" ] && echo "$dst: A local override exists." >&2

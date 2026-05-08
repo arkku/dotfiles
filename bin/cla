@@ -1,0 +1,123 @@
+#!/usr/bin/env bash
+# cla: claude wrapper that uses friendly, persistent session names.
+# dependencies: claude
+#
+# Usage:  cla [name] [extra-claude-args...]
+#
+# - The first positional argument that does not start with '-' becomes the
+#   session name. Any other arguments (and any flags) are passed through
+#   to claude unchanged.
+# - If no name is given, the basename of $PWD is used. In a git repo on a
+#   branch with a slash (e.g. feature/foo-bar), the suffix after the last
+#   '/' is appended (e.g. ios + feature/foo-bar -> "ios-foo-bar").
+#
+# Lookup: claude persists --name as `{"type":"custom-title", ...}` lines
+# in the session JSONL under ~/.claude/projects/<encoded-cwd>/<uuid>.jsonl.
+# We rebuild the encoded-cwd to find the project directory directly, with
+# a content-scan fallback if the encoding ever drifts.
+
+set -e
+
+# Replace each non-alphanumeric character with '-'. claude uses this exact
+# scheme to derive the project directory name from a cwd.
+encode_cwd() {
+    printf '%s' "$1" | LC_ALL=C tr -c 'A-Za-z0-9' '-'
+}
+
+# Sanitize a free-form session name into a stable [A-Za-z0-9_-] token.
+# Runs of '-' are collapsed, leading/trailing '-' are trimmed.
+sanitize_name() {
+    local s
+    s=$(printf '%s' "$1" | LC_ALL=C tr -c 'A-Za-z0-9_-' '-' | tr -s '-')
+    s=${s#-}; s=${s%-}
+    printf '%s' "$s"
+}
+
+# Print true if the directory $1 has at least one *.jsonl session whose
+# `cwd` field matches $2.
+dir_matches_cwd() {
+    local d=$1 cwd=$2 files
+    shopt -s nullglob
+    files=( "$d"*.jsonl )
+    shopt -u nullglob
+    [ ${#files[@]} -gt 0 ] || return 1
+    grep -m1 -qF "\"cwd\":\"$cwd\"" "${files[0]}"
+}
+
+# Locate the claude project directory for the given cwd. Fast path: try
+# the encoded form. Fallback: scan all project dirs by content, in case
+# claude's encoding has changed.
+find_project_dir() {
+    local cwd=$1
+    local fast="$HOME/.claude/projects/$(encode_cwd "$cwd")/"
+    if [ -d "$fast" ] && dir_matches_cwd "$fast" "$cwd"; then
+        printf '%s\n' "$fast"
+        return
+    fi
+    local d
+    shopt -s nullglob
+    for d in "$HOME"/.claude/projects/*/; do
+        if dir_matches_cwd "$d" "$cwd"; then
+            shopt -u nullglob
+            printf '%s\n' "$d"
+            return
+        fi
+    done
+    shopt -u nullglob
+}
+
+# Default name: cwd basename, plus branch suffix if on a slashed branch.
+default_name() {
+    local n
+    n=$(basename -- "$PWD")
+    local branch
+    if branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null); then
+        case "$branch" in
+            */*) n="$n-${branch##*/}" ;;
+        esac
+    fi
+    printf '%s\n' "$n"
+}
+
+# Pull out the first non-flag positional argument as the session name; the
+# rest pass through to claude unchanged.
+name=
+args=()
+got_name=0
+for arg in "$@"; do
+    if [ "$got_name" -eq 0 ] && [ "${arg#-}" = "$arg" ]; then
+        name=$arg
+        got_name=1
+    else
+        args+=("$arg")
+    fi
+done
+[ -n "$name" ] || name=$(default_name)
+
+sanitized=$(sanitize_name "$name")
+if [ -z "$sanitized" ]; then
+    echo "clx: empty session name after sanitization (was: $name)" >&2
+    exit 1
+fi
+
+uuid=
+proj_dir=$(find_project_dir "$PWD")
+if [ -n "$proj_dir" ]; then
+    match=$(grep -lF "\"customTitle\":\"$sanitized\"" "$proj_dir"*.jsonl 2>/dev/null | head -1)
+    [ -n "$match" ] && uuid=$(basename "$match" .jsonl)
+    # No explicit name and no title match: if there's exactly one session
+    # in this directory, resume it regardless of its title.
+    if [ -z "$uuid" ] && [ "$got_name" -eq 0 ]; then
+        shopt -s nullglob
+        files=( "$proj_dir"*.jsonl )
+        shopt -u nullglob
+        [ ${#files[@]} -eq 1 ] && uuid=$(basename "${files[0]}" .jsonl)
+    fi
+fi
+
+if [ -n "$uuid" ]; then
+    exec claude --resume "$uuid" "${args[@]}"
+else
+    uuid=$(uuidgen | tr 'A-Z' 'a-z')
+    exec claude --session-id "$uuid" --name "$sanitized" "${args[@]}"
+fi

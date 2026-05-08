@@ -1,4 +1,7 @@
 #!/bin/sh
+# tmx: A session-managing tmux wrapper.
+# dependencies: tmux
+#
 # A wrapper for running tmux. Takes on (optional) main session name as
 # argument, creates it if it doesn't exist. Then (in either case),
 # a new child session is created and attached to the main session.
@@ -9,7 +12,7 @@
 # (Make sure ~/.tmux.conf does not interfere by having something like
 #  `new-session` or `attach-session` in it.)
 #
-# By Kimmo Kulovesi <http://arkku.com/> 2017-02-03.
+# By Kimmo Kulovesi <https://arkku.dev/> 2017-02-03.
 # Distribute freely, use at your own risk only.
 
 tmux=tmux

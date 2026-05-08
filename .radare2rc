@@ -1,3 +1,5 @@
+# .radare2rc
+# dependencies: r2
 e asm.cmt.right = false
 e asm.syntax = intel
 e asm.describe = false
@@ -7,10 +9,9 @@ e asm.lines.ret = true
 e asm.lines.right = true
 e asm.hints = true
 e asm.noisy = false
-e asm.leahints = false
-e asm.section.sub = true
 e asm.var.access = true
-e asm.var.subonly = false
+e asm.sub.section = true
+e asm.sub.varonly = false
 e cmd.stack = true
 e cfg.fortunes = true
 e cfg.fortunes.type = tips

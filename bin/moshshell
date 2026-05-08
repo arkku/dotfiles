@@ -1,6 +1,7 @@
 #!/bin/sh
+# dependencies: mosh
 host="$1"
-[ -z "$host" ] && host=homeshell
+[ -z "$host" ] && host=shell
 port="$2"
 [ -z "$port" ] && port=62300:62399
 slave="$3"
