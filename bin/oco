@@ -30,7 +30,8 @@ for arg in "$@"; do
 done
 
 if [ "$session_flag" -eq 1 ]; then
-    exec opencode "$@"
+    opencode "$@"
+    exit $?
 fi
 
 DB="$HOME/.local/share/opencode/opencode.db"
@@ -56,7 +57,7 @@ result=$(sqlite3 "$DB" "
 if [ -n "$result" ]; then
     IFS='|' read -r session_id session_title session_model <<< "$result"
     echo "oco: resuming \"$session_title\"${session_model:+ ($session_model)}" >&2
-    exec opencode -s "$session_id" "$@"
+    opencode -s "$session_id" "$@"
+else
+    opencode "$@"
 fi
-
-exec opencode "$@"

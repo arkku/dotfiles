@@ -116,8 +116,8 @@ if [ -n "$proj_dir" ]; then
 fi
 
 if [ -n "$uuid" ]; then
-    exec claude --resume "$uuid" "${args[@]}"
+    claude --resume "$uuid" "${args[@]}"
 else
     uuid=$(uuidgen | tr 'A-Z' 'a-z')
-    exec claude --session-id "$uuid" --name "$sanitized" "${args[@]}"
+    claude --session-id "$uuid" --name "$sanitized" "${args[@]}"
 fi
