@@ -85,7 +85,7 @@ hi Error term=reverse cterm=none ctermfg=white ctermbg=darkred gui=none guifg=#f
 hi Todo term=standout cterm=none ctermfg=white ctermbg=darkgreen gui=none guifg=#003300 guibg=#99ffdd
 
 " Search and Selection
-hi IncSearch term=reverse cterm=reverse,underline gui=reverse guifg=#ffe07a guibg=#222222
+hi IncSearch term=reverse cterm=reverse,underline gui=reverse guifg=#ffe07a guibg=#222228
 hi Search term=reverse cterm=reverse gui=none guibg=#fff0e0
 
 hi clear Visual
@@ -99,8 +99,8 @@ hi StatusLine term=bold,reverse cterm=reverse gui=reverse guifg=#0281ff guibg=#f
 hi StatusLineNC term=bold,reverse cterm=reverse gui=reverse guifg=#3399cc guibg=#bbccff
 hi TabLine term=reverse cterm=none ctermfg=gray ctermbg=blue gui=none guibg=#cccccc guifg=#403f53
 hi TabLineSel term=bold,reverse cterm=underline,bold ctermfg=white ctermbg=blue gui=underline guibg=#fafafa guifg=#000000
-hi TabLineFill term=reverse cterm=none ctermfg=gray ctermbg=blue gui=none guibg=#222222 guifg=#666666
-hi VertSplit term=reverse cterm=none ctermfg=gray ctermbg=blue gui=none guibg=#222222 guifg=#666666
+hi TabLineFill term=reverse cterm=none ctermfg=gray ctermbg=blue gui=none guibg=#222228 guifg=#666666
+hi VertSplit term=reverse cterm=none ctermfg=gray ctermbg=blue gui=none guibg=#222228 guifg=#666666
 
 hi WarningMsg term=standout cterm=bold ctermfg=red gui=bold guifg=#cc9900
 hi ErrorMsg term=standout cterm=none ctermfg=white ctermbg=darkred gui=none guifg=#ffffff guibg=#990000
@@ -110,14 +110,14 @@ hi MoreMsg term=bold cterm=bold ctermfg=blue gui=bold guifg=#009966
 hi Question term=bold cterm=bold ctermfg=magenta gui=bold guifg=#009966
 hi Title term=bold cterm=bold ctermfg=yellow gui=bold guifg=#ff9933
 
-hi LineNr term=reverse cterm=none ctermbg=black ctermfg=gray gui=none guibg=#222222 guifg=#666666
-hi CursorLineNr term=reverse cterm=none ctermbg=black ctermfg=white gui=none guibg=#222222 guifg=#bbbbbb
+hi LineNr term=reverse cterm=none ctermbg=black ctermfg=gray gui=none guibg=#222228 guifg=#666666
+hi CursorLineNr term=reverse cterm=none ctermbg=black ctermfg=white gui=none guibg=#222228 guifg=#bbbbbb
 hi CursorLine guibg=#ccffff
 hi CursorColumn guibg=#f0fefe
 hi NonText term=bold cterm=none ctermfg=gray gui=none guifg=#666666 guibg=#f0f0f0
 
 hi Folded term=reverse cterm=none ctermfg=blue ctermbg=gray gui=none guifg=#0099cc guibg=#f0f0f0
-hi FoldColumn term=reverse cterm=none ctermbg=black ctermfg=cyan gui=none guibg=#222222 guifg=#cccccc
+hi FoldColumn term=reverse cterm=none ctermbg=black ctermfg=cyan gui=none guibg=#222228 guifg=#cccccc
 
 hi ColorColumn term=reverse cterm=none ctermbg=lightgray gui=none guibg=#ffffe0
 
@@ -146,17 +146,17 @@ hi qfError term=bold cterm=bold ctermfg=red gui=bold guifg=#990000
 
 " Git Gutter
 let g:gitgutter_override_sign_column_highlight = 0
-hi GitGutterAdd term=standout ctermfg=lightgreen ctermbg=black guibg=#222222 guifg=#00cc33
-hi GitGutterChange term=standout ctermfg=cyan ctermbg=black guibg=#222222 guifg=#0099ff
-hi GitGutterDelete term=standout ctermfg=lightred ctermbg=black guibg=#222222 guifg=#ff3300
-hi GitGutterChangeDelete term=standout ctermfg=lightmagenta ctermbg=black guibg=#222222 guifg=#ff0066
-hi GitGutterChangeDeleteInvisible ctermfg=black ctermbg=black guibg=#222222 guifg=#000000
-hi GitGutterChangeInvisible ctermfg=black ctermbg=black guibg=#222222 guifg=#000000
-hi GitGutterDeleteInvisible ctermfg=black ctermbg=black guibg=#222222 guifg=#000000
-hi GitGutterAddInvisible ctermfg=black ctermbg=black guibg=#222222 guifg=#000000
+hi GitGutterAdd term=standout ctermfg=lightgreen ctermbg=black guibg=#222228 guifg=#00cc33
+hi GitGutterChange term=standout ctermfg=cyan ctermbg=black guibg=#222228 guifg=#0099ff
+hi GitGutterDelete term=standout ctermfg=lightred ctermbg=black guibg=#222228 guifg=#ff3300
+hi GitGutterChangeDelete term=standout ctermfg=lightmagenta ctermbg=black guibg=#222228 guifg=#ff0066
+hi GitGutterChangeDeleteInvisible ctermfg=black ctermbg=black guibg=#222228 guifg=#000000
+hi GitGutterChangeInvisible ctermfg=black ctermbg=black guibg=#222228 guifg=#000000
+hi GitGutterDeleteInvisible ctermfg=black ctermbg=black guibg=#222228 guifg=#000000
+hi GitGutterAddInvisible ctermfg=black ctermbg=black guibg=#222228 guifg=#000000
 
-hi ALEWarningSign term=standout cterm=bold ctermfg=yellow ctermbg=black gui=bold guibg=#222222 guifg=#ffcc00
-hi ALEErrorSign term=standout cterm=bold ctermfg=lightred ctermbg=black gui=bold guibg=#222222 guifg=#ff0033
+hi ALEWarningSign term=standout cterm=bold ctermfg=yellow ctermbg=black gui=bold guibg=#222228 guifg=#ffcc00
+hi ALEErrorSign term=standout cterm=bold ctermfg=lightred ctermbg=black gui=bold guibg=#222228 guifg=#ff0033
 
 hi link CocWarningSign ALEWarningSign
 hi link CocErrorSign ALEErrorSign
@@ -177,15 +177,15 @@ hi link CocHighlightText CursorLine
 
 hi link SyntasticErrorSign ALEErrorSign
 hi link SyntasticWarningSign ALEWarningSign
-hi SyntasticStyleErrorSign term=standout ctermfg=darkyellow ctermbg=black guibg=#222222 guifg=#cccc00
-hi SyntasticStyleWarningSign term=standout ctermfg=darkmagenta ctermbg=black guibg=#222222 guifg=#996633
+hi SyntasticStyleErrorSign term=standout ctermfg=darkyellow ctermbg=black guibg=#222228 guifg=#cccc00
+hi SyntasticStyleWarningSign term=standout ctermfg=darkmagenta ctermbg=black guibg=#222228 guifg=#996633
 
 if &background == "dark"
-    hi Normal term=none cterm=none gui=none guifg=#aaaaaa guibg=#222228
-    hi NormalNC term=none cterm=none gui=none guifg=#999999
-    hi Terminal term=none cterm=none gui=none guifg=#aaaaaa guibg=#222228
+    hi Normal term=none cterm=none gui=none guifg=#bbaaaa guibg=#222228
+    hi NormalNC term=none cterm=none gui=none guifg=#aa9999
+    hi Terminal term=none cterm=none gui=none guifg=#aaaaaa guibg=#111118
 
-    hi LineNr term=reverse cterm=none ctermbg=black ctermfg=darkgray gui=none guibg=#222222 guifg=#666666
+    hi LineNr term=reverse cterm=none ctermbg=black ctermfg=darkgray gui=none guibg=#222228 guifg=#444455
 
     hi SpecialKey term=reverse cterm=bold ctermfg=cyan gui=bold guibg=#0066cc guifg=#f0f0ff
     hi WhiteSpace term=standout cterm=none ctermfg=darkblue gui=none guifg=#330066
@@ -233,21 +233,21 @@ if &background == "dark"
 
     hi CursorLine guibg=#333333
     hi CursorColumn guibg=#030303
-    hi NonText term=bold cterm=none ctermfg=darkgray gui=none guifg=#666666 guibg=#222222
+    hi NonText term=bold cterm=none ctermfg=darkgray gui=none guifg=#666666 guibg=#222228
 
-    hi Folded term=reverse cterm=none ctermfg=yellow ctermbg=darkblue gui=none guifg=#ff9966 guibg=#222222
+    hi Folded term=reverse cterm=none ctermfg=yellow ctermbg=darkblue gui=none guifg=#ff9966 guibg=#222228
 
     hi Todo term=standout cterm=none ctermfg=white ctermbg=darkgreen gui=none guifg=#ccffcc guibg=#009966
 
     hi DiffAdd term=bold ctermfg=white ctermbg=darkmagenta guibg=#660066
     hi DiffDelete term=reverse ctermfg=darkred ctermbg=darkblue guibg=#000066 guifg=#660000
-    hi DiffChange term=bold ctermfg=lightgray ctermbg=darkblue guibg=#222222
+    hi DiffChange term=bold ctermfg=lightgray ctermbg=darkblue guibg=#222228
     hi DiffText term=reverse ctermfg=lightcyan ctermbg=darkblue gui=none guibg=#444444
 
     hi Directory term=bold cterm=bold ctermfg=white gui=bold guifg=#ffffff
     hi ColorColumn term=reverse cterm=none ctermbg=darkblue gui=none guibg=#080808
 
-    hi TabLine term=reverse cterm=none ctermfg=gray ctermbg=darkblue gui=none guibg=#222222 guifg=#999999
+    hi TabLine term=reverse cterm=none ctermfg=gray ctermbg=darkblue gui=none guibg=#222228 guifg=#999999
     hi TabLineSel term=bold,reverse cterm=underline,bold ctermfg=white ctermbg=blue gui=underline guibg=#bbbbbb guifg=#330000
 
     hi PMenu term=reverse cterm=none ctermfg=gray ctermbg=darkblue gui=none guibg=#000099 guifg=#cccccc
@@ -277,13 +277,13 @@ if &background == "dark"
 
     function! g:BuffetSetCustomColors()
         hi! BuffetCurrentBuffer term=bold,reverse cterm=bold ctermfg=white ctermbg=blue gui=underline guibg=#bbbbbb guifg=#333366
-        hi! BuffetBuffer term=reverse cterm=none ctermfg=gray ctermbg=blue gui=none guibg=#222222 guifg=#999999
-        hi! BuffetActiveBuffer term=reverse cterm=none ctermfg=cyan ctermbg=blue gui=none guibg=#222222 guifg=#99bbcc
-        hi! BuffetTrunc term=reverse cterm=none ctermfg=gray ctermbg=blue gui=none guibg=#222222 guifg=#666666
-        hi! BuffetTab term=reverse cterm=none ctermfg=red ctermbg=blue gui=none guibg=#222222 guifg=#666666
+        hi! BuffetBuffer term=reverse cterm=none ctermfg=gray ctermbg=blue gui=none guibg=#222228 guifg=#999999
+        hi! BuffetActiveBuffer term=reverse cterm=none ctermfg=cyan ctermbg=blue gui=none guibg=#222228 guifg=#99bbcc
+        hi! BuffetTrunc term=reverse cterm=none ctermfg=gray ctermbg=blue gui=none guibg=#222228 guifg=#666666
+        hi! BuffetTab term=reverse cterm=none ctermfg=red ctermbg=blue gui=none guibg=#222228 guifg=#666666
         hi! BuffetModCurrentBuffer term=bold,reverse cterm=bold ctermfg=white ctermbg=blue gui=underline guibg=#bbbbbb guifg=#222233
-        hi! BuffetModBuffer term=reverse cterm=none ctermfg=gray ctermbg=blue gui=none guibg=#222222 guifg=#aa9999
-        hi! BuffetModActiveBuffer term=reverse cterm=none ctermfg=lightblue ctermbg=blue gui=none guibg=#222222 guifg=#cc99cc
+        hi! BuffetModBuffer term=reverse cterm=none ctermfg=gray ctermbg=blue gui=none guibg=#222228 guifg=#aa9999
+        hi! BuffetModActiveBuffer term=reverse cterm=none ctermfg=lightblue ctermbg=blue gui=none guibg=#222228 guifg=#cc99cc
     endfunction
 
     if !empty($TMUX) || !empty($TERM_PROGRAM)
@@ -335,7 +335,7 @@ else " Light background
         hi! BuffetCurrentBuffer term=bold,reverse cterm=bold ctermfg=white ctermbg=blue  gui=underline guibg=#fafafa guifg=#000000
         hi! BuffetBuffer term=reverse cterm=none ctermfg=gray ctermbg=blue gui=none guibg=#cccccc guifg=#403f53
         hi! BuffetActiveBuffer term=reverse cterm=none ctermfg=cyan ctermbg=blue gui=none guibg=#cccccc guifg=#403f53
-        hi! BuffetTrunc term=reverse cterm=none ctermfg=gray ctermbg=blue gui=none guibg=#222222 guifg=#666666
+        hi! BuffetTrunc term=reverse cterm=none ctermfg=gray ctermbg=blue gui=none guibg=#222228 guifg=#666666
         hi! BuffetTab term=reverse cterm=none ctermfg=red ctermbg=blue gui=none guibg=#cccccc guifg=#666666
         hi! BuffetModCurrentBuffer term=bold,reverse cterm=bold ctermfg=white ctermbg=blue  gui=underline guibg=#fafafa guifg=#000000
         hi! BuffetModBuffer term=reverse cterm=none ctermfg=gray ctermbg=blue gui=none guibg=#cccccc guifg=#403f53
