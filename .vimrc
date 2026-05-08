@@ -11,21 +11,41 @@ if &term =~ ".*256col.*"
     set t_AB=[4%p1%dm
     set t_8f=[38;2;%lu;%lu;%lum
     set t_8b=[48;2;%lu;%lu;%lum
-    "set termguicolors
+    set termguicolors
 elseif &term =~ "xterm.*" || &term == "screen" || &term == "tmux" || &term =~ ".*-color.*"
     set t_Co=16
     set t_Sf=[3%dm
     set t_Sb=[4%dm
 endif
 
-if $BACKGROUND == 'dark'
-    set background=dark
-elseif $BACKGROUND == 'light'
-    set background=light
-elseif $COLORFGBG =~ '.*[,;][0-68]$'
-    set background=dark
-elseif $COLORFGBG =~ '.*[,;]\(7\|1[0-9]\)$'
-    set background=light
+let s:should_set_bg = 1
+
+if !empty('$TMUX') && $TERM =~# '^tmux'
+    let s:tmux_theme = trim(system("tmux display -p '#{client_theme}' 2>/dev/null || true"))
+
+    if s:tmux_theme ==# 'light'
+        set background=light
+        let s:should_set_bg = 0
+    elseif s:tmux_theme ==# 'dark'
+        set background=dark
+        let s:should_set_bg = 0
+    endif
+endif
+
+if s:should_set_bg
+    if $BACKGROUND ==# 'dark'
+        set background=dark
+    elseif $BACKGROUND ==# 'light'
+        set background=light
+    elseif $COLORFGBG =~# '.*[,;][0-68]$'
+        set background=dark
+    elseif $COLORFGBG =~# '.*[,;]\(7\|1[0-9]\)$'
+        set background=light
+    elseif $TERM =~# '.*\(linux\|ansi\|vt[0-9]\|dos\|bsd\|mach\|console\|con[0-9]\).*'
+        set background=dark
+    else
+        set background=light
+    endif
 endif
 
 set ttymouse=xterm2

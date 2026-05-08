@@ -15,8 +15,8 @@ let s:should_set_bg = 1
 if $TERM =~# '^\(xterm-kitty\|xterm-ghostty\)'
     " These terminals should be able to tell their BG color
     let s:should_set_bg = 0
-elseif $TERM =~# '^tmux'
-    let s:tmux_theme = trim(system("tmux display -p '#{client_theme}' 2>/dev/null"))
+elseif $TERM =~# '^tmux' && !empty($TMUX)
+    let s:tmux_theme = trim(system("tmux display -p '#{client_theme}' 2>/dev/null || true"))
     if s:tmux_theme ==# 'light' || s:tmux_theme ==# 'dark'
         " tmux returns a client_theme
         let s:should_set_bg = 0
