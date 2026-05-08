@@ -1,50 +1,41 @@
 #!/bin/sh
-if [ -z "$SSH_CONNECTION" ] && command -v pbcopy >/dev/null 2>&1; then
-    exec pbcopy
-elif [ -z "$SSH_CONNECTION" ] && command -v clip.exe >/dev/null 2>&1; then
-    exec clip.exe
-elif [ -n "$DISPLAY" ]; then
-    if command -v xclip >/dev/null 2>&1; then
-        exec xclip -selection c
-    elif command -v xsel >/dev/null 2>&1; then
-        exec xsel -i -b
+
+# Local clipboard tools
+if [ -z "$SSH_CONNECTION" ]; then
+    command -v pbcopy   >/dev/null 2>&1 && exec pbcopy
+    command -v clip.exe >/dev/null 2>&1 && exec clip.exe
+    if [ -n "$DISPLAY" ]; then
+        command -v xclip >/dev/null 2>&1 && exec xclip -selection c
+        command -v xsel  >/dev/null 2>&1 && exec xsel -i -b
     fi
-elif [ -z "$SSH_CONNECTION" ]; then
-    if command -v clip >/dev/null 2>&1; then
-        exec clip
-    elif [ -w '/dev/clipboard' ]; then
-        exec cat >/dev/clipboard
-    fi
+    command -v clip                     >/dev/null 2>&1 && exec clip
+    [ -w '/dev/clipboard' ]            && exec cat >/dev/clipboard
 fi
 
+# Output full OSC 52 sequence: ESC ] 52 ; c ; <base64> ST
 encode_osc52() {
-    base64 | tr -d '\n\r'
+    printf '\033]52;c;%s\033\\' "$(base64 | tr -d '\n\r')"
 }
 
-if [ -n "$TMUX" ]; then
-    set -- $(tmux display-message -p "#{client_tty} #{client_termname}")
-    client_tty="$1"
-    outer_term="$2"
+if [ -n "$TMUX" ] && command -v tmux >/dev/null 2>&1; then
+    if command -v base64 >/dev/null 2>&1; then
+        set -- $(tmux display-message -p "#{client_tty} #{client_termname}")
+        client_tty=$1
 
-    case "$outer_term" in
-        tmux*|screen*)
-            # Nested tmux needs passthrough
-            if command -v base64 >/dev/null 2>&1; then
-                exec printf "\033Ptmux;\033]52;c;%s\033\\\033\\" "$(encode_osc52)" >"${client_tty:-/dev/stdout}"
-            else
-                exec tmux load-buffer -
-            fi
-            ;;
-        *)
-            # Single layer of tmux, just use OSC 52
-            if command -v base64 >/dev/null 2>&1; then
-                exec printf "\033]52;c;%s\033\\" "$(encode_osc52)" >"${client_tty:-/dev/stdout}"
-            else
-                exec tmux load-buffer -
-            fi
-            ;;
-    esac
-
+        case "$2" in
+            tmux*|screen*)
+                # Nested tmux: DCS passthrough with doubled ESC bytes
+                # tmux un-doubles \033\033 → \033 when forwarding
+                exec printf '\033Ptmux;\033\033]52;c;%s\033\033\\\033\\' \
+                    "$(base64 | tr -d '\n\r')" >"${client_tty:-/dev/stdout}"
+                ;;
+            *)
+                encode_osc52 >"${client_tty:-/dev/stdout}"
+                ;;
+        esac
+    else
+        exec tmux load-buffer -
+    fi
 elif command -v base64 >/dev/null 2>&1; then
-    exec printf "\033]52;c;%s\033\\" "$(encode_osc52)"
+    encode_osc52
 fi
