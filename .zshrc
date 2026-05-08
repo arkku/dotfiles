@@ -689,23 +689,21 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
         eval `dircolors -b "$HOME/.dir_colors"`
     fi
 
-    if [ "$CLICOLOR" -eq 1 ] && command -v eza >/dev/null 2>&1; then
-        # use eza instead of ls for long listings when available w/ colours
-        alias eza='eza --group-directories-first --sort=name'
-        alias l='eza -Fx'
-        alias ll='eza -lgFH --git'
-        alias la='ll -a -@'
-        export EZA_COLORS="da=37:Makefile=0;33:README*=0;33:lm=4:uu=0:un=1:gu=0:gn=1:${EZA_COLORS:+:$EZA_COLORS}"
-    else
-        # ls
-        alias l='ls'
-        alias ll='ls -kl'
-        alias la='ls -kla'
-    fi
-    alias l.='ls -d .*'
+    # Hyperlinked filenames (OSC 8) in ls/eza/rg/fd: only when not over SSH,
+    # since file:// URLs only resolve on the local machine.
+    [ -z "$SSH_CONNECTION" ] && cli_hyperlinks=1 || cli_hyperlinks=
 
+    # Pick the most capable ls implementation for bare `ls` and `l.`.
+    # GNU ls (whether at `ls` on Linux or as homebrew's `gls` on macOS) is
+    # preferred for --hyperlink and feature parity; eza next; BSD ls / plain
+    # ls last. The shell `gls` alias for `git ls-files` is unaffected:
+    # `whence -p` resolves the executable itself, bypassing aliases.
     if ls --version 2>/dev/null | grep -q GNU; then
-        alias ls='ls -F --color=auto --group-directories-first'
+        ls_cmd="ls -F --color=auto --group-directories-first${cli_hyperlinks:+ --hyperlink=auto}"
+    elif gls_path=$(whence -p gls 2>/dev/null) && [ -n "$gls_path" ] && "$gls_path" --version 2>/dev/null | grep -q GNU; then
+        ls_cmd="$gls_path -F --color=auto --group-directories-first${cli_hyperlinks:+ --hyperlink=auto}"
+    elif command -v eza >/dev/null 2>&1; then
+        ls_cmd="eza --group-directories-first --sort=name${cli_hyperlinks:+ --hyperlink} --classify=auto"
     elif [ "$CLICOLOR" = 1 ] && ls -G "$HOME" >/dev/null 2>&1; then
         if [[ $BACKGROUND == 'light' ]]; then
             # ls on macOS does not support X for bold, and the bold
@@ -714,10 +712,38 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
         else
             export LSCOLORS='ExfxHehecxegehBDBDAhaD'
         fi
-        alias ls='ls -F -G'
+        ls_cmd='ls -F -G'
     else
-        alias ls='ls -F'
+        ls_cmd='ls -F'
     fi
+    alias ls="$ls_cmd"
+    alias l.="$ls_cmd -d .*"
+
+    # Long-listing aliases (`l`, `ll`, `la`): prefer eza when available for
+    # its richer column layout, falling back to the `ls` chosen above.
+    if [ "$CLICOLOR" -eq 1 ] && command -v eza >/dev/null 2>&1; then
+        eza_cmd="eza --group-directories-first --sort=name${cli_hyperlinks:+ --hyperlink}"
+        alias eza="$eza_cmd"
+        alias l="$eza_cmd -F -x"
+        alias ll="$eza_cmd -lgF -H"
+        alias la="$eza_cmd -lgF -H -a -@"
+        # `--git` walks the index per file and is slow in big repos
+        alias llg="$eza_cmd -lgF -H --git"
+        alias lag="$eza_cmd -lgF -H -a -@ --git"
+        export EZA_COLORS="da=37:Makefile=0;33:README*=0;33:lm=4:uu=0:un=1:gu=0:gn=1:${EZA_COLORS:+:$EZA_COLORS}"
+        unset eza_cmd
+    else
+        alias l="$ls_cmd"
+        alias ll="$ls_cmd -kl"
+        alias la="$ls_cmd -kla"
+    fi
+    unset ls_cmd gls_path 2>/dev/null
+
+    if [ -n "$cli_hyperlinks" ]; then
+        command -v rg >/dev/null 2>&1 && alias rg='rg --hyperlink-format=default'
+        command -v fd >/dev/null 2>&1 && alias fd='fd --hyperlink=auto'
+    fi
+    unset cli_hyperlinks
 
     # Completion
     autoload -Uz compinit && compinit ${=is_sudo:+-i}

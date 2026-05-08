@@ -4,3 +4,5 @@
 /local
 /Session.vim
 .dotfiles_custom
+.claude/
+.agents/
