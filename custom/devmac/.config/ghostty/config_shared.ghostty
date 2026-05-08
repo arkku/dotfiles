@@ -1,2 +1,6 @@
+# Signal to clipcopy that OSC 52 can be used
 env = OSC52=1
 clipboard-write = allow
+
+# Ctrl-Backspace -> Ctrl-W (backward-kill-word)
+keybind = ctrl+backspace=text:\x17

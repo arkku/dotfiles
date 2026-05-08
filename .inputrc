@@ -103,6 +103,10 @@ set bell-style none
 "\e[1;4A": history-search-backward
 "\e[1;4C": end-of-line
 "\e[1;4D": beginning-of-line
+"\e[1;9B": history-search-forward
+"\e[1;9A": history-search-backward
+"\e[1;9C": end-of-line
+"\e[1;9D": beginning-of-line
 
 # alt arrows
 "\e0B": end-of-line
@@ -113,3 +117,5 @@ set bell-style none
 "\e0D": backward-word
 "\e[1;3C": forward-word
 "\e[1;3D": backward-word
+"\eb": backward-word
+"\ef": forward-word

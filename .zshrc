@@ -876,6 +876,12 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
         bindkey ${=mode} '\e[1;3B' end-of-line
         bindkey ${=mode} '\e[1;3C' forward-word
         bindkey ${=mode} '\e[1;3D' backward-word
+        bindkey ${=mode} '\eb' backward-word
+        bindkey ${=mode} '\ef' forward-word
+        bindkey ${=mode} '\e[1;4C' end-of-line
+        bindkey ${=mode} '\e[1;4D' beginning-of-line
+        bindkey ${=mode} '\e[1;9C' end-of-line
+        bindkey ${=mode} '\e[1;9D' beginning-of-line
         if [[ "$mode" = '-M vicmd' ]]; then
             bindkey ${=mode} '\C-?' backward-char
             bindkey ${=mode} '\C-H' backward-char
