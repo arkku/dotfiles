@@ -1,0 +1,62 @@
+#!/usr/bin/env bash
+# oco: opencode wrapper that resumes the most recent session in the current directory.
+# Dependencies: opencode, sqlite3
+#
+# Usage:  oco [arguments to opencode]
+
+set -e
+
+MAX_AGE_DAYS=3
+
+# Subcommand (e.g. "oco models"): pass straight through
+case "$1" in [a-zA-Z]*) exec opencode "$@";; esac
+
+# Scan for session flags (passthrough) and extract model for matching
+session_flag=0
+model=
+i=0
+for arg in "$@"; do
+    case "$arg" in
+        -s|--session|-c|--continue) session_flag=1 ;;
+        -m=*|--model=*) model="${arg#*=}" ;;
+        -m|--model)
+            # shellcheck disable=SC2214
+            next_idx=$((i + 2))
+            eval "next_arg=\${$next_idx}"
+            [ -n "$next_arg" ] && [ "${next_arg#-}" = "$next_arg" ] && model="$next_arg"
+            ;;
+    esac
+    i=$((i + 1))
+done
+
+if [ "$session_flag" -eq 1 ]; then
+    exec opencode "$@"
+fi
+
+DB="$HOME/.local/share/opencode/opencode.db"
+safe_dir=$(printf '%s' "$PWD" | sed "s/'/''/g")
+cutoff=$(($(date +%s) * 1000 - MAX_AGE_DAYS * 86400 * 1000))
+
+model_filter=
+if [ -n "$model" ]; then
+    provider=${model%%/*}
+    model_id=${model#*/}
+    safe_provider=$(printf '%s' "$provider" | sed "s/'/''/g")
+    safe_model_id=$(printf '%s' "$model_id" | sed "s/'/''/g")
+    model_filter="AND json_extract(model, '$.providerID') = '$safe_provider'
+    AND json_extract(model, '$.id') = '$safe_model_id'"
+fi
+
+result=$(sqlite3 "$DB" "
+    SELECT id, title, COALESCE(json_extract(model, '$.providerID') || '/' || json_extract(model, '$.id'), '') FROM session
+    WHERE directory = '$safe_dir' AND time_updated > $cutoff $model_filter
+    ORDER BY time_updated DESC LIMIT 1
+")
+
+if [ -n "$result" ]; then
+    IFS='|' read -r session_id session_title session_model <<< "$result"
+    echo "oco: resuming \"$session_title\"${session_model:+ ($session_model)}" >&2
+    exec opencode -s "$session_id" "$@"
+fi
+
+exec opencode "$@"
