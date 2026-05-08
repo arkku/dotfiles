@@ -34,8 +34,6 @@ This is a checklist for me when I set up a new machine.
 * [hub](https://hub.github.com)
 * [fzf](https://github.com/junegunn/fzf)
 * [zoxide](https://github.com/ajeetdsouza/zoxide) (preferred)
-* [fasd](https://github.com/clvv/fasd) (fallback if zoxide is not installed)
-    - in my config, remember to `touch ~/.fasd-init-zsh`
 * [ripgrep](https://github.com/BurntSushi/ripgrep)
 * [fd](https://github.com/sharkdp/fd)
     - on some systems may have to `ln -s /usr/bin/fdfind ~/bin/fd`
