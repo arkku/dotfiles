@@ -31,7 +31,6 @@ This is a checklist for me when I set up a new machine.
     - [Auto Dark Mode](https://github.com/LinusU/vscode-auto-dark-mode)
     - extensions for C, Swift, Ruby, Awk, zsh, Assembler, Jekyll, Liquid, etc.
 * [zsh-syntax-highlighting](https://github.com/zsh-users/zsh-syntax-highlighting)
-* [hub](https://hub.github.com)
 * [fzf](https://github.com/junegunn/fzf)
 * [zoxide](https://github.com/ajeetdsouza/zoxide) (preferred)
 * [ripgrep](https://github.com/BurntSushi/ripgrep)
@@ -41,6 +40,8 @@ This is a checklist for me when I set up a new machine.
     - on some systems may have to `ln -s /usr/bin/batcat ~/bin/bat`
     - need to run `bat cache --build` for themes to be detected
 * [rvm](https://rvm.io)
+* [yazi](https://github.com/sxyazi/yazi)
+* [lazygit](https://github.com/jesseduffield/lazygit)
 * SF Mono font
     - `/System/Applications/Utilities/Terminal.app/Contents/Resources/Fonts`
 * `~/.ssh` (keys, permissions, authorized keys, include shared config)
@@ -261,37 +262,18 @@ Autocompletion is set to be case-, hyphen-, and underscore-insensitive. If
 
 #### Directory Jumping
 
-If `zoxide`, `fasd`, or `z.sh` is installed (in that order of preference) it
-is loaded and its aliases set up. For `fasd` and `z.sh`, the initially empty
-file `~/.fasd-init-zsh` (or `~/.z` for `z.sh`) must also exist. All three
-include at least `z`, which jumps to a directory matching the partial name,
-e.g., `z dot` probably jumps to `~/.dotfiles` if you have been using that
-directory.
+If `zoxide` is installed it is loaded and its aliases set up. The aliases are:
 
-For `zoxide`, the additional aliases are:
-
+* `z dir` – jump from anywhere to a directory matching the partial name `dir`,
+  e.g., `z dot` probably jumps to `~/.dotfiles` if you have been using that
+  directory
 * `zi` – interactively pick a directory (uses `fzf` when available) and `cd`
 * `zz` – alias for `zi`
 * `sd` – interactively pick a directory and print its path
 
-If `fasd` and `fzf` are both enabled, then all interactive selections in `fasd`
-are replaced by `fzf`.
-
-For `fasd`, the set of aliases is:
-
-* `z dir` – jump from anywhere to directory matching the partial name `dir`
-* `zz dir` – as `z`, but interactively select the directory if there are
-  multiple matches
-* `zzz file` – interactively select a file or directory, and jump to the
-  directory _containing_ it (even if it is a directory in itself)
-* `d dir` – print the directory matching the partial name `dir`
-* `sd dir` – as above, but interactively disambiguate
-* `f file` – print the file matching the partial name `file`
-* `sf dir` – as above, but interactively disambiguate
-* `a any` – print the directory or file matching the partial name `any`
-* `any any` – print the directory or file matching the partial name `any`
-* `v file` – edit the file in vi
-* `vv file` – as above, but interactively disambiguate
+For backwards compatibility, `fasd` (with `~/.fasd-init-zsh` present) and
+`z.sh` (with `~/.z` present) are still loaded as fallbacks if `zoxide` is not
+installed, in that order. Both provide at least the `z` command.
 
 #### Key Bindings
 
@@ -563,10 +545,9 @@ Unless otherwise noted, the following bindings are all after the prefix
 (<kbd>Ctrl</kbd>–<kbd>T</kbd> in my configuration):
 
 * `r` – reload configuration from disk
+* `\` – open a floating popup window in the current directory
 * `|` – split the window horizontally, opening in the current directory
-* `\` – split the window horizontally at full width
 * `-` – split the window horizontally, opening in the current directory
-* `_` – split the window horizontally at full width
 * `h` – split the window vertically at full width, opening in the current
   directory (yes, the `h` splits vertically and `v` horizontally in tmux
   terminology, to match the Vim terminology where the direction describes the
