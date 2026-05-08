@@ -29,6 +29,40 @@ EOFSSH
     fi
 fi
 
+kittyshared="kitty_shared.conf"
+kittypath="$HOME/.config/kitty"
+if [ -e "$kittypath/$kittyshared" ]; then
+    if ! grep -F "include $kittyshared" -q "$kittypath/kitty.conf" 2>/dev/null; then
+        cat <<EOFKITTY
+# .config/kitty/$kittyshared
+
+echo 'include $kittyshared' >>~/.config/kitty/kitty.conf
+
+EOFKITTY
+    fi
+fi
+
+ghosttyshared="config_shared.ghostty"
+ghosttypath="$HOME/.config/ghostty"
+if [ -e "$ghosttypath/$ghosttyshared" ]; then
+    ghosttymain=''
+    for f in config.ghostty config; do
+        if [ -e "$ghosttypath/$f" ]; then
+            ghosttymain="$f"
+            break
+        fi
+    done
+    ghosttymain="${ghosttymain:-config.ghostty}"
+    if ! grep -F "config-file = $ghosttyshared" -q "$ghosttypath/$ghosttymain" 2>/dev/null; then
+        cat <<EOFGHOSTTY
+# .config/ghostty/$ghosttyshared
+
+echo 'config-file = $ghosttyshared' >>~/.config/ghostty/$ghosttymain
+
+EOFGHOSTTY
+    fi
+fi
+
 profile=".profile_shared"
 if [ -e "$HOME/$profile" ]; then
     if ! grep -F '. "$HOME/'"$profile"'"' -q "$HOME/.profile"; then

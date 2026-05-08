@@ -1,15 +1,16 @@
 #!/bin/sh
 
-# Local clipboard tools
-if [ -z "$SSH_CONNECTION" ]; then
+# Local clipboard tools — skipped if $OSC52 is set (terminal advertises OSC 52
+# support) or in an SSH session, in which case OSC 52 is preferred.
+if [ -z "$SSH_CONNECTION" ] && [ -z "$OSC52" ]; then
     command -v pbcopy   >/dev/null 2>&1 && exec pbcopy
     command -v clip.exe >/dev/null 2>&1 && exec clip.exe
     if [ -n "$DISPLAY" ]; then
         command -v xclip >/dev/null 2>&1 && exec xclip -selection c
         command -v xsel  >/dev/null 2>&1 && exec xsel -i -b
     fi
-    command -v clip                     >/dev/null 2>&1 && exec clip
-    [ -w '/dev/clipboard' ]            && exec cat >/dev/clipboard
+    command -v clip      >/dev/null 2>&1 && exec clip
+    [ -w '/dev/clipboard' ]              && exec cat >/dev/clipboard
 fi
 
 # Output full OSC 52 sequence: ESC ] 52 ; c ; <base64> ST
