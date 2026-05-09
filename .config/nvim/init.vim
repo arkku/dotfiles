@@ -75,7 +75,7 @@ let maplocalleader=" "
 colorscheme arkku
 
 " Fix clipboard over ssh/mosh
-if getenv('SSH_CONNECTION') != v:null || getenv('TMUX') != v:null
+if !empty($SSH_CONNECTION) || !empty($TMUX) || !empty($VIMCLIPCOPY)
   let g:clipboard = {
     \ 'name': 'clipcopy',
     \ 'copy': {
@@ -88,4 +88,9 @@ if getenv('SSH_CONNECTION') != v:null || getenv('TMUX') != v:null
     \ },
     \ 'cache_enabled': 0,
     \ }
+endif
+
+" Easy toggle to yank to the system clipboard by default
+if !empty($VIMCLIP)
+    set clipboard+=unnamedplus
 endif

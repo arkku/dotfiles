@@ -4,5 +4,6 @@
 /local
 /Session.vim
 .dotfiles_custom
-.claude/
-.agents/
+**/.claude/settings.local.json
+AGENTS.local.md
+.aider*

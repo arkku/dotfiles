@@ -1,17 +1,16 @@
 #!/bin/sh
-if [ -z "$SSH_CONNECTION" ] && command -v pbpaste >/dev/null 2>&1; then
-    exec pbpaste
-elif [ -n "$DISPLAY" ]; then
-    if command -v xclip >/dev/null 2>&1; then
-        exec xclip -o -selection c
-    elif command -v xsel >/dev/null 2>&1; then
-        exec xsel -o -b
+if [ -z "$SSH_CONNECTION" ] && [ -z "$OSC52" ]; then
+    command -v pbpaste  >/dev/null 2>&1 && exec pbpaste
+    if [ -n "$DISPLAY" ]; then
+        command -v xclip >/dev/null 2>&1 && exec xclip -o -selection c
+        command -v xsel  >/dev/null 2>&1 && exec xsel -o -b
     fi
-elif [ -z "$SSH_CONNECTION" ]; then
-    if [ -r '/dev/clipboard' ]; then
-        exec cat /dev/clipboard
-    fi
+    [ -r '/dev/clipboard' ]              && exec cat /dev/clipboard
 fi
+
 if [ -n "$TMUX" ]; then
     exec tmux save-buffer -
+elif [ -n "$DISPLAY" ]; then
+    command -v xclip >/dev/null 2>&1 && exec xclip -o -selection c
+    command -v xsel  >/dev/null 2>&1 && exec xsel -o -b
 fi
