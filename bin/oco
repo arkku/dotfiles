@@ -6,6 +6,16 @@
 
 set -e
 
+# EDITOR is required for things like /export
+if [ -z "$EDITOR" ]; then
+    for editor in "${VISUAL:nvim}" nvim vim vi; do
+        if command -v "$editor" >/dev/null 2>&1; then
+            export EDITOR="$EDITOR"
+            break
+        fi
+    done
+fi
+
 MAX_AGE_DAYS=3
 
 # Subcommand (e.g. "oco models"): pass straight through
