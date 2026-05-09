@@ -49,9 +49,6 @@ if [ -z "$BACKGROUND" ]; then
 fi
 
 _apply_background() {
-    [ "$BACKGROUND" = "$LAST_BACKGROUND" ] && return
-    LAST_BACKGROUND="$BACKGROUND"
-
     if [ "$BACKGROUND" = 'dark' ]; then
         FADED_COLOR='8'
     else
@@ -91,30 +88,31 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
 
     autoload -Uz colors && colors
 
-    _on_terminal_dark() {
+    _theme_dark() {
         [ "$BACKGROUND" = 'dark' ] && return
         export BACKGROUND=dark
         export COLORFGBG='7;0'
         _apply_background
         zle reset-prompt 2>/dev/null || true
     }
-    _on_terminal_light() {
+    _theme_light() {
         [ "$BACKGROUND" = 'light' ] && return
         export BACKGROUND=light
         export COLORFGBG='0;15'
         _apply_background
         zle reset-prompt 2>/dev/null || true
     }
-    zle -N _on_terminal_dark
-    zle -N _on_terminal_light
-    bindkey '\e[?997;1n' _on_terminal_dark
-    bindkey '\e[?997;2n' _on_terminal_light
+    zle -N _theme_dark
+    zle -N _theme_light
+    bindkey '\e[?997;1n' _theme_dark
+    bindkey '\e[?997;2n' _theme_light
 
     if [ -z "$TMUX" -a -z "$NO2031" ]; then
         # Try to subscribe to light/dark mode updates (mode 2031).
         # Unsubcribe during commands to avoid unwanted input into the command.
-        _subscribe_theme() { [ -z "$TMUX" ] && print -n '\e[?2031h' }
-        _unsubscribe_theme() { [ -z "$TMUX" ] && print -n '\e[?2031l' }
+        # `export NO2031=1` to suppress this at any time.
+        _subscribe_theme() { [ -z "$TMUX" -a -z "$NO2031" ] && print -n '\e[?2031h' }
+        _unsubscribe_theme() { [ -z "$TMUX" -a -z "$NO2031" ] && print -n '\e[?2031l' }
         precmd_functions+=( _subscribe_theme )
         preexec_functions+=( _unsubscribe_theme )
     elif [ -n "$TMUX" ] && command -v tmux >/dev/null 2>&1; then
@@ -123,9 +121,9 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
             [ -z "$TMUX" ] && return
             local _tmux_theme="$(tmux display -p '#{client_theme}' 2>/dev/null)"
             if [ "$_tmux_theme" = 'light' ]; then
-                _on_terminal_light
+                _theme_light
             elif [ "$_tmux_theme" = 'dark' ]; then
-                _on_terminal_dark
+                _theme_dark
             fi
             unset _tmux_theme
         }
