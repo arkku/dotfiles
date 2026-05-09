@@ -30,6 +30,19 @@ if !empty('$TMUX') && $TERM =~# '^tmux'
         set background=dark
         let s:should_set_bg = 0
     endif
+
+    if s:should_set_bg == 0
+        function! TmuxTheme()
+            let l:tmux_theme = trim(system("tmux display-message -p '#{client_theme}' 2>/dev/null || true"))
+            if !empty(l:tmux_theme) && &background !=# l:tmux_theme
+            let &background = l:tmux_theme
+            endif
+        endfunction
+        augroup TmuxTheme
+            autocmd!
+            autocmd FocusGained,BufEnter,CursorHold * call TmuxTheme()
+        augroup END
+    endif
 endif
 
 if s:should_set_bg

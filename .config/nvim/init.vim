@@ -20,6 +20,22 @@ elseif $TERM =~# '^tmux' && !empty($TMUX)
     if s:tmux_theme ==# 'light' || s:tmux_theme ==# 'dark'
         " tmux returns a client_theme
         let s:should_set_bg = 0
+
+        " poll the theme occasionally
+
+        function! s:CheckTmuxTheme()
+            let l:tmux_theme = trim(system("tmux display -p '#{client_theme}' 2>/dev/null || true"))
+            if l:tmux_theme ==# 'dark' && &background !=# 'dark'
+                set background=dark
+            elseif l:tmux_theme ==# 'light' && &background !=# 'light'
+                set background=light
+            endif
+        endfunction
+
+        augroup TmuxTheme
+            autocmd!
+            autocmd FocusGained,VimResume * call s:CheckTmuxTheme()
+        augroup END
     endif
 endif
 
