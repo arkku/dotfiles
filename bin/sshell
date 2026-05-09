@@ -1,0 +1,21 @@
+#!/bin/sh
+host="$1"
+[ -z "$host" ] && host=shell
+port="$2"
+[ -z "$port" ] && port=22
+slave="$3"
+[ -z "$slave" ] && slave=`hostname -s`
+main=$4
+[ -z "$main" ] && main=0
+
+session="${main}_${slave}"
+
+attempted_detach=0
+while true; do
+    if ssh -t -p "$port" "$host" -- bin/tmx prefix '^b' "$main" "$slave" '||' true; then
+        exit 0
+    fi
+
+    echo "Lost connection to $host, reconnecting..."
+    sleep 1 || exit 1
+done
