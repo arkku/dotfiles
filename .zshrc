@@ -48,19 +48,6 @@ if [ -z "$BACKGROUND" ]; then
     export BACKGROUND
 fi
 
-# Update BACKGROUND on each prompt when inside tmux (checks client_theme
-# which reflects the terminal's light/dark mode via DECRPM 2031).
-_update_background() {
-    [ -z "$TMUX" ] && return
-    local _new_theme="$(tmux display -p '#{client_theme}' 2>/dev/null)"
-    [ -z "$_new_theme" ] && return
-    [ "$_new_theme" = "$BACKGROUND" ] && return
-    export BACKGROUND="$_new_theme"
-    unset _new_theme
-    _apply_background
-}
-precmd_functions+=( _update_background )
-
 _apply_background() {
     [ "$BACKGROUND" = "$LAST_BACKGROUND" ] && return
     LAST_BACKGROUND="$BACKGROUND"
@@ -90,34 +77,6 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
     # Vi-mode; load zsh-vi-mode here with ZVM_INIT_MODE=sourcing so later
     # bindkey calls aren't clobbered
     bindkey -v
-
-    # Bind terminal light/dark mode responses (mode 2031 / DECRPM) for
-    # terminals that send unsolicited theme change reports (e.g. kitty,
-    # ghostty).  Not needed inside tmux where we poll client_theme instead.
-    if [ -z "$TMUX" ]; then
-        _on_terminal_dark() {
-            [ "$BACKGROUND" = dark ] && return
-            export BACKGROUND=dark
-            export COLORFGBG='7;0'
-            _apply_background
-            zle reset-prompt
-        }
-        _on_terminal_light() {
-            [ "$BACKGROUND" = light ] && return
-            export BACKGROUND=light
-            export COLORFGBG='0;15'
-            _apply_background
-            zle reset-prompt
-        }
-        zle -N _on_terminal_dark
-        zle -N _on_terminal_light
-        # Bind light/dark mode notifications
-        bindkey '\e[?997;1n' _on_terminal_dark
-        bindkey '\e[?997;2n' _on_terminal_light
-        # Subscribe to terminal mode change notifications (mode 2031)
-        print -n '\e[?2031h'
-    fi
-
     ZVM_INIT_MODE=sourcing
     local vimodepath
     for vimodepath in "$HOME/.zsh" '/usr/local/share' '/usr/share' '/opt/homebrew/share'; do
@@ -130,13 +89,51 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
 
     export KEYTIMEOUT=1
 
-    local is_root=`print -nP '%(!_1_)'`
-    local is_sudo="${is_root:-$SUDO_USER}"
-
     autoload -Uz colors && colors
 
-    # A better move/rename command
-    autoload -Uz zmv
+    _on_terminal_dark() {
+        [ "$BACKGROUND" = 'dark' ] && return
+        export BACKGROUND=dark
+        export COLORFGBG='7;0'
+        _apply_background
+        zle reset-prompt 2>/dev/null || true
+    }
+    _on_terminal_light() {
+        [ "$BACKGROUND" = 'light' ] && return
+        export BACKGROUND=light
+        export COLORFGBG='0;15'
+        _apply_background
+        zle reset-prompt 2>/dev/null || true
+    }
+    zle -N _on_terminal_dark
+    zle -N _on_terminal_light
+    bindkey '\e[?997;1n' _on_terminal_dark
+    bindkey '\e[?997;2n' _on_terminal_light
+
+    if [ -z "$TMUX" -a -z "$NO2031" ]; then
+        # Try to subscribe to light/dark mode updates (mode 2031).
+        # Unsubcribe during commands to avoid unwanted input into the command.
+        _subscribe_theme() { [ -z "$TMUX" ] && print -n '\e[?2031h' }
+        _unsubscribe_theme() { [ -z "$TMUX" ] && print -n '\e[?2031l' }
+        precmd_functions+=( _subscribe_theme )
+        preexec_functions+=( _unsubscribe_theme )
+    elif [ -n "$TMUX" ] && command -v tmux >/dev/null 2>&1; then
+        # Poll tmux for client_theme updates
+        _check_tmux_theme() {
+            [ -z "$TMUX" ] && return
+            local _tmux_theme="$(tmux display -p '#{client_theme}' 2>/dev/null)"
+            if [ "$_tmux_theme" = 'light' ]; then
+                _on_terminal_light
+            elif [ "$_tmux_theme" = 'dark' ]; then
+                _on_terminal_dark
+            fi
+            unset _tmux_theme
+        }
+        preexec_functions+=( _check_tmux_theme )
+    fi
+
+    local is_root=`print -nP '%(!_1_)'`
+    local is_sudo="${is_root:-$SUDO_USER}"
 
     # Test for UTF-8
     if [ -z "$NOUTF8" ] && [[ "${LANG}${LC_CTYPE}${LC_ALL}" == *[Uu][Tt][Ff]*8* ]]; then
@@ -302,6 +299,9 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
     fi
 
     # Aliases
+
+    # A better move/rename command
+    autoload -Uz zmv
 
     # Grep while excluding version control dirs
     alias gr='grep --color=auto --exclude-dir={.git,.hg,.svn,.bzr}'
@@ -496,8 +496,6 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
                 local batargs
                 batargs=()
                 local batstyle=''
-
-                [ "$BACKGROUND" = 'dark' ] && batargs+=( "--theme=Arkku Dark" )
 
                 local filecount=0
                 for arg in "$@"; do

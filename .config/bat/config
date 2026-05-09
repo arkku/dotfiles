@@ -1,2 +1,4 @@
---theme="Arkku"
+--theme="auto"
+--theme-light="Arkku"
+--theme-dark="Arkku Dark"
 --style="plain"
