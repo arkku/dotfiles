@@ -459,18 +459,56 @@ if [ -n "$PS1" -a -z "$ENVONLY" ]; then
         eval `dircolors -b "$HOME/.dir_colors"`
     fi
 
-    if ls --version 2>/dev/null | grep -q GNU; then
-        alias ls='ls -F --color=auto --group-directories-first'
-    elif [ "$CLICOLOR" = 1 ] && ls -G "$HOME" >/dev/null 2>&1; then
-        if [ "$BACKGROUND" = 'light' ]; then
-            export LSCOLORS='AxfxHehecxegehBDBDAhaD'
-        else
-            export LSCOLORS='ExfxHehecxegehBDBDAhaD'
-        fi
-        alias ls='ls -F -G'
+    # ls/eza: prefer eza when available with CLICOLOR
+    if [ "$CLICOLOR" = 1 ] && command -v eza >/dev/null 2>&1; then
+        ls_cmd="eza --group-directories-first --sort=name${ICONS:+ --icons=auto} --classify=auto"
+        alias eza="$ls_cmd"
+        alias exa="$ls_cmd"
+        alias ls="$ls_cmd"
+
+        # --hyperlink doesn't seem to have a toggle to disable when redirected
+        ls_cmd="$ls_cmd ${CLIHYPERLINK:+ --hyperlink}"
+
+        alias f="$ls_cmd -f -X --show-symlinks"
+        alias d="$ls_cmd -D -X --show-symlinks"
+        alias l="$ls_cmd -F -x"
+        alias ll="$ls_cmd -lgF -H --time-style=relative"
+        alias ll.="$ls_cmd -lgF -H -d .* --time-style=relative"
+        alias llx="$ls_cmd -lgF -H"
+        alias la="$ls_cmd -lgF -H -a -@ --time-style=relative"
+        alias llg="$ls_cmd -lgF -H --git --time-style=relative"
+        alias lag="$ls_cmd -lgF -H -a -@ --git --time-style=relative"
+
+        alias t="$ls_cmd -gF -H --tree --level=2"
+        alias tt="$ls_cmd -lgF -H --tree --level=2 --time-style=relative"
+        alias ta="$ls_cmd -lgF -H -a --tree --level=2 --time-style=relative"
+        alias ttg="$ls_cmd -lgF -H --tree --level=2 --git --time-style=relative"
     else
-        alias ls='ls -F'
+        if ls --version 2>/dev/null | grep -q GNU; then
+            ls_cmd="ls -F --color=auto --group-directories-first${CLIHYPERLINK:+ --hyperlink=auto}"
+        elif gls_path=$(command -p which -s gls 2>/dev/null) && [ -n "$gls_path" ] && "$gls_path" --version 2>/dev/null | grep -q GNU; then
+            ls_cmd="$gls_path -F --color=auto --group-directories-first${CLIHYPERLINK:+ --hyperlink=auto}"
+        elif [ "$CLICOLOR" = 1 ] && ls -G "$HOME" >/dev/null 2>&1; then
+            ls_cmd='ls -F -G'
+        else
+            ls_cmd='ls -F'
+        fi
+
+        alias ls="$ls_cmd"
+        alias l="$ls_cmd"
+        alias ll="$ls_cmd -kl"
+        alias la="$ls_cmd -kla"
+        alias ll.="$ls_cmd -kl -d .*"
+
+        alias t="$ls_cmd -R"
+        alias tt="$ls_cmd -kl -R"
+        alias ta="$ls_cmd -kla -R"
+
+        unset gls_path 2>/dev/null
     fi
+    alias l.="$ls_cmd -d .*"
+
+    unset ls_cmd 2>/dev/null
 
     # Load fasd if it is installed and ~/.fasd-init-bash exists (touch it!)
     fasd_cache="$HOME/.fasd-init-bash"
