@@ -52,12 +52,12 @@ export LAST_BACKGROUND='none'
 
 _apply_background() {
     [ "$BACKGROUND" = "$LAST_BACKGROUND" ] && return
-    LAST_BACKGROUND="$BACKGROUND"
+    export LAST_BACKGROUND="$BACKGROUND"
 
     if [ "$BACKGROUND" = 'dark' ]; then
-        FADED_COLOR='8'
+        export FADED_COLOR='8'
     else
-        FADED_COLOR='7'
+        export FADED_COLOR='7'
     fi
 
     if [ "$BACKGROUND" = 'light' ]; then
@@ -101,48 +101,63 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
 
     autoload -Uz colors && colors
 
-    _theme_dark() {
+    theme_dark() {
         [ "$BACKGROUND" = 'dark' ] && return
         export BACKGROUND=dark
         export COLORFGBG='7;0'
         _apply_background
         zle reset-prompt 2>/dev/null || true
     }
-    _theme_light() {
+    theme_light() {
         [ "$BACKGROUND" = 'light' ] && return
         export BACKGROUND=light
         export COLORFGBG='0;15'
         _apply_background
         zle reset-prompt 2>/dev/null || true
     }
-    zle -N _theme_dark
-    zle -N _theme_light
-    bindkey '\e[?997;1n' _theme_dark
-    bindkey '\e[?997;2n' _theme_light
+    zle -N theme_dark
+    zle -N theme_light
+    bindkey '\e[?997;1n' theme_dark
+    bindkey '\e[?997;2n' theme_light
 
-    if [ -z "$TMUX" -a -z "$NO2031" ]; then
-        # Try to subscribe to light/dark mode updates (mode 2031).
-        # Unsubcribe during commands to avoid unwanted input into the command.
-        # `export NO2031=1` to suppress this at any time.
-        _subscribe_theme() {
-            [ -z "$TMUX" -a -z "$NO2031" ] && print -n '\e[?996n\e[?2031h'
-        }
-        _unsubscribe_theme() { [ -z "$TMUX" -a -z "$NO2031" ] && print -n '\e[?2031l' }
-        precmd_functions+=( _subscribe_theme )
-        preexec_functions+=( _unsubscribe_theme )
-    elif [ -n "$TMUX" ] && command -v tmux >/dev/null 2>&1; then
-        # Poll tmux for client_theme updates
-        _check_tmux_theme() {
-            [ -z "$TMUX" ] && return
-            local _tmux_theme="$(tmux display -p '#{client_theme}' 2>/dev/null)"
-            if [ "$_tmux_theme" = 'light' ]; then
-                _theme_light
-            elif [ "$_tmux_theme" = 'dark' ]; then
-                _theme_dark
-            fi
-            unset _tmux_theme
-        }
-        preexec_functions+=( _check_tmux_theme )
+    if [ -z "$AUTOTHEME" ]; then
+        if [ -n "$TMUX" ]; then
+            command -v tmux >/dev/null 2>&1 && export AUTOTHEME=1
+        else
+            case "$TERM" in
+                xterm-kitty|xterm-ghostty|*-256color)
+                    export AUTOTHEME=1
+                    ;;
+            esac
+        fi
+    fi
+
+    # Try to automatically determine light/dark theme.
+    # `export AUTOTHEME=0` to suppress this at any time.
+    if [ "$AUTOTHEME" = 1 ]; then
+        if [ -n "$TMUX" ]; then
+            # Poll tmux for client_theme updates
+            _check_tmux_theme() {
+                [ -z "$TMUX" -o "$AUTOTHEME" = 0 ] && return
+                local _tmux_theme="$(tmux display -p '#{client_theme}' 2>/dev/null)"
+                if [ "$_tmux_theme" = 'light' ]; then
+                    theme_light
+                elif [ "$_tmux_theme" = 'dark' ]; then
+                    theme_dark
+                fi
+                unset _tmux_theme
+            }
+            preexec_functions+=( _check_tmux_theme )
+        else
+            # Try to subscribe to light/dark mode updates (mode 2031).
+            # Unsubcribe during commands to avoid unwanted input into the command.
+            _subscribe_theme() {
+                [ "$AUTOTHEME" = 1 ] && print -n '\e[?996n\e[?2031h'
+            }
+            _unsubscribe_theme() { [ "$AUTOTHEME" = 1 ] && print -n '\e[?2031l' }
+            precmd_functions+=( _subscribe_theme )
+            preexec_functions+=( _unsubscribe_theme )
+        fi
     fi
 
     local is_root=`print -nP '%(!_1_)'`
@@ -762,7 +777,11 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
 
     # Hyperlinked filenames (OSC 8) in ls/eza/rg/fd: only when not over SSH,
     # since file:// URLs only resolve on the local machine.
-    [ -z "$SSH_CONNECTION" -o "$CLIHYPERLINK" = 1 ] && CLIHYPERLINK=1 || CLIHYPERLINK=
+    if [ "$CLIHYPERLINK" = '0' ]; then
+        CLIHYPERLINK=''
+    else
+        [ -z "$SSH_CONNECTION" -o "$CLIHYPERLINK" = 1 ] && CLIHYPERLINK=1 || CLIHYPERLINK=''
+    fi
 
     if [ "$CLICOLOR" = 1 ] && command -v eza >/dev/null 2>&1; then
         ls_cmd="eza --group-directories-first --sort=name${ICONS:+ --icons=auto} --classify=auto"
