@@ -65,6 +65,7 @@ for vscpath in "$HOME/" '/'; do
 done
 
 [ -e "$HOME/.profile_private" ] && . "$HOME/.profile_private"
+[ -e "$HOME/.profile_secrets" ] && . "$HOME/.profile_secrets"
 
 for rvmdir in "$HOME/.rvm" '/usr/local/rvm'; do
     if [ -s "$rvmdir/scripts/rvm" ]; then
