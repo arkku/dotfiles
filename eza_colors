@@ -1,0 +1,234 @@
+#!/usr/bin/env zsh
+#
+# builds EZA_COLORS from parts with comments
+
+#   1        for bold
+#   2        for dimmed
+#   3        for italic
+#   4        for underline
+#   31       for red text
+#   32       for green text
+#   33       for yellow text
+#   34       for blue text
+#   35       for purple text
+#   36       for cyan text
+#   37       for white text
+#   90       for dark gray text
+#   91       for bright red text
+#   92       for bright green text
+#   93       for bright yellow text
+#   94       for bright blue text
+#   95       for bright purple text
+#   96       for bright cyan text
+#   97       for bright text
+#   38;5;nnn for a colour from 0 to 255 (replace the nnn part)
+
+typeset -a eza_colors_parts
+typeset -a eza_colors_dark
+typeset -a eza_colors_light
+
+eza_colors_parts+=(
+
+    # UI headers / backgrounds
+    #xx="2"                     # punctuation / UI background
+    #hd="2"                     # header row in table
+
+    # permission bits / xattr
+    oc="0"                      # permission shown as octal
+    su="1;33"                   # setuid/setgid/sticky bits for files
+    sf="33"                     # setuid/setgid/sticky for other file kinds
+    ur="0"                      # user-read permission
+    uw="0"                      # user-write permission
+    ux="32"                     # user-execute permission (regular file)
+    ue="0"                      # user-execute permission (other file kinds, e.g., dir)
+    gr="0"                      # group-read permission
+    gw="1"                      # group-write permission
+    gx="0"                      # group-execute permission
+    tr="0"                      # others-read permission
+    tw="1;31"                   # others-write permission
+    tx="0"                      # others-execute permission
+    #xa="2"                     # extended‑attribute indicator
+
+    # file size / extended attributes
+    #sn="0"                     # file size numbers (all)
+    nb="2"                      # file size numbers (bytes)
+    nk="0"                      # file size numbers (KB)
+    nm="1;33"                   # file size numbers (MB)
+    ng="1;93"                   # file size numbers (GB)
+    nt="1;91"                   # file size numbers (TB)
+    #sb="0"                     # file size unit (all)
+    ub="2"                      # file size unit (bytes)
+    uk="2"                      # file size unit (KB)
+    um="33"                     # file size unit (MB)
+    ug="93"                     # file size unit (GB)
+    ut="91"                     # file size unit (TB)
+
+    # hard‑link counts
+    #lc="2"                     # number of hard links
+    lm="33"                     # number of hard links (regular file with >= 2)
+
+    # dates, inodes, blocks
+    da="2"                      # file’s date
+    in="2"                      # inode number
+    bl="0"                      # number of blocks
+    df="2"                      # device major id
+    ds="2"                      # device minor id
+    ff="96"                     # BSD file flags
+
+    # user and group
+    uu="3"                      # user that is you
+    uR="1"                      # user that is root
+    un="0"                      # user that is someone else
+    gu="3"                      # group that you belong to
+    gR="1"                      # group related to root
+    gn="0"                      # group you aren’t a member of
+
+    # date
+    #da="2"                     # file date
+
+    # Git flags (git, git_repo)
+    ga="92"                     # git “new” flag
+    gm="33"                     # git “modified” flag
+    gd="31"                     # git “deleted” flag
+    gv="3;33"                   # git “renamed” flag
+    gt="2;33"                   # git “modified metadata” flag
+    gi="2"                      # git “ignored” flag
+    gc="35"                     # git “conflicted” flag
+    Gm="32"                     # git main branch
+    Go="33"                     # git other branch
+    Gc="32"                     # git clean branch
+    Gd="33"                     # git dirty branch
+
+    # extras
+    ic="2"                      # icon
+
+    # file names
+    fi="0"                      # regular file
+    #di="1"                     # directory
+    ln="4;36"                   # symlinks
+    pi="44;37"                  # named pipe
+    so="1;44;47"                # sockets
+    bd="46;34"                  # block device
+    cd="47;34"                  # character device
+    ex="1"                      # executable file
+    mp="1;91"                   # mount point
+
+    # file names, special cases
+    lp="3"                      # path of a symlink
+    or="4;41;37"                # broken symlinks (target doesn't exist)
+    bO="41;37"                  # overlay style for broken symlink paths
+    #mi="41;37"                 # missing target of broken symlink (GNU ls)
+    cc="2"                      # escaped character in filename
+    sp="3;33"                   # not file, dir, mount, exec, pipe, socket,
+                                # block device, char device, or link
+
+    # file names by kind
+    im="0"                      # image file
+    vi="0"                      # video file
+    mu="0"                      # lossy music file
+    lo="0"                      # lossless music file
+    cr="1;36"                   # crypto‑related file
+    do="0"                      # document file
+    #co="2"                     # compressed file
+    #tm="2"                     # temporary file
+    cm="2;36"                   # compilation artifact
+    bu="3;36"                   # build file
+    sc="36"                     # source‑code file
+
+    # file name globs
+    '*.mk=36'                   # .mk files
+    '*.md=33'                   # Markdown files
+    '*.txt=33'                  # text files
+    'README*=3;33'              # README*
+    'LICENSE*=33'               # LICENSE* files
+    'COPYING=33'                # COPYING file
+
+)
+
+eza_colors_dark+=(
+    xx="90"                     # punctuation
+    hd="90"                     # header row in table
+    xa="90"                     # extended attributes
+
+    lc="2;37"                   # hard‑link count
+
+    da="2;37"                   # file date
+
+    di="1;94"                   # directory
+    tm="2"                      # temporary file
+    co="2;37"                   # compressed file
+)
+eza_colors_light+=(
+    xx="37"                     # punctuation
+    hd="37"                     # header row in table
+    xa="37"                     # extended attributes
+
+    lc="37"                     # hard‑link count
+
+    da="2"                      # file date
+
+    di="1;34"                   # directory
+    tm="37"                     # temporary file
+    co="2"                      # compressed file
+)
+export EZA_COLORS="${(j.:.)eza_colors_parts}"
+export EZA_COLORS="$(echo "$EZA_COLORS" | sed 's/:\([0-9]\)/;\1/g')"
+export EZA_COLORS_DARK="${(j.:.)eza_colors_dark}"
+export EZA_COLORS_DARK="$(echo "$EZA_COLORS_DARK" | sed 's/:\([0-9]\)/;\1/g')"
+export EZA_COLORS_LIGHT="${(j.:.)eza_colors_light}"
+export EZA_COLORS_LIGHT="$(echo "$EZA_COLORS_LIGHT" | sed 's/:\([0-9]\)/;\1/g')"
+
+typeset -a ls_colors_keys
+
+ls_colors_keys+=(
+    fi                  # regular file
+    di                  # directory 
+    ex                  # executable files
+
+    ln                  # symlink
+    or                  # broken symlink
+    mi                  # path of the missing broken symlink target
+
+    pi                  # pipe
+    so                  # socket
+    bd                  # block device
+    cd                  # character device
+)
+
+build_ls_colors() {
+    local -a src=("$@")
+    local -a result=()
+    for key in $ls_colors_keys; do
+        for entry in $src; do
+            if [[ "$entry" == "${key}="* ]]; then
+                result+=("$key=${entry#*=}")
+                break
+            fi
+        done
+    done
+    echo "${(j.:.)result}"
+}
+
+export LS_COLORS="$(build_ls_colors $eza_colors_parts)"
+export LS_COLORS_DARK="$(build_ls_colors $eza_colors_dark)"
+export LS_COLORS_LIGHT="$(build_ls_colors $eza_colors_light)"
+
+echo "    export EZA_COLORS='$EZA_COLORS'"
+echo "    export LS_COLORS='$LS_COLORS:mi=41;37'"
+echo '    if [ "$BACKGROUND" = "dark" ]; then'
+echo '        export EZA_COLORS="$EZA_COLORS:'"$EZA_COLORS_DARK"\"
+echo '        export LS_COLORS="$LS_COLORS:'"$LS_COLORS_DARK"\"
+echo '    else'
+echo '        export EZA_COLORS="$EZA_COLORS:'"$EZA_COLORS_LIGHT"\"
+echo '        export LS_COLORS="$LS_COLORS:'"$LS_COLORS_LIGHT"\"
+echo '    fi'
+
+if [ "$BACKGROUND" = 'dark' ]; then
+    export EZA_COLORS="$EZA_COLORS:$EZA_COLORS_DARK"
+    export LS_COLORS="$LS_COLORS:$LS_COLORS_DARK"
+else
+    export EZA_COLORS="$EZA_COLORS:$EZA_COLORS_LIGHT"
+    export LS_COLORS="$LS_COLORS:$LS_COLORS_LIGHT"
+fi
+
+eza --group-directories-first --sort=name --hyperlink --icons=auto --classify=auto -lgF -H --tree --level=2 --git -@ "$@" -h

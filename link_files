@@ -189,7 +189,8 @@ find . -type f -print0 | while read -d '' file; do
                 continue
             fi
             ;;
-        .git/*|.gitignore|.gitmodules|.claude/*|.agents/*)    # Ignore git/agent directories
+        .git/*|.gitignore|.gitmodules|.claude/*|.agents/*|.aider*)
+            # Ignore git/agent directories
             continue
             ;;
         .*|bin/*|share/*|man/*)          # Dotfiles and whitelisted paths

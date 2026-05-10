@@ -48,20 +48,33 @@ if [ -z "$BACKGROUND" ]; then
     export BACKGROUND
 fi
 
+export LAST_BACKGROUND='none'
+
 _apply_background() {
+    [ "$BACKGROUND" = "$LAST_BACKGROUND" ] && return
+    LAST_BACKGROUND="$BACKGROUND"
+
     if [ "$BACKGROUND" = 'dark' ]; then
         FADED_COLOR='8'
     else
         FADED_COLOR='7'
     fi
 
-    [ -n "$_using_macos_ls" ] && {
-        if [ "$BACKGROUND" = 'light' ]; then
-            export LSCOLORS='AxfxHehecxegehBDBDAhaD'
-        else
-            export LSCOLORS='ExfxHehecxegehBDBDAhaD'
-        fi
-    }
+    if [ "$BACKGROUND" = 'light' ]; then
+        export LSCOLORS='AxfxHehecxegehBDBDAhaD'
+    else
+        export LSCOLORS='ExfxHehecxegehBDBDAhaD'
+    fi
+
+    export EZA_COLORS='oc=0:su=1;33:sf=33:ur=0:uw=0:ux=32:ue=0:gr=0:gw=1:gx=0:tr=0:tw=1;31:tx=0:nb=2:nk=0:nm=1;33:ng=1;93:nt=1;91:ub=2:uk=2:um=33:ug=93:ut=91:lm=33:da=2:in=2:bl=0:df=2:ds=2:ff=96:uu=3:uR=1:un=0:gu=3:gR=1:gn=0:ga=92:gm=33:gd=31:gv=3;33:gt=2;33:gi=2:gc=35:Gm=32:Go=33:Gc=32:Gd=33:ic=2:fi=0:ln=4;36:pi=44;37:so=1;44;47:bd=46;34:cd=47;34:ex=1:mp=1;91:lp=3:or=4;41;37:bO=41;37:cc=2:sp=3;33:im=0:vi=0:mu=0:lo=0:cr=1;36:do=0:cm=2;36:bu=3;36:sc=36:*.mk=36:*.md=33:*.txt=33:README*=3;33:LICENSE*=33:COPYING=33'
+    export LS_COLORS='fi=0:ex=1:ln=4;36:or=4;41;37:pi=44;37:so=1;44;47:bd=46;34:cd=47;34:mi=41;37'
+    if [ "$BACKGROUND" = "dark" ]; then
+        export EZA_COLORS="$EZA_COLORS:xx=90:hd=90:xa=90:lc=2;37:da=2;37:di=1;94:tm=2:co=2;37"
+        export LS_COLORS="$LS_COLORS:di=1;94"
+    else
+        export EZA_COLORS="$EZA_COLORS:xx=37:hd=37:xa=37:lc=37:da=2:di=1;34:tm=37:co=2"
+        export LS_COLORS="$LS_COLORS:di=1;34"
+    fi
 
     (( ${+ZSH_HIGHLIGHT_STYLES} )) && ZSH_HIGHLIGHT_STYLES[comment]="fg=$FADED_COLOR"
     [ -n "$ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE" ] && ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=$FADED_COLOR"
@@ -111,7 +124,9 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
         # Try to subscribe to light/dark mode updates (mode 2031).
         # Unsubcribe during commands to avoid unwanted input into the command.
         # `export NO2031=1` to suppress this at any time.
-        _subscribe_theme() { [ -z "$TMUX" -a -z "$NO2031" ] && print -n '\e[?2031h' }
+        _subscribe_theme() {
+            [ -z "$TMUX" -a -z "$NO2031" ] && print -n '\e[?996n\e[?2031h'
+        }
         _unsubscribe_theme() { [ -z "$TMUX" -a -z "$NO2031" ] && print -n '\e[?2031l' }
         precmd_functions+=( _subscribe_theme )
         preexec_functions+=( _unsubscribe_theme )
@@ -745,65 +760,65 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
 
     [ -n "$COLORTERM" -a -z "$CLICOLOR" ] && export CLICOLOR=1
 
-    if [ -r "$HOME/.dir_colors" ] && command -v dircolors >/dev/null 2>&1; then
-        eval `dircolors -b "$HOME/.dir_colors"`
-    fi
-
     # Hyperlinked filenames (OSC 8) in ls/eza/rg/fd: only when not over SSH,
     # since file:// URLs only resolve on the local machine.
-    [ -z "$SSH_CONNECTION" ] && cli_hyperlinks=1 || cli_hyperlinks=
+    [ -z "$SSH_CONNECTION" -o "$CLIHYPERLINK" = 1 ] && CLIHYPERLINK=1 || CLIHYPERLINK=
 
-    # Pick the most capable ls implementation for bare `ls` and `l.`.
-    # GNU ls (whether as `ls` on Linux or as homebrew's `gls` on macOS) is
-    # preferred for --hyperlink and feature parity; eza next; BSD ls / plain
-    # ls last.
-    if ls --version 2>/dev/null | grep -q GNU; then
-        ls_cmd="ls -F --color=auto --group-directories-first${cli_hyperlinks:+ --hyperlink=auto}"
-    elif gls_path=$(whence -p gls 2>/dev/null) && [ -n "$gls_path" ] && "$gls_path" --version 2>/dev/null | grep -q GNU; then
-        ls_cmd="$gls_path -F --color=auto --group-directories-first${cli_hyperlinks:+ --hyperlink=auto}"
-    elif command -v eza >/dev/null 2>&1; then
-        ls_cmd="eza --group-directories-first --sort=name${cli_hyperlinks:+ --hyperlink} --classify=auto"
-    elif [ "$CLICOLOR" = 1 ] && ls -G "$HOME" >/dev/null 2>&1; then
-        if [[ $BACKGROUND == 'light' ]]; then
-            # ls on macOS does not support X for bold, and the bold
-            # black would be invisible on dark background
-            export LSCOLORS='AxfxHehecxegehBDBDAhaD'
+    if [ "$CLICOLOR" = 1 ] && command -v eza >/dev/null 2>&1; then
+        ls_cmd="eza --group-directories-first --sort=name${ICONS:+ --icons=auto} --classify=auto"
+        alias eza="$ls_cmd"
+        alias exa="$ls_cmd"
+        alias ls="$ls_cmd"
+
+        # --hyperlink doesn't seem to have a toggle to disable when redirected
+        ls_cmd="$ls_cmd ${CLIHYPERLINK:+ --hyperlink}"
+
+        alias f="$ls_cmd -f -X --show-symlinks"
+        alias d="$ls_cmd -D -X --show-symlinks"
+        alias l="$ls_cmd -F -x"
+        alias ll="$ls_cmd -lgF -H --time-style=relative"
+        alias ll.="$ls_cmd -lgF -H -d .* --time-style=relative"
+        alias llx="$ls_cmd -lgF -H"
+        alias la="$ls_cmd -lgF -H -a -@ --time-style=relative"
+        # `--git` is slow in big repos, hence not on by default
+        alias llg="$ls_cmd -lgF -H --git --time-style=relative"
+        alias lag="$ls_cmd -lgF -H -a -@ --git --time-style=relative"
+
+        alias t="$ls_cmd -gF -H --tree --level=2"
+        alias tt="$ls_cmd -lgF -H --tree --level=2 --time-style=relative"
+        alias ta="$ls_cmd -lgF -H -a --tree --level=2 --time-style=relative"
+        alias ttg="$ls_cmd -lgF -H --tree --level=2 --git --time-style=relative"
+    else
+        if ls --version 2>/dev/null | grep -q GNU; then
+            ls_cmd="ls -F --color=auto --group-directories-first${CLIHYPERLINK:+ --hyperlink=auto}"
+        elif gls_path=$(whence -p gls 2>/dev/null) && [ -n "$gls_path" ] && "$gls_path" --version 2>/dev/null | grep -q GNU; then
+            ls_cmd="$gls_path -F --color=auto --group-directories-first${CLIHYPERLINK:+ --hyperlink=auto}"
+        elif [ "$CLICOLOR" = 1 ] && ls -G "$HOME" >/dev/null 2>&1; then
+            ls_cmd='ls -F -G'
         else
-            export LSCOLORS='ExfxHehecxegehBDBDAhaD'
+            ls_cmd='ls -F'
         fi
-        ls_cmd='ls -F -G'
-        _using_macos_ls=1
-    else
-        ls_cmd='ls -F'
-    fi
-    alias ls="$ls_cmd"
-    alias l.="$ls_cmd -d .*"
 
-    # Long-listing aliases (`l`, `ll`, `la`): prefer eza when available for
-    # its richer column layout, falling back to the `ls` chosen above.
-    if [ "$CLICOLOR" -eq 1 ] && command -v eza >/dev/null 2>&1; then
-        eza_cmd="eza --group-directories-first --sort=name${cli_hyperlinks:+ --hyperlink}"
-        alias eza="$eza_cmd"
-        alias l="$eza_cmd -F -x"
-        alias ll="$eza_cmd -lgF -H"
-        alias la="$eza_cmd -lgF -H -a -@"
-        # `--git` walks the index per file and is slow in big repos
-        alias llg="$eza_cmd -lgF -H --git"
-        alias lag="$eza_cmd -lgF -H -a -@ --git"
-        export EZA_COLORS="da=37:Makefile=0;33:README*=0;33:lm=4:uu=0:un=1:gu=0:gn=1:${EZA_COLORS:+:$EZA_COLORS}"
-        unset eza_cmd
-    else
+        alias ls="$ls_cmd"
         alias l="$ls_cmd"
         alias ll="$ls_cmd -kl"
         alias la="$ls_cmd -kla"
-    fi
-    unset ls_cmd gls_path 2>/dev/null
+        alias ll.="$ls_cmd -kl -d .*"
 
-    if [ -n "$cli_hyperlinks" ]; then
+        alias t="$ls_cmd -R"
+        alias tt="$ls_cmd -kl -R"
+        alias ta="$ls_cmd -kla -R"
+
+        unset gls_path 2>/dev/null
+    fi
+    alias l.="$ls_cmd -d .*"
+
+    unset ls_cmd 2>/dev/null
+
+    if [ -n "$CLIHYPERLINK" ]; then
         command -v rg >/dev/null 2>&1 && alias rg='rg --hyperlink-format=default'
         command -v fd >/dev/null 2>&1 && alias fd='fd --hyperlink=auto'
     fi
-    unset cli_hyperlinks
 
     # Completion
     autoload -Uz compinit && compinit ${=is_sudo:+-i}
