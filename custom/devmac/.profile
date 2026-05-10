@@ -64,6 +64,10 @@ for vscpath in "$HOME/" '/'; do
     fi
 done
 
+if [ -d '/opt/homebrew/share/zsh-syntax-highlighting/highlighters' ]; then
+    export ZSH_HIGHLIGHT_HIGHLIGHTERS_DIR='/opt/homebrew/share/zsh-syntax-highlighting/highlighters'
+fi
+
 [ -e "$HOME/.profile_private" ] && . "$HOME/.profile_private"
 [ -e "$HOME/.profile_secrets" ] && . "$HOME/.profile_secrets"
 

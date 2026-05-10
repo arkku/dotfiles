@@ -71,10 +71,6 @@ unset rvmdir
 
 [ -d "$HOME/.local/bin" ] && export PATH="$PATH:$HOME/.local/bin"
 
-if [ -d '/opt/homebrew/share/zsh-syntax-highlighting/highlighters' ]; then
-    export ZSH_HIGHLIGHT_HIGHLIGHTERS_DIR='/opt/homebrew/share/zsh-syntax-highlighting/highlighters'
-fi
-
 if [ -n "$PS1" -a -z "$ENVONLY" ]; then
     if [ -t 0 ]; then
         # Set the interrupt character to Ctrl-c and do clean backspacing.
