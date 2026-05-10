@@ -66,14 +66,14 @@ _apply_background() {
         export LSCOLORS='ExfxHehecxegehBDBDAhaD'
     fi
 
-    export EZA_COLORS='oc=0:su=1;33:sf=33:ur=0:uw=0:ux=32:ue=0:gr=0:gw=1:gx=0:tr=0:tw=1;31:tx=0:nb=2:nk=0:nm=1;33:ng=1;93:nt=1;91:ub=2:uk=2:um=33:ug=93:ut=91:lm=33:da=2:in=2:bl=0:df=2:ds=2:ff=96:uu=3:uR=1:un=0:gu=3:gR=1:gn=0:ga=92:gm=33:gd=31:gv=3;33:gt=2;33:gi=2:gc=35:Gm=32:Go=33:Gc=32:Gd=33:ic=2:fi=0:ln=4;36:pi=44;37:so=1;44;47:bd=46;34:cd=47;34:ex=1:mp=1;91:lp=3:or=4;41;37:bO=41;37:cc=2:sp=3;33:im=0:vi=0:mu=0:lo=0:cr=1;36:do=0:cm=2;36:bu=3;36:sc=36:*.mk=36:*.md=33:*.txt=33:README*=3;33:LICENSE*=33:COPYING=33'
-    export LS_COLORS='fi=0:ex=1:ln=4;36:or=4;41;37:pi=44;37:so=1;44;47:bd=46;34:cd=47;34:mi=41;37'
+    export EZA_COLORS='oc=0:su=1;33:sf=33:ur=0:uw=0:ux=32:ue=0:gr=0:gw=1:gx=0:tr=0:tw=1;31:tx=0:nb=2:nk=0:nm=1;33:ng=1;93:nt=1;91:ub=2:uk=2:um=33:ug=93:ut=91:lm=33:da=2:in=2:bl=0:df=2:ds=2:ff=96:uu=3:uR=1:un=0:gu=3:gR=1:gn=0:ga=92:gm=33:gd=31:gv=3;33:gt=2;33:gi=2:gc=35:Gm=32:Go=33:Gc=32:Gd=33:ic=2:fi=0:pi=44;37:so=1;44;47:bd=46;34:cd=47;34:ex=1:mp=1;91:lp=3:or=4;41;37:bO=41;37:cc=2:sp=3;33:im=0:vi=0:mu=0:lo=0:cr=1;36:do=0:cm=2;36:bu=3;36:sc=36:*.mk=36:*.md=33:*.txt=33:README*=3;33:LICENSE*=33:COPYING=33'
+    export LS_COLORS='fi=0:ex=1:or=4;41;37:pi=44;37:so=1;44;47:bd=46;34:cd=47;34:mi=41;37'
     if [ "$BACKGROUND" = "dark" ]; then
-        export EZA_COLORS="$EZA_COLORS:xx=90:hd=90:xa=90:lc=2;37:da=2;37:di=1;94:tm=2;co=2;37"
-        export LS_COLORS="$LS_COLORS:di=1;94"
+        export EZA_COLORS="$EZA_COLORS:xx=90:hd=90:xa=90:ln=4;96:lc=2;37:da=2;37:di=1;94:tm=2:co=2;37"
+        export LS_COLORS="$LS_COLORS:di=1;94:ln=4;96"
     else
-        export EZA_COLORS="$EZA_COLORS:xx=37:hd=37:xa=37:lc=37:da=2:di=1;34:tm=37:co=2"
-        export LS_COLORS="$LS_COLORS:di=1;34"
+        export EZA_COLORS="$EZA_COLORS:xx=37:hd=37:xa=37:ln=4;94:lc=37:da=2:di=1;34:tm=37:co=2"
+        export LS_COLORS="$LS_COLORS:di=1;34:ln=4;94"
     fi
 
     export FADED_COLOR

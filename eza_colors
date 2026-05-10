@@ -105,7 +105,7 @@ eza_colors_parts+=(
     # file names
     fi="0"                      # regular file
     #di="1"                     # directory
-    ln="4;36"                   # symlinks
+    #ln="4;96"                   # symlinks
     pi="44;37"                  # named pipe
     so="1;44;47"                # sockets
     bd="46;34"                  # block device
@@ -150,6 +150,7 @@ eza_colors_dark+=(
     hd="90"                     # header row in table
     xa="90"                     # extended attributes
 
+    ln="4;96"                   # symlinks
     lc="2;37"                   # hard‑link count
 
     da="2;37"                   # file date
@@ -163,6 +164,7 @@ eza_colors_light+=(
     hd="37"                     # header row in table
     xa="37"                     # extended attributes
 
+    ln="4;94"                   # symlinks
     lc="37"                     # hard‑link count
 
     da="2"                      # file date
