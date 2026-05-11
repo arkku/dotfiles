@@ -784,29 +784,29 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
     fi
 
     if [ "$CLICOLOR" = 1 ] && command -v eza >/dev/null 2>&1; then
-        ls_cmd="eza --group-directories-first --sort=name${ICONS:+ --icons=auto} --classify=auto"
+        ls_cmd="eza --group-directories-first --sort=name --classify=auto"
         alias eza="$ls_cmd"
         alias exa="$ls_cmd"
         alias ls="$ls_cmd"
 
         # --hyperlink doesn't seem to have a toggle to disable when redirected
-        ls_cmd="$ls_cmd ${CLIHYPERLINK:+ --hyperlink}"
+        ls_cmd="$ls_cmd${CLIHYPERLINK:+ --hyperlink}${ICONS:+ --icons=auto}"
 
         alias f="$ls_cmd -f -X --show-symlinks"
         alias d="$ls_cmd -D -X --show-symlinks"
-        alias l="$ls_cmd -F -x"
-        alias ll="$ls_cmd -lgF -H --time-style=relative"
-        alias ll.="$ls_cmd -lgF -H -d .* --time-style=relative"
-        alias llx="$ls_cmd -lgF -H"
-        alias la="$ls_cmd -lgF -H -a -@ --time-style=relative"
+        alias l="$ls_cmd -X"
+        alias ll="$ls_cmd -lg -H --time-style=relative"
+        alias ll.="$ls_cmd -lg -H -d .* --time-style=relative"
+        alias llx="$ls_cmd -lg -H"
+        alias la="$ls_cmd -lg -H -a -@ --time-style=relative"
         # `--git` is slow in big repos, hence not on by default
-        alias llg="$ls_cmd -lgF -H --git --time-style=relative"
-        alias lag="$ls_cmd -lgF -H -a -@ --git --time-style=relative"
+        alias llg="$ls_cmd -lg -H --git --time-style=relative"
+        alias lag="$ls_cmd -lg -H -a -@ --git --time-style=relative"
 
-        alias t="$ls_cmd -gF -H --tree --level=2"
-        alias tt="$ls_cmd -lgF -H --tree --level=2 --time-style=relative"
-        alias ta="$ls_cmd -lgF -H -a --tree --level=2 --time-style=relative"
-        alias ttg="$ls_cmd -lgF -H --tree --level=2 --git --time-style=relative"
+        alias t="$ls_cmd -g -H --tree --level=2"
+        alias tt="$ls_cmd -lg -H --tree --level=2 --time-style=relative"
+        alias ta="$ls_cmd -lg -H -a --tree --level=2 --time-style=relative"
+        alias ttg="$ls_cmd -lg -H --tree --level=2 --git --time-style=relative"
     else
         if ls --version 2>/dev/null | grep -q GNU; then
             ls_cmd="ls -F --color=auto --group-directories-first${CLIHYPERLINK:+ --hyperlink=auto}"

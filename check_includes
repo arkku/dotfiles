@@ -36,9 +36,18 @@ if [ -e "$kittypath/$kittyshared" ]; then
         cat <<EOFKITTY
 # .config/kitty/$kittyshared
 
-printf '\ninclude %s\n' '$kittyshared' >>~/.config/kitty/kitty.conf
+printf '\ninclude %s\n' '$kittyshared' >>"$kittypath/kitty.conf"
 
 EOFKITTY
+    fi
+    if [ ! -e "$kittypath/light-theme.auto.conf" ]; then
+        echo "n -s themes/Arkku.conf $kittypath/light-theme.auto.conf"
+    fi
+    if [ ! -e "$kittypath/no-preference-theme.auto.conf" ]; then
+        echo "ln -s themes/Arkku.conf $kittypath/no-preference-theme.auto.conf"
+    fi
+    if [ ! -e "$kittypath/dark-theme.auto.conf" ]; then
+        echo "ln -s "themes/Arkku Dark.conf" $kittypath/dark-theme.auto.conf"
     fi
 fi
 
@@ -57,7 +66,7 @@ if [ -e "$ghosttypath/$ghosttyshared" ]; then
         cat <<EOFGHOSTTY
 # .config/ghostty/$ghosttyshared
 
-printf '\nconfig-file = %s\n' '$ghosttyshared' >>~/.config/ghostty/$ghosttymain
+printf '\nconfig-file = %s\ntheme = dark:Arkku Dark,light:Arkku\n' '$ghosttyshared' >>"$ghosttypath/$ghosttymain"
 
 EOFGHOSTTY
     fi
