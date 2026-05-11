@@ -371,6 +371,8 @@ if [ -n "$PS1" -a -z "$ENVONLY" ]; then
     }
 
     if command -v fzf >/dev/null 2>&1; then
+        export FZF_DEFAULT_OPTS='--layout=reverse --ansi'
+
         # use fd with fzf (note: symlink /usr/bin/fdfind to ~/bin/fd)
         if command -v fd >/dev/null 2>&1; then
             export FZF_DEFAULT_COMMAND='fd --color=always --exclude .git'

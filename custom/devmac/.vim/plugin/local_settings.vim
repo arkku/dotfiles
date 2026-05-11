@@ -60,6 +60,9 @@ augroup localcocsettings
     autocmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
 augroup end
 
+let g:ctrlp_user_command='fd -c never -d 5 -- . %s 2>/dev/null'
+let g:ctrlp_use_caching=0
+
 let g:ctrlp_custom_ignore = {
     \ 'dir':  '\v[\/]\.(git|hg|svn|build|bzr)$',
     \ 'file': '\v\.(exe|so|dll|o|obj|bin|a|[~])$'

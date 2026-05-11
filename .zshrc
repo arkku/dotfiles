@@ -549,7 +549,7 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
         export FZF_COMPLETION_OPTS='+c -x'
         #export FZF_TMUX=1
         export FZF_TMUX_HEIGHT='30%'
-        export FZF_DEFAULT_OPTS='--layout=reverse'
+        export FZF_DEFAULT_OPTS='--layout=reverse --ansi'
 
         if whence fzf-completion >/dev/null 2>&1; then
             # fzf is probably sourced first so the completion binding breaks
