@@ -557,6 +557,7 @@ if [ -n "$PS1" -a -z "$ENVONLY" ]; then
 
         alias t="$ls_cmd -gF -H --tree --level=2"
         alias tt="$ls_cmd -lgF -H --tree --level=2 --time-style=relative"
+        alias t3="$ls_cmd -lgF -H --tree --level=3 --time-style=relative"
         alias ta="$ls_cmd -lgF -H -a --tree --level=2 --time-style=relative"
         alias ttg="$ls_cmd -lgF -H --tree --level=2 --git --time-style=relative"
     else

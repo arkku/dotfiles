@@ -415,16 +415,12 @@ if !exists('g:vscode')
     nnoremap <Leader>x <Esc>:bw!<CR>
 
     " Quickfix
-    nnoremap <Leader>f <Esc>:cw<CR>
-    nnoremap <Leader>F <Esc>:ccl<CR>
+    nnoremap <Leader>f <Esc>:copen<CR>
+    nnoremap <Leader>F <Esc>:cclose<CR>
 
     " Location List
     nnoremap <Leader>l <Esc>:lopen<CR>
     nnoremap <Leader>L <Esc>:lclose<CR>
-
-    " Syntastic
-    nnoremap <Leader>s <Esc>:silent! SyntasticCheck<CR>:silent! SyntasticSetLoclist<CR>:silent! Errors<CR>
-    nnoremap <Leader>S <Esc>:silent! SyntasticReset<CR>
 
     " Space tab to open a new tab
     nnoremap <Leader><Tab> <Esc>:tabnew<CR>
@@ -610,12 +606,13 @@ command! CDC cd %:p:h
 command! Fmt :call CocActionAsync('format')
 
 if executable('fzf')
-    " Add fzf if installed
     if !empty(glob(expand("~/.fzf")))
         set runtimepath+=~/.fzf
+    elseif !empty(glob("/opt/homebrew/opt/fzf"))
+        set runtimepath+=/opt/homebrew/opt/fzf
     elseif !empty(glob("/usr/local/opt/fzf"))
         set runtimepath+=/usr/local/opt/fzf
-    elseif !exists('g:loaded_fzf') && !empty(glob("/usr/share/doc/fzf/examples/plugin/fzf.vim"))
+    elseif !empty(glob("/usr/share/doc/fzf/examples/plugin/fzf.vim"))
         set runtimepath+=/usr/share/doc/fzf/examples
     endif
 

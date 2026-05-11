@@ -805,6 +805,7 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
 
         alias t="$ls_cmd -g -H --tree --level=2"
         alias tt="$ls_cmd -lg -H --tree --level=2 --time-style=relative"
+        alias t3="$ls_cmd -lg -H --tree --level=3 --time-style=relative"
         alias ta="$ls_cmd -lg -H -a --tree --level=2 --time-style=relative"
         alias ttg="$ls_cmd -lg -H --tree --level=2 --git --time-style=relative"
     else
