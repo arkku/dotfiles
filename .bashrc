@@ -533,10 +533,6 @@ if [ -n "$PS1" -a -z "$ENVONLY" ]; then
 
     [ -n "$COLORTERM" -a -z "$CLICOLOR" ] && export CLICOLOR=1
 
-    if [ -r "$HOME/.dir_colors" ] && command -v dircolors >/dev/null 2>&1; then
-        eval `dircolors -b "$HOME/.dir_colors"`
-    fi
-
     # ls/eza: prefer eza when available with CLICOLOR
     if [ "$CLICOLOR" = 1 ] && command -v eza >/dev/null 2>&1; then
         ls_cmd="eza --group-directories-first --sort=name${ICONS:+ --icons=auto} --classify=auto"
