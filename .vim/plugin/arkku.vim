@@ -411,12 +411,14 @@ if !exists('g:vscode')
     nmap <Leader>8 <Plug>BuffetSwitch(8)
     nmap <Leader>9 <Plug>BuffetSwitch(9)
     nmap <Leader>0 <Plug>BuffetSwitch(10)
-    nnoremap <Leader>q <Esc>:bd<CR>
-    nnoremap <Leader>x <Esc>:bw!<CR>
+
+    " Quickly close stuff
+    nnoremap <Leader>x <Esc>:bd<CR>
+    nnoremap <Leader>X <Esc>:bw!<CR>
 
     " Quickfix
-    nnoremap <Leader>f <Esc>:copen<CR>
-    nnoremap <Leader>F <Esc>:cclose<CR>
+    nnoremap <Leader>q <Esc>:copen<CR>
+    nnoremap <Leader>Q <Esc>:cclose<CR>
 
     " Location List
     nnoremap <Leader>l <Esc>:lopen<CR>
@@ -437,8 +439,8 @@ if !exists('g:vscode')
     nnoremap <LocalLeader>8 8gt
     nnoremap <LocalLeader>9 9gt
     nnoremap <LocalLeader>0 10gt
-    nnoremap <LocalLeader>q <Esc>:tabclose<CR>
-    nnoremap <LocalLeader>x <Esc>:tabclose!<CR>
+    nnoremap <LocalLeader>x <Esc>:tabclose<CR>
+    nnoremap <LocalLeader>X <Esc>:tabclose!<CR>
     nnoremap <LocalLeader><Tab> gt
     nnoremap <LocalLeader><S-Tab> gT
 

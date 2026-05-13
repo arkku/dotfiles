@@ -66,8 +66,8 @@
     },
     "swift": {
       "command": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/sourcekit-lsp",
-      "filetypes": ["swift"],
-      "rootPatterns": ["Package.swift", ".git/"],
+      "filetypes": ["swift", "objective-c", "objective-cpp"],
+      "rootPatterns": ["Package.swift", "*.xcworkspace", "*.xcodeproj", ".git/"],
       "initializationOptions": {}
     },
     "zls": {

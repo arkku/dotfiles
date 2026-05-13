@@ -134,12 +134,12 @@ Some additional bindings in the style of the "unimpaired" plugin:
 These bindings are for the normal mode, preceded by the leader (<kbd>\\</kbd>):
 
 * `1` – `0` – switch to vim-buffet buffer 1–10
-* `f` – open quickfix if there are warnings/errors
-* `F` – close quickfix
+* `q` – open quickfix if there are warnings/errors
+* `Q` – close quickfix
 * `l` – open location list
 * `L` – close location list
-* `q` – delete buffer
-* `x` – wipeout buffer
+* `x` – delete buffer
+* `X` – wipeout buffer
 * `d` – jump to definition of thing under cursor (if coc installed)
 * `i` – jump to implementation of thing under cursor (if coc installed)
 * `r` – show references to the thing under cursor (if coc installed)
@@ -147,9 +147,6 @@ These bindings are for the normal mode, preceded by the leader (<kbd>\\</kbd>):
 * `o` – show code outline (if coc installed)
 * `c` – coc code action (if installed)
 * `R` – coc rename (if installed)
-* `s` – run [Syntastic](https://github.com/vim-syntastic/syntastic) check, and
-  open the location list if there are errors
-* `S` – reset Syntastic, clearing all errors
 * `t` – toggle a split terminal console (the session remains even if toggled
   away from view) – Neovim only
 * `T` – split and open a terminal with the given command
@@ -163,8 +160,8 @@ These bindings are for the normal mode, preceded by the leader (<kbd>\\</kbd>):
 These bindings are for the normal mode, preceded by the local leader (<kbd>Space</kbd>):
 
 * `1` – `0` – switch to tab 1–10
-* `q` – close tab
-* `x` – force close tab
+* `x` – close tab
+* `X` – force close tab
 * <kbd>Tab</kbd> – go to next tab
 * <kbd>Shift</kbd> + <kbd>Tab</kbd> – go to previous tab
 * `w` – open warnings/errors list (coc, or location list)
