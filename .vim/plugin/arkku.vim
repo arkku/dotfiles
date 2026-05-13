@@ -102,6 +102,21 @@ function! HasCloser()
     endif
 endfunction
 
+" If there are multiple windows, cycle them; otherwise cycle buffers. The
+" argument is 'n', 'p', 'n!', or 'p!' (corresponds to ':bn', ':bp', etc.)
+function! BufferCycleTab(direction)
+    let wincount = winnr("$")
+    if wincount > 1
+        if a:direction == "p" || a:direction == "p!"
+            exe "wincmd W"
+        else
+            exe "wincmd w"
+        endif
+    else
+        exe "silent! b" . a:direction
+    endif
+endfunction
+
 " Return in insert mode: accept autocompletion (endwise- and closer-compatible)
 let g:endwise_no_mappings=1
 let g:closer_no_mappings=1
@@ -321,6 +336,9 @@ let g:ruby_minlines=100
 
 silent! set virtualedit=onemore,block
 
+" Double-Esc to clear highlight of previous search
+nnoremap <Esc><Esc> <Esc>:silent! noh<CR>:<BS><Esc>
+
 " ^? as backspace
 noremap! <C-?> <C-H>
 
@@ -374,10 +392,15 @@ vnoremap p "_dP
 inoremap <C-_> <C-R>=printf("%",)<Left><Left><Left>
 cnoremap <C-_> <C-R>=findfile("",";")<Left><Left><Left><Left><Left><Left>
 
-"if empty(mapcheck('<C-S>', 'i'))
-"endif
 
-nnoremap [oy <Esc>:
+" Map C-E to the old C-I (same as Tab), so C-O and C-E jump back and
+" forward in the jumplist (O and E are adjacent i Dvorak, in QWERTY they
+if empty(mapcheck('<C-E>', 'n'))
+    nnoremap <silent> <C-E> <C-I>
+endif
+
+" Also map C-S-O to the inverse of C-O (not supported in many terminals)
+nnoremap <silent> <C-S-O> <C-I>
 
 if !exists('g:vscode')
     set timeoutlen=400
@@ -390,6 +413,19 @@ if !exists('g:vscode')
     " (note that on Dvorak C-O and C-Q are vertically adjacent)
     nnoremap <C-Q> <C-I>
 
+    " S-Tab in normal mode is the inverse of Tab (i.e., jumplist backward)
+    nnoremap <silent> <S-Tab> <C-O>
+
+    " \t / \T cycle windows if there are several, otherwise cycle buffers
+    nnoremap <silent> <Leader>t <Esc>:call BufferCycleTab("n")<CR>
+    nnoremap <silent> <Leader>T <Esc>:call BufferCycleTab("p")<CR>
+
+    " \y / \p to yank/put to/from the system clipboard
+    if empty(mapcheck('<Leader>y', 'n')) && empty(mapcheck('<Leader>p', 'n'))
+        noremap <Leader>y "+y
+        noremap <Leader>p "+p
+    endif
+
     nnoremap [oa <Esc>:set formatoptions +=a<CR>
     nnoremap ]oa <Esc>:set formatoptions -=a<CR>
     nnoremap [ot <Esc>:set formatoptions +=t<CR>
@@ -399,7 +435,7 @@ if !exists('g:vscode')
     inoremap <C-Del> <C-O>dw
 
     nmap <silent> <C-N> :Lexplore<CR>
-
+ 
     " \1 to \0 switch buffers (vim-buffet)
     nmap <Leader>1 <Plug>BuffetSwitch(1)
     nmap <Leader>2 <Plug>BuffetSwitch(2)
@@ -407,7 +443,7 @@ if !exists('g:vscode')
     nmap <Leader>4 <Plug>BuffetSwitch(4)
     nmap <Leader>5 <Plug>BuffetSwitch(5)
     nmap <Leader>6 <Plug>BuffetSwitch(6)
-    nmap <Leader>7 <Plug>BuffetSwitch(7)
+    nmap <Leader>7 <Plug>BuffeSwitch(7)
     nmap <Leader>8 <Plug>BuffetSwitch(8)
     nmap <Leader>9 <Plug>BuffetSwitch(9)
     nmap <Leader>0 <Plug>BuffetSwitch(10)
@@ -424,7 +460,7 @@ if !exists('g:vscode')
     nnoremap <Leader>l <Esc>:lopen<CR>
     nnoremap <Leader>L <Esc>:lclose<CR>
 
-    " Space tab to open a new tab
+    " \ tab to open a new tab
     nnoremap <Leader><Tab> <Esc>:tabnew<CR>
     nnoremap <Leader><S-Tab> <Esc>:tabclose<CR>
 
@@ -441,12 +477,13 @@ if !exists('g:vscode')
     nnoremap <LocalLeader>0 10gt
     nnoremap <LocalLeader>x <Esc>:tabclose<CR>
     nnoremap <LocalLeader>X <Esc>:tabclose!<CR>
+
+    " Space tab to cycle tabs
     nnoremap <LocalLeader><Tab> gt
     nnoremap <LocalLeader><S-Tab> gT
 
-    " Shortcuts to open a split terminal
-    nnoremap <Leader>t <Esc>:split term://$SHELL<CR>A
-    nnoremap <Leader>T <Esc>:split term://
+    " \` to open a split terminal (plain vim fallback; replaced below for nvim)
+    nnoremap <Leader>` <Esc>:split term://$SHELL<CR>A
 
     if has('nvim')
         au TermOpen * setlocal nonumber norelativenumber nospell nofoldenable nolist signcolumn=no
@@ -455,7 +492,7 @@ if !exists('g:vscode')
             bdelete!
         endfunction
 
-        " On nvim, replace the \t terminal with a toggleable one
+        " On nvim, replace the \` terminal with a toggleable one
         function! OpenTerminal(identifier)
             let identifier = 't_' . a:identifier
 
@@ -486,15 +523,10 @@ if !exists('g:vscode')
         endfunction
 
         "nnoremap <C-T> :call OpenTerminal('console')<CR>
-        nnoremap <Leader>t :call OpenTerminal('console')<CR>
+        nnoremap <Leader>` :call OpenTerminal('console')<CR>
 
         let g:yoinkSavePersistently=1
         silent! set shada=!,'100,<50,s10,h
-
-        " Paste from system clipboard (in nvim it generally just works to paste
-        " directly, so this kind of inverts the behaviour since Ctrl-R is
-        " affected by formatting) - mnemonic 'Baste'
-        inoremap <C-B> <C-R>+
     endif
 
     let g:yoinkSwapClampAtEnds=0
@@ -544,13 +576,6 @@ if !exists('g:vscode')
     silent! tnoremap <Esc> <C-\><C-N>
     silent! tnoremap <Esc><Esc> <Esc>
 
-    " Paste from system clipboard in insert mode with C-B (mnemonic: Baste)
-    if !has('nvim') && empty(mapcheck('<C-B>', 'i'))
-        " Note that currently the mapcheck fails since we map C-B above, but
-        " I'm just leaving this here for future reference
-        set pastetoggle=<F10>
-        inoremap <C-B> <F10><C-R>+<F10>
-    endif
 endif
 
 " Always reset the chgwin to accommodate both :Lexplore and :Explore
@@ -599,11 +624,14 @@ let g:Tlist_Enable_Fold_Column=0
 let g:Tlist_Compact_Format=1
 
 " Fallback if there is no fzf
-nmap <LocalLeader>z <C-P>
+nmap <Leader>f <C-P>
 
-" cd to current file's directory
-command! CD lcd %:p:h
-command! CDC cd %:p:h
+" cd to given dir, or current file's dir (CD = window-local lcd, CD! = global cd)
+function! s:ArkkuCD(bang, args) abort
+    let l:dir = empty(a:args) ? expand('%:p:h') : a:args
+    execute (a:bang ? 'cd' : 'lcd') fnameescape(l:dir)
+endfunction
+command! -bang -nargs=? -complete=dir CD call s:ArkkuCD(<bang>0, <q-args>)
 
 command! Fmt :call CocActionAsync('format')
 
@@ -621,18 +649,36 @@ if executable('fzf')
     runtime! plugin/fzf.vim
 
     if exists('g:loaded_fzf')
-        " Space z to open fuzzy file finder
-        if executable('fd')
-            nnoremap <LocalLeader>z <Esc>:silent! NERDTREEClose<CR>:call fzf#run(fzf#wrap({'source': 'fd -c never -d 5 -- . 2>/dev/null'}))<CR>
-        elseif executable('rg')
-            nnoremap <LocalLeader>z <Esc>:silent! NERDTREEClose<CR>:call fzf#run(fzf#wrap({'source': 'rg --color never --max-depth 4 -l -- ""'}))<CR>
-        else
-            " Space z to open FZF
-            nnoremap <LocalLeader>z <Esc>:silent! NERDTREEClose<CR>:FZF<CR>
+        " \f to open fuzzy file finder (fzf.vim :Files, with preview)
+        nnoremap <Leader>f <Esc>:silent! NERDTREEClose<CR>:Files<CR>
+        " \F to open fuzzy git file finder (fzf.vim :GFiles, repo-tracked only)
+        nnoremap <Leader>F <Esc>:silent! NERDTREEClose<CR>:GFiles<CR>
+
+        " \s / \S for :Lines (fuzzy search across all loaded buffers)
+        if empty(mapcheck('<Leader>s', 'n'))
+            nnoremap <Leader>s :Lines<CR>
+        endif
+        if empty(mapcheck('<Leader>S', 'n'))
+            nnoremap <Leader>S :execute 'Lines ' . expand('<cword>')<CR>
+        endif
+
+        " \a / \A for :Rg (interactive ripgrep)
+        if empty(mapcheck('<Leader>a', 'n'))
+            nnoremap <Leader>a :Rg<CR>
+        endif
+        if empty(mapcheck('<Leader>A', 'n'))
+            nnoremap <Leader>A :execute 'Rg ' . expand('<cword>')<CR>
+        endif
+    elseif executable('rg')
+        " Fallback when fzf.vim is not loaded: :silent grep!
+        if empty(mapcheck('<Leader>a', 'n'))
+            nnoremap <Leader>a :silent grep!<Space>
+        endif
+        if empty(mapcheck('<Leader>A', 'n'))
+            nnoremap <Leader>A :execute 'silent grep! ' . shellescape(expand('<cword>')) <Bar> redraw! <Bar> botright cwindow<CR>
         endif
     endif
 
-    nnoremap <Leader>/ <Esc>:Lines<CR>
     nnoremap <LocalLeader>/ <Esc>:BLines<CR>
     nnoremap <LocalLeader>h <Esc>:History<CR>
 

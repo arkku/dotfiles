@@ -90,35 +90,38 @@ anymore).
   available, otherwise the normal Vim behaviour)
 * arrows (with Ctrl and Alt) escape sequences explicitly bound for various
   different terminals (not in Neovim)
-* <kbd>Alt</kbd>-<kbd>arrow</kbd> mapped the same way as in macOS, i.e., skip
+* <kbd>Alt</kbd>–<kbd>arrow</kbd> mapped the same way as in macOS, i.e., skip
   words left/right, or to beginning/end of line
 * <kbd>Ctrl</kbd>–<kbd>left</kbd> and <kbd>Ctrl</kbd>–<kbd>right</kbd> mapped
   the same way as in macOS, i.e., line beginning/end
 * <kbd>Ctrl</kbd>–<kbd>up</kbd> and <kbd>Ctrl</kbd>–<kbd>down</kbd> move
   visually, i.e., lines on screen instead of lines in file
-* <kbd>Ctrl</kbd>-<kbd>A</kbd> – go to the beginning of line
-* <kbd>Ctrl</kbd>-<kbd>E</kbd> – go to the end of line (unless pop-up
-  completion menu is open, in which case close it)
+* <kbd>Ctrl</kbd>–<kbd>A</kbd> – (insert) go to the beginning of line
+* <kbd>Ctrl</kbd>–<kbd>E</kbd> – (insert) go to the end of line (unless pop-up
+* <kbd>Ctrl</kbd>–<kbd>E</kbd> – (normal) jump to the next item in the jump
+  list (the inverse of <kbd>Ctrl</kbd>–<kbd>O</kbd>)
 * <kbd>Ctrl</kbd>–<kbd>B</kbd> – in insert mode, insert the character below the
   cursor (the default mapping for <kbd>Ctrl</kbd>–<kbd>E</kbd>, but even the
   mnemonic makes more sense now)
-* <kbd>Ctrl</kbd>–<kbd>B</kbd> – toggle paste mode, paste, and toggle paste
-  mode again (Vim only)
-* <kbd>Esc</kbd> – exit integrated terminal (press twice quickly to send to
-* <kbd>Esc</kbd> <kbd>Esc</kbd> – in insert mode, clear highlighting of
+* <kbd>Esc</kbd> <kbd>Esc</kbd> – in normal mode, clear highlighting of
   previous search
-* <kbd>Ctrl</kbd>-<kbd>\_</kbd> – various bindings in different modes, not
+* <kbd>Ctrl</kbd>–<kbd>\_</kbd> – various bindings in different modes, not
   settled on a final choice yet
 * <kbd>Ctrl</kbd>–<kbd>J</kbd> and <kbd>Ctrl</kbd>–<kbd>K</kbd> right after
   putting text in normal change the text that was put by cycling put history
   (depends on Yoink plugin)
-* <kbd>Ctrl</kbd>-<kbd>Q</kbd> – in normal mode works as the original
+* <kbd>Ctrl</kbd>–<kbd>Q</kbd> – in normal mode works as the original
   <kbd>Tab</kbd> binding (since usually I use a configuration that rebinds it),
   i.e., jump to newer cursor position (such as after jumping to an older
   position with <kbd>Ctrl</kbd>–<kbd>O</kbd>, which is also conveniently
   adjacent in Dvorak)
-* <kbd>Ctrl</kbd>-<kbd>Q</kbd> – in insert mode inserts the previously inserted
+* <kbd>Ctrl</kbd>–<kbd>Q</kbd> – in insert mode inserts the previously inserted
   text, i.e., the original behaviour of <kbd>Ctrl</kbd>–<kbd>A</kbd>
+* <kbd>Ctrl</kbd>–<kbd>N</kbd> – in normal mode, open `:Lexplore` (netrw
+  side-panel file explorer), overriding the default cursor-down
+* <kbd>Shift</kbd>–<kbd>Tab</kbd> – in normal mode, jump to the older cursor
+  position (equivalent to <kbd>Ctrl</kbd>–<kbd>O</kbd>), i.e., the inverse of
+  the default <kbd>Tab</kbd> (same as <kbd>Ctrl</kbd>–<kbd>I</kbd>)
 
 #### Unimpaired-style Bindings
 
@@ -140,20 +143,22 @@ These bindings are for the normal mode, preceded by the leader (<kbd>\\</kbd>):
 * `L` – close location list
 * `x` – delete buffer
 * `X` – wipeout buffer
-* `d` – jump to definition of thing under cursor (if coc installed)
-* `i` – jump to implementation of thing under cursor (if coc installed)
-* `r` – show references to the thing under cursor (if coc installed)
-* `e` – show errors/diagnostics (if coc installed)
-* `o` – show code outline (if coc installed)
-* `c` – coc code action (if installed)
-* `R` – coc rename (if installed)
-* `t` – toggle a split terminal console (the session remains even if toggled
-  away from view) – Neovim only
-* `T` – split and open a terminal with the given command
-* `u` – open function search
-* `/` – open `fzf` search for lines in open buffers (if plugin installed)
+* `t` / `T` – cycle windows if there are several, otherwise cycle buffers
+  (`T` reverses direction)
+* `` ` `` – toggle a split terminal console (the session remains even if
+  toggled away from view) – Neovim only
+* `f` – open `fzf` fuzzy search for files (via `:Files`, with preview); uses
+  CtrlP as a fallback if `fzf.vim` is not loaded
+* `F` – open `fzf` fuzzy search for git-tracked files only (via `:GFiles`)
+* `s` – open `fzf` `:Lines` search across all loaded buffers
+* `S` – as `s`, pre-filled with the word under the cursor
+* `a` – open `fzf` `:Rg` (interactive ripgrep across the project); falls back
+  to `:silent grep!` if `fzf.vim` is not loaded
+* `A` – as `a`, pre-filled with the word under the cursor
+* `y` – yank to the system clipboard (also in visual mode)
+* `p` – put from the system clipboard
 * <kbd>Tab</kbd> – create a new tab
-* <kbd>Shift</kbd> + <kbd>Tab</kbd> – close tab
+* <kbd>Shift</kbd>-<kbd>Tab</kbd> – close tab
 
 #### Local Leader Bindings
 
@@ -168,16 +173,45 @@ These bindings are for the normal mode, preceded by the local leader (<kbd>Space
 * `W` – close warnings/errors list
 * `h` – open `fzf` fuzzy search for "recently opened files" (if plugin installed)
 * `/` – open `fzf` search for lines in this buffer
-* `s` – open search for symbols (if coc is installed)
 * `t` – open tag search (if fzf plugin is installed)
 * `T` – open tag search (if CtrlP plugin is installed)
-* `z` – open `fzf` fuzzy search for files (powered by `fd` if installed)
+
+#### CoC Bindings
+
+These bindings are active when [coc.nvim](https://github.com/neoclide/coc.nvim)
+is installed:
+
+* `gd` – jump to definition of thing under cursor
+* `gy` – jump to type definition
+* `gi` – jump to implementation
+* `gr` – show references
+* `gh` – show documentation/hover (for `vim` files, opens `:help` instead)
+* <kbd>Ctrl</kbd>-<kbd>S</kbd> – (normal and visual) expand the visual
+  selection to the next larger semantic range, as reported by the language
+  server (an LSP-driven "expand region")
+* `if` / `af` – text object for the inside/around of a function
+* `ic` / `ac` – text object for the inside/around of a class
+
+Leader bindings (preceded by <kbd>\\</kbd>):
+
+* `d` – jump to definition of thing under cursor
+* `i` – jump to implementation
+* `r` – show references
+* `e` – show errors/diagnostics
+* `o` – show code outline
+* `c` – code action
+* `R` – rename symbol
+
+Local leader bindings (preceded by <kbd>Space</kbd>):
+
+* `s` – open search for symbols
 
 #### Commands
 
-* `CD` – change the current window's working directory to that of the current
-  file
-* `CD!` – change every window's working directory to that of the current file
+* `CD [dir]` – change the current window's working directory to `dir`, or to
+  the directory of the current file if no argument is given
+* `CD! [dir]` – as `CD`, but change every window's working directory (not just
+  the current one)
 
 ### Shell
 

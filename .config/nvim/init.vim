@@ -62,9 +62,6 @@ if ($TERM =~ '.*-256color.*' && ($TERM_PROGRAM != "Apple_Terminal" || !empty($TM
     set list
 endif
 
-" Double-Esc to clear highlight of previous search
-nnoremap <Esc><Esc> <Esc>:silent! noh<CR>:<BS><Esc>
-
 " Check for updates on focus
 au FocusGained * :checktime
 
