@@ -665,20 +665,20 @@ if executable('fzf')
             nnoremap <Leader>S :execute 'Lines ' . expand('<cword>')<CR>
         endif
 
-        " \a / \A for :Rg (interactive ripgrep)
-        if empty(mapcheck('<Leader>a', 'n'))
-            nnoremap <Leader>a :Rg<CR>
+        " \g / \G for :Rg (interactive ripgrep)
+        if empty(mapcheck('<Leader>g', 'n'))
+            nnoremap <Leader>g :Rg<CR>
         endif
-        if empty(mapcheck('<Leader>A', 'n'))
-            nnoremap <Leader>A :execute 'Rg ' . expand('<cword>')<CR>
+        if empty(mapcheck('<Leader>G', 'n'))
+            nnoremap <Leader>G :execute 'Rg ' . expand('<cword>')<CR>
         endif
     elseif executable('rg')
         " Fallback when fzf.vim is not loaded: :silent grep!
-        if empty(mapcheck('<Leader>a', 'n'))
-            nnoremap <Leader>a :silent grep!<Space>
+        if empty(mapcheck('<Leader>g', 'n'))
+            nnoremap <Leader>g :silent grep!<Space>
         endif
-        if empty(mapcheck('<Leader>A', 'n'))
-            nnoremap <Leader>A :execute 'silent grep! ' . shellescape(expand('<cword>')) <Bar> redraw! <Bar> botright cwindow<CR>
+        if empty(mapcheck('<Leader>G', 'n'))
+            nnoremap <Leader>G :execute 'silent grep! ' . shellescape(expand('<cword>')) <Bar> redraw! <Bar> botright cwindow<CR>
         endif
     endif
 

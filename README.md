@@ -150,13 +150,14 @@ These bindings are for the normal mode, preceded by the leader (<kbd>\\</kbd>):
 * `f` – open `fzf` fuzzy search for files (via `:Files`, with preview); uses
   CtrlP as a fallback if `fzf.vim` is not loaded
 * `F` – open `fzf` fuzzy search for git-tracked files only (via `:GFiles`)
+* `g` – open `fzf` `:Rg` (interactive ripgrep across the project); falls back
+  to `:silent grep!` if `fzf.vim` is not loaded
+* `G` – open `fzf` `:Rg` to search among uses of the word under the cursor
 * `s` – open `fzf` `:Lines` search across all loaded buffers
 * `S` – as `s`, pre-filled with the word under the cursor
-* `a` – open `fzf` `:Rg` (interactive ripgrep across the project); falls back
-  to `:silent grep!` if `fzf.vim` is not loaded
-* `A` – as `a`, pre-filled with the word under the cursor
-* `y` – yank to the system clipboard (also in visual mode)
-* `p` – put from the system clipboard
+* `y` – yank to the system clipboard (also in visual mode, in normal mode
+  use like plain `y`, e.g. `\yy` yanks the current line)
+* `p` – put/paste from the system clipboard
 * <kbd>Tab</kbd> – create a new tab
 * <kbd>Shift</kbd>-<kbd>Tab</kbd> – close tab
 
