@@ -648,6 +648,9 @@ if executable('fzf')
 
     runtime! plugin/fzf.vim
 
+    " Close the fzf dialogs with Esc
+    autocmd FileType fzf tnoremap <buffer> <Esc> <Esc>
+
     if exists('g:loaded_fzf')
         " \f to open fuzzy file finder (fzf.vim :Files, with preview)
         nnoremap <Leader>f <Esc>:silent! NERDTREEClose<CR>:Files<CR>

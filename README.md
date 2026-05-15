@@ -80,7 +80,7 @@ Some other general settings done:
 Many settings assume that my [plugin
 collection](https://github.com/arkku/vim-plugin-collection/) is installed, and
 some plugin-related settings are in that collection (and not duplicated here
-anymore).
+anymore). But this config should work without the plugin collection.
 
 #### General Bindings
 
