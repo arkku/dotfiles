@@ -1,8 +1,17 @@
+if !exists('g:did_coc_loaded')
+  finish
+endif
+
 nmap <silent> gd <Plug>(coc-definition)
-nmap <silent> gy <Plug>(coc-type-definition)
-nmap <silent> gi <Plug>(coc-implementation)
-nmap <silent> gr <Plug>(coc-references)
 nmap <silent> gh :call <SID>show_documentation()<CR>
+
+if !has('nvim-0.11')
+    nmap <silent> grr <Plug>(coc-references)
+    nmap <silent> gri <Plug>(coc-implementation)
+    nmap <silent> grt <Plug>(coc-type-definition)
+    nmap <silent> grn <Plug>(coc-rename)
+    nmap <silent> gra <Plug>(coc-codeaction)
+endif
 
 nmap <silent> <Leader>c <Plug>(coc-codeaction)
 nmap <silent> <Leader>d <Plug>(coc-definition)

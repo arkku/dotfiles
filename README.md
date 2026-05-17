@@ -183,13 +183,16 @@ These bindings are active when [coc.nvim](https://github.com/neoclide/coc.nvim)
 is installed:
 
 * `gd` – jump to definition of thing under cursor
-* `gy` – jump to type definition
-* `gi` – jump to implementation
-* `gr` – show references
 * `gh` – show documentation/hover (for `vim` files, opens `:help` instead)
+* `grt` – jump to type definition
+* `gri` – jump to implementation
+* `grr` – show references
 * <kbd>Ctrl</kbd>-<kbd>S</kbd> – (normal and visual) expand the visual
   selection to the next larger semantic range, as reported by the language
   server (an LSP-driven "expand region")
+
+Text objects:
+
 * `if` / `af` – text object for the inside/around of a function
 * `ic` / `ac` – text object for the inside/around of a class
 
@@ -206,6 +209,24 @@ Leader bindings (preceded by <kbd>\\</kbd>):
 Local leader bindings (preceded by <kbd>Space</kbd>):
 
 * `s` – open search for symbols
+
+#### Aerial bindings
+
+These bindings are active when
+[Aerial](https://github.com/stevearc/aerial.nvim) is loaded. Aerial benefits
+from installing
+[nvim-web-devicons](https://github.com/nvim-tree/nvim-web-devicons.git).
+(These are not part of my plugin collection since no one version fits all nvim
+versions that I have in use across different systems.)
+
+Normal mode bindings:
+
+* `[[` - jump to the previous Aerial symbol
+* `]]` - jump to the next Aerial symbol
+
+Leader bindings (preceded by <kbd>\\</kbd>):
+
+* `a` - toggle Aerial open/closed
 
 #### Commands
 
@@ -714,19 +735,8 @@ export PATH="/Library/Developer/Toolchains/swift-latest.xctoolchain/usr/bin:$PAT
 
 ### Additional Development Tools
 
-* [sourcekit-lsp](https://github.com/apple/sourcekit-lsp)
 * [universal-ctags](https://github.com/universal-ctags/ctags)
 * [ccls](https://github.com/MaskRay/ccls)
 * [solargraph](https://github.com/castwide/solargraph) (gem)
 * [solargraph-syntax-suggest](https://github.com/CKolkey/solargraph-syntax-suggest) (gem)
-
-``` vim
-:CocInstall coc-json
-:CocInstall coc-html
-:CocInstall coc-css
-:CocInstall coc-yaml
-:CocInstall coc-sourcekit
-:CocInstall coc-tsserver
-:CocInstall coc-solargraph
-```
 

@@ -64,7 +64,7 @@ set formatoptions-=t
 set splitbelow          " Split new windows below current
 set noerrorbells
 set scrolloff=4         " Scroll before reaching screen edge
-set cino=:0l1           " Do not indent case labels in switch or {} of case
+"set cino=:0l1           " Do not indent case labels in switch or {} of case
 set cino+=g0            " Do not indent C++ scope declarations
 set cino+=t0            " Do not indent function return type
 set cino+=(0w1          " Do not indent new lines inside parentheses
@@ -94,6 +94,21 @@ function! IsCocJumpable()
     endif
 endfunction
 
+let g:SuperTabMappingForward="<C-N>"
+let g:SuperTabMappingBackward="<C-P>"
+imap <silent><expr> <Tab> PumVisible() ? coc#pum#confirm() : (IsCocJumpable() ? "\<C-J>" : "\<Tab>")
+imap <silent><expr> <S-Tab> PumVisible() ? coc#pum#cancel() : (IsCocJumpable() ? "\<C-K>" : "\<S-Tab>")
+"imap <silent><expr> <Esc> PumVisible() ? coc#pum#cancel() : "\<Esc>"
+
+" Map C-E to end of line or close any open pop-up menu
+inoremap <silent><expr> <C-E> PumVisible() ? coc#pum#cancel() : "\<End>"
+inoremap <C-B> <C-E>
+" ^- map the unused C-B to the old C-E, even the mnemonic (below) makes sense
+
+let g:SuperTabDefaultCompletionType="context"
+let g:SuperTabContextDefaultCompletionType="<C-N>"
+let g:SuperTabLongestEnhanced=1
+
 function! HasCloser()
     if exists("g:loaded_endwise") && exists('*closer#close')
         return 1
@@ -102,37 +117,10 @@ function! HasCloser()
     endif
 endfunction
 
-" If there are multiple windows, cycle them; otherwise cycle buffers. The
-" argument is 'n', 'p', 'n!', or 'p!' (corresponds to ':bn', ':bp', etc.)
-function! BufferCycleTab(direction)
-    let wincount = winnr("$")
-    if wincount > 1
-        if a:direction == "p" || a:direction == "p!"
-            exe "wincmd W"
-        else
-            exe "wincmd w"
-        endif
-    else
-        exe "silent! b" . a:direction
-    endif
-endfunction
-
-" Return in insert mode: accept autocompletion (endwise- and closer-compatible)
 let g:endwise_no_mappings=1
 let g:closer_no_mappings=1
 "imap <silent><expr> <CR> PumVisible() ? coc#pum#confirm() : HasCloser() ? closer#close(EndwiseAppend(EunuchNewLine("\r"))) : "\<CR>"
 imap <silent><expr> <CR> HasCloser() ? closer#close(EndwiseAppend(EunuchNewLine("\r"))) : "\<CR>"
-
-let g:SuperTabMappingForward="<C-N>"
-let g:SuperTabMappingBackward="<C-P>"
-imap <silent><expr> <Tab> PumVisible() ? coc#pum#confirm() : (IsCocJumpable() ? "\<C-J>" : "\<Tab>")
-imap <silent><expr> <S-Tab> PumVisible() ? coc#pum#cancel() : (IsCocJumpable() ? "\<C-K>" : "\<S-Tab>")
-"imap <silent><expr> <Esc> PumVisible() ? coc#pum#cancel() : "\<Esc>"
-
-"let g:SuperTabDefaultCompletionType="<C-N>"
-let g:SuperTabDefaultCompletionType="context"
-let g:SuperTabContextDefaultCompletionType="<C-N>"
-let g:SuperTabLongestEnhanced=1
 
 function! GitStatuslineBranch()
     if exists('g:loaded_fugitive')
@@ -170,6 +158,19 @@ function! SyntaxErrorsStatus()
             if get(info, 'warning', 0)
                 call add(msgs, 'W' . info['warning'])
             endif
+            let status = ' ' . join(msgs, ' ')
+        endif
+    elseif has('nvim-0.9')
+        let msgs = []
+        let errors = luaeval('vim.tbl_count(vim.tbl_filter(function(d) return d.severity == 1 end, vim.diagnostic.get(0)))')
+        let warnings = luaeval('vim.tbl_count(vim.tbl_filter(function(d) return d.severity == 2 end, vim.diagnostic.get(0)))')
+        if errors > 0
+            call add(msgs, 'E' . errors)
+        endif
+        if warnings > 0
+            call add(msgs, 'W' . warnings)
+        endif
+        if !empty(msgs)
             let status = ' ' . join(msgs, ' ')
         endif
     endif
@@ -381,11 +382,6 @@ noremap! <C-A> <Home>
 " Map the unused C-Q to the old C-A
 noremap! <C-Q> <C-A>
 
-" Map C-E to end of line or close any open pop-up menu
-inoremap <silent><expr> <C-E> PumVisible() ? coc#pum#cancel() : "\<End>"
-inoremap <C-B> <C-E>
-" ^- map the unused C-B to the old C-E, even the mnemonic makes more sense
-"
 " Make p in visual mode paste over the selection without yanking it
 vnoremap p "_dP
 
@@ -415,6 +411,21 @@ if !exists('g:vscode')
 
     " S-Tab in normal mode is the inverse of Tab (i.e., jumplist backward)
     nnoremap <silent> <S-Tab> <C-O>
+
+    " If there are multiple windows, cycle them; otherwise cycle buffers. The
+    " argument is 'n', 'p', 'n!', or 'p!' (corresponds to ':bn', ':bp', etc.)
+    function! BufferCycleTab(direction)
+        let wincount = winnr("$")
+        if wincount > 1
+            if a:direction == "p" || a:direction == "p!"
+                exe "wincmd W"
+            else
+                exe "wincmd w"
+            endif
+        else
+            exe "silent! b" . a:direction
+        endif
+    endfunction
 
     " \t / \T cycle windows if there are several, otherwise cycle buffers
     nnoremap <silent> <Leader>t <Esc>:call BufferCycleTab("n")<CR>
@@ -549,20 +560,24 @@ if !exists('g:vscode')
     nmap <C-K> <Plug>(YoinkPostPasteSwapForward)
 
     " ]w and [w to jump to next/prev warning/error (coc, ale, llist)
-    nmap <silent><expr> ]w (exists('coc_enabled') && coc_enabled && !(exists('b:coc_enabled') && !b:coc_enabled)) ? "\<Plug>(coc-diagnostic-next)" : (exists('ale_enabled') && ale_enabled) ? "\<Plug>(ale_next_wrap)" : ":lnext\<CR>"
-    nmap <silent><expr> [w (exists('coc_enabled') && coc_enabled && !(exists('b:coc_enabled') && !b:coc_enabled)) ? "\<Plug>(coc-diagnostic-prev)" : (exists('ale_enabled') && ale_enabled) ? "\<Plug>(ale_previous_wrap)" : ":lprevious\<CR>"
+    nmap <silent><expr> ]w exists('g:coc_enabled') && !(exists('b:coc_enabled') && !b:coc_enabled) ? "\<Plug>(coc-diagnostic-next)" : exists('g:ale_enabled') ? "\<Plug>(ale_next_wrap)" : has('nvim-0.6') ? "\<Cmd>lua vim.diagnostic.jump({count=1})\<CR>" : "\<Cmd>lnext\<CR>"
+    nmap <silent><expr> [w exists('g:coc_enabled') && !(exists('b:coc_enabled') && !b:coc_enabled) ? "\<Plug>(coc-diagnostic-prev)" : exists('g:ale_enabled') ? "\<Plug>(ale_previous_wrap)" : has('nvim-0.6') ? "\<Cmd>lua vim.diagnostic.jump({count=-1})\<CR>" : "\<Cmd>lprevious\<CR>"
 
     " space + w and space + W to open/close list of diagnostics (or location list)
-    nmap <silent><expr> <LocalLeader>w (exists('coc_enabled') && coc_enabled) ? ":CocList diagnostics<CR>" : ":lopen\<CR>"
-    nmap <silent><expr> <LocalLeader>W (exists('coc_enabled') && coc_enabled) ? ":CocList diagnostics<CR>" : ":lclose\<CR>"
+    nmap <silent><expr> <LocalLeader>w exists('g:coc_enabled') ? "\<Cmd>CocList diagnostics\<CR>" : has('nvim-0.6') ? "\<Cmd>lua vim.diagnostic.setloclist()\<CR>\<Cmd>lopen\<CR>" : "\<Cmd>lopen\<CR>"
+    nmap <silent><expr> <LocalLeader>W exists('g:coc_enabled') ? "\<Cmd>CocList diagnostics\<CR>" : "\<Cmd>lclose\<CR>"
 
     function! ShowDocumentationForWordUnderCursor()
-        if exists('g:coc_enabled') && g:coc_enabled && (!exists('b:coc_enabled') || b:coc_enabled) && CocAction('doHover')
-            return
-        elseif exists('g:ale_enabled') && g:ale_enabled && (!exists('b:ale_enabled') || b:ale_enabled)
-            execute "ALEHover"
+        if &filetype == 'vim' || &filetype == 'help'
+            execute 'h ' . expand('<cword>')
+        elseif exists('g:coc_enabled') && (!exists('b:coc_enabled') || b:coc_enabled)
+            call CocAction('doHover')
+        elseif exists('g:ale_enabled') && (!exists('b:ale_enabled') || b:ale_enabled)
+            execute 'ALEHover'
+        elseif has('nvim-0.6')
+            lua vim.lsp.buf.hover()
         else
-            execute "normal! K"
+            execute 'normal! K'
         endif
     endfunction
 
