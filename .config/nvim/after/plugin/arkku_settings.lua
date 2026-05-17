@@ -18,6 +18,7 @@ vim.api.nvim_create_autocmd("BufReadPost", {
             diff = true,
             wdiff = true,
             gitsendemail = true,
+            mail = true,
         }
 
         local ft = vim.bo[event.buf].filetype
@@ -93,32 +94,24 @@ vim.api.nvim_create_autocmd('FileType', {
 
 local lsp_capabilities = vim.lsp.protocol.make_client_capabilities()
 
--- blink completion
+-- blink completion (if coc.nvim not loaded)
 local ok, blink = pcall(require, 'blink.cmp')
-if ok then
+if ok and not vim.g.did_coc_loaded then
     if vim.g.loaded_supertab then
         -- Remove supertab mappings (they don't work with blink)
-        vim.keymap.set('i', '<Tab>', '<Tab>')
-        vim.keymap.set('i', '<C-n>', '<C-n>')
-        vim.keymap.set('i', '<C-p>', '<C-p>')
+        vim.keymap.set('i', '<Tab>', '<Tab>',  { noremap = true, silent = true })
+        vim.keymap.set('i', '<C-n>', '<C-n>', { noremap = true, silent = true })
+        vim.keymap.set('i', '<C-p>', '<C-p>', { noremap = true, silent = true })
     else
         -- Prevent supertab from loading
         vim.g.loaded_supertab = 1
     end
 
-    -- 'default' for mappings similar to built-in completions (C-y to accept)
-    -- 'super-tab' for mappings similar to vscode (tab to accept)
-    -- 'enter' for enter to accept
-    -- 'none' for no mappings
-    --
-    -- All presets have the following mappings:
-    -- C-space: Open menu or open docs if already open
-    -- C-n/C-p or Up/Down: Select next/previous item
-    -- C-e: Hide menu
-    -- C-k: Toggle signature help (if signature.enabled = true)
-    --
-    -- See :h blink-cmp-config-keymap for defining your own keymap
     local keymap = {
+        -- 'default' for mappings similar to built-in completions (C-y to accept)
+        -- 'super-tab' for mappings similar to vscode (tab to accept)
+        -- 'enter' for enter to accept
+        -- 'none' for no mappings
         preset = 'super-tab',
 
         ['<Tab>'] = {
@@ -153,6 +146,19 @@ if ok then
         }
         keymap["<C-k>"] = minuet.make_blink_map()
     end
+
+    local disable_auto_show_in = {
+        diff = true,
+        gitcommit = true,
+        gitrebase = true,
+        gitsendemail = true,
+        mail = true,
+        markdown = true,
+        text = true,
+        textile = true,
+        wdiff = true,
+        [""] = true,
+    }
 
     blink.build():wait(60000)
     blink.setup {
@@ -192,7 +198,10 @@ if ok then
             },
 
             menu = {
-                auto_show = true,
+                auto_show = function()
+                    local ft = vim.bo.filetype
+                    return not disable_auto_show_in[ft]
+                end,
             },
 
             documentation = {
@@ -396,11 +405,14 @@ local servers = {
     bashls          = { filetypes = { 'sh', 'bash', 'zsh', }, },
     clangd          = {},
     crystalline     = {},
+    cssls           = {},
     dartls          = {},
     elixirls        = {},
     eslint          = {},
     gopls           = {},
     hls             = {},
+    html            = {},
+    jsonls          = {},
     kotlin_lsp      = { cmd = { 'kotlin-lsp', '--stdio' }, },
     lua_ls          = {},
     marksman        = {},
