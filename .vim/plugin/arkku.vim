@@ -63,7 +63,7 @@ set formatoptions+=r    " Auto-insert comment leader on return
 set formatoptions-=t
 set splitbelow          " Split new windows below current
 set noerrorbells
-set scrolloff=4         " Scroll before reaching screen edge
+set scrolloff=8         " Scroll before reaching screen edge
 "set cino=:0l1           " Do not indent case labels in switch or {} of case
 set cino+=g0            " Do not indent C++ scope declarations
 set cino+=t0            " Do not indent function return type
@@ -72,6 +72,8 @@ set cino+=m0            " Do not line up closing parentheses at SOL
 set cino+=Ws            " Indent arguments in: func(\narg1,\narg2);
 set cino+=j1            " Indent Java anonymous classes
 set cino+=J1            " Indent JavaScript object declarations
+
+set synmaxcol=800       " Limit syntax highlighting columns
 
 set updatetime=521      " Update swap file more often
 set hidden              " Hide, rather than unload, abandoned buffers
@@ -384,10 +386,14 @@ noremap! <C-Q> <C-A>
 
 " Make p in visual mode paste over the selection without yanking it
 vnoremap p "_dP
+vnoremap P "_d"+P
+
+" Indent without leaving visual mode
+vnoremap < <gv
+vnoremap > >gv
 
 inoremap <C-_> <C-R>=printf("%",)<Left><Left><Left>
 cnoremap <C-_> <C-R>=findfile("",";")<Left><Left><Left><Left><Left><Left>
-
 
 " Map C-E to the old C-I (same as Tab), so C-O and C-E jump back and
 " forward in the jumplist (O and E are adjacent i Dvorak, in QWERTY they
