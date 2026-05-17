@@ -357,8 +357,10 @@ for name, cfg in pairs(servers) do
         server_cfg.capabilities = lsp_capabilities
         if has_native_lsp then
             local template = vim.lsp.config[name]
-            vim.lsp.config(name, server_cfg)
-            vim.lsp.enable(name)
+            if template or cfg.cmd then
+                vim.lsp.config(name, server_cfg)
+                vim.lsp.enable(name)
+            end
         elseif lspconfig then
             local template = lspconfig[name]
             if template then
