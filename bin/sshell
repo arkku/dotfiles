@@ -10,11 +10,22 @@ main=$4
 
 session="${main}_${slave}"
 
+if command -v autossh >/dev/null 2>&1; then
+    ssh='autossh -M 0'
+    export AUTOSSH_GATETIME=0
+    autossh=1
+else
+    ssh='ssh'
+    unset autossh
+fi
+
 attempted_detach=0
 while true; do
-    if ssh -t -p "$port" "$host" -- bin/tmx prefix '^b' "$main" "$slave" '||' true; then
+    if $ssh -t -p "$port" "$host" -- bin/tmx prefix '^b' "$main" "$slave" '||' true; then
         exit 0
     fi
+
+    [ -n "$autossh" ] && exit 1
 
     echo "Lost connection to $host, reconnecting..."
     sleep 1 || exit 1
