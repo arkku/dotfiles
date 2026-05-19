@@ -35,12 +35,6 @@ vim.api.nvim_create_autocmd("BufReadPost", {
     end,
 })
 
--- Breakpoint sign
-vim.fn.sign_define("DapBreakpoint", {
-    text = "●",
-    texthl = "DapBreakpointSign",
-})
-
 -- coc.nvim compatibility bindings without coc.nvim
 if not vim.g.did_coc_loaded then
     local function show_documentation()
@@ -82,6 +76,32 @@ vim.api.nvim_create_autocmd('FileType', {
     end
 })
 
+--- LSP support
+
+local has_native_lsp = type(vim.lsp.enable) == 'function' and vim.lsp.config ~= nil
+local lspconfig = nil
+
+local has_lazydev = false
+
+if has_native_lsp then
+    local ok, lazydev = pcall(require, 'lazydev')
+    if ok then
+        lazydev.setup {
+            library = { 'nvim-dap-ui' },
+        }
+        has_lazydev = true
+    end
+else
+    local ok, lspconfig_mod = pcall(require, 'lspconfig')
+    if ok then
+        lspconfig = lspconfig_mod
+    end
+end
+
+local function executable_exists(cmd)
+    return type(cmd) == 'table' and type(cmd[1]) == 'string' and vim.fn.executable(cmd[1]) == 1
+end
+
 local lsp_capabilities = vim.lsp.protocol.make_client_capabilities()
 
 -- blink completion (if coc.nvim not loaded)
@@ -117,9 +137,8 @@ if ok and not vim.g.did_coc_loaded then
         ['<C-y>'] = { 'select_and_accept', 'fallback' },
     }
 
-    local providers = {
-        default = { 'lsp', 'path', 'snippets', 'buffer' },
-    }
+    local providers = {}
+    local default_providers = { 'lsp', 'path', 'snippets', 'buffer' }
 
     -- If minuet-ai is installed, add it as a provider and bind to <C-k>
     -- (do not include by default since it's slow and costs tokens)
@@ -132,10 +151,21 @@ if ok and not vim.g.did_coc_loaded then
             -- Should match minuet.config.request_timeout * 1000,
             -- since minuet.config.request_timeout is in seconds
             timeout_ms = 3000,
-            score_offset = 50,
+            score_offset = 100,
         }
         keymap["<C-k>"] = minuet.make_blink_map()
     end
+
+    if has_lazydev then
+        providers['lazydev'] = {
+            name = 'LazyDev',
+            module = 'lazydev.integrations.blink',
+            score_offset = 50,
+        }
+        table.insert(default_providers, 2, 'lazydev')
+    end
+
+    providers['default'] = default_providers
 
     local disable_auto_show_in = {
         diff = true,
@@ -377,20 +407,6 @@ if ok then
             },
         },
     })
-end
-
-local has_native_lsp = type(vim.lsp.enable) == 'function' and vim.lsp.config ~= nil
-local lspconfig = nil
-
-if not has_native_lsp then
-    local ok, lspconfig_mod = pcall(require, 'lspconfig')
-    if ok then
-        lspconfig = lspconfig_mod
-    end
-end
-
-local function executable_exists(cmd)
-    return type(cmd) == 'table' and type(cmd[1]) == 'string' and vim.fn.executable(cmd[1]) == 1
 end
 
 local servers = {

@@ -7,6 +7,28 @@ set packpath+=~/.vim
 " Note that that the settings shared between Vim and Neovim have been moved to
 " the file ~/.vim/plugin/arkku.vim
 
+function! s:PluginInstalled(name) abort
+  return !empty(globpath(&packpath, 'pack/*/start/' . a:name, 0, 1)) || !empty(globpath(&packpath, 'pack/*/opt/' . a:name, 0, 1))
+endfunction
+
+" Disable netrw if we have a replacement for it
+if s:PluginInstalled('neo-tree.nvim')
+    " Prefer neo-tree simply because my vim-plugin-collection includes
+    " nvim-tree, so if both are installed it means there is a local override
+    " over my default of nvim-tree.
+    let g:loaded_netrw = 1
+    let g:loaded_netrwPlugin = 1
+    nnoremap <C-n> <cmd>Neotree toggle<CR>
+    command! -nargs=* Lexplore Neotree toggle
+    lua require("neo-tree").setup({ source_selector = { winbar = true } })
+elseif s:PluginInstalled('nvim-tree.lua')
+    let g:loaded_netrw = 1
+    let g:loaded_netrwPlugin = 1
+    nnoremap <C-n> <cmd>NvimTreeToggle<CR>
+    command! -nargs=* Lexplore NvimTreeToggle
+    lua require("nvim-tree").setup()
+endif
+
 " Decide whether we should set 'background' manually
 let s:should_set_bg = 1
 

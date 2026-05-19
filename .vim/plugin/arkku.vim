@@ -454,7 +454,10 @@ if !exists('g:vscode')
     noremap! <C-BS> <C-W>
     inoremap <C-Del> <C-O>dw
 
-    nmap <silent> <C-N> :Lexplore<CR>
+    " Ctrl-N to open file explorer (netrw by default)
+    if empty(mapcheck('<C-N>', 'n'))
+        nmap <silent> <C-N> :Lexplore<CR>
+    endif
  
     " \1 to \0 switch buffers (vim-buffet)
     nmap <Leader>1 <Plug>BuffetSwitch(1)

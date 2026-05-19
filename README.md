@@ -228,6 +228,25 @@ Leader bindings (preceded by <kbd>\\</kbd>):
 
 * `a` - toggle Aerial open/closed
 
+#### Debugger bindings
+
+If nvim-dap is installed, the following leader bindings are set:
+
+* `bb` – toggle breakpoint at current line
+* `bc` – start/continue debugger execution
+* `bn` – step over
+* `bi` – step into
+* `bo` – step out
+* `br` – open debugger REPL
+* `bl` – rerun last debug session
+* `bq` – terminate debug session
+
+If nvim-dap-ui is additionally installed, these leader bindings are added:
+
+* `bu` – toggle debugger UI visibility
+* `be` – evaluate expression under cursor
+* `bf` – open current debugger UI element in floating window
+
 #### Commands
 
 * `CD [dir]` – change the current window's working directory to `dir`, or to

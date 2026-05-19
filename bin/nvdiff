@@ -1,0 +1,24 @@
+#!/bin/sh
+# dependencies: nvim
+cmd=':DiffviewOpen'
+case "$1" in
+    --*)
+        ;;
+    main)
+        cmd="$cmd origin/main...HEAD"
+        shift
+        ;;
+    master)
+        cmd="$cmd origin/master...HEAD"
+        shift
+        ;;
+    *..*)
+        cmd="$cmd $1"
+        shift
+        ;;
+    [a-zA-Z]*)
+        cmd="$cmd $1"
+        shift
+        ;;
+esac
+exec nvim -c "$cmd" "$@"
