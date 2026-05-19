@@ -4,6 +4,9 @@
 set runtimepath+=~/.vim,~/.vim/after
 set packpath+=~/.vim
 
+" Expand session options
+set sessionoptions+=winpos,terminal,folds
+
 " Note that that the settings shared between Vim and Neovim have been moved to
 " the file ~/.vim/plugin/arkku.vim
 

@@ -45,28 +45,31 @@ if not vim.g.did_coc_loaded then
         end
     end
 
-    vim.keymap.set('n', 'gd', vim.lsp.buf.definition, { silent = true })
-    vim.keymap.set('n', 'gh', show_documentation, { silent = true })
+    vim.keymap.set('n', 'gd', vim.lsp.buf.definition, { silent = true, desc = 'Go to definition' })
+    vim.keymap.set('n', 'gh', show_documentation, { silent = true, desc = 'Go to documentation/help' })
 
-    vim.keymap.set('n', '<Leader>c', vim.lsp.buf.code_action, { silent = true })
-    vim.keymap.set('n', '<Leader>d', vim.lsp.buf.definition, { silent = true })
-    vim.keymap.set('n', '<Leader>r', vim.lsp.buf.references, { silent = true })
-    vim.keymap.set('n', '<Leader>i', vim.lsp.buf.implementation, { silent = true })
-    vim.keymap.set('n', '<Leader>R', vim.lsp.buf.rename, { silent = true })
-    vim.keymap.set('n', '<Leader>e', vim.diagnostic.setloclist, { silent = true })
+    vim.keymap.set('n', '<Leader>c', vim.lsp.buf.code_action, { silent = true, desc = 'Code action' })
+    vim.keymap.set('n', '<Leader>d', vim.lsp.buf.definition, { silent = true, desc = 'Go to definition' })
+    vim.keymap.set('n', '<Leader>r', vim.lsp.buf.references, { silent = true, desc = 'Show references' })
+    vim.keymap.set('n', '<Leader>i', vim.lsp.buf.implementation, { silent = true, desc = 'Go to implementation' })
+    vim.keymap.set('n', '<Leader>e', vim.diagnostic.setqflist, { silent = true, desc = 'Show errors/diagnostics' })
+    vim.keymap.set('n', '<leader>E', function()
+        vim.cmd('cclose')
+        vim.diagnostic.open_float()
+    end, { silent = true, desc = 'Close diagnostics and/or open hover' })
 end
 
 -- Grow selection with Ctrl-S
 if vim.fn.has('nvim-0.12') == 1 then
     local keymap = vim.keymap.set
-    keymap('n', '<C-S>', ':normal van<cr>', opts)
+    keymap('n', '<C-S>', ':normal van<cr>', { silent = true, desc = 'Select / grow selection' })
     keymap('v', '<C-S>', function()
         vim.api.nvim_feedkeys('an', 'v', false)
-    end)
-    keymap('n', '<C-Shift-s>', ':normal vin<cr>', opts)
+    end, { silent = true, desc = 'Select / grow selection' })
+    keymap('n', '<C-Shift-s>', ':normal vin<cr>', { silent = true, desc = 'Select / grow selection (inner)' })
     keymap('v', '<C-Shift-s>', function()
         vim.api.nvim_feedkeys('in', 'v', false)
-    end)
+    end, { silent = true, desc = 'Select / grow selection (inner)' })
 end
 
 vim.api.nvim_create_autocmd('FileType', {
@@ -266,99 +269,99 @@ if ok then
     -- method / function (map both af/am if/im)
     vim.keymap.set({ "x", "o" }, "am", function()
         require("nvim-treesitter-textobjects.select").select_textobject("@function.outer", "textobjects")
-    end)
+    end, { desc = 'around method' })
     vim.keymap.set({ "x", "o" }, "im", function()
         require("nvim-treesitter-textobjects.select").select_textobject("@function.inner", "textobjects")
-    end)
+    end, { desc = 'in method' })
     vim.keymap.set({ "x", "o" }, "af", function()
         require("nvim-treesitter-textobjects.select").select_textobject("@function.outer", "textobjects")
-    end)
+    end, { desc = 'around function' })
     vim.keymap.set({ "x", "o" }, "if", function()
         require("nvim-treesitter-textobjects.select").select_textobject("@function.inner", "textobjects")
-    end)
+    end, { desc = 'in function' })
 
     -- class (ac/ic)
     vim.keymap.set({ "x", "o" }, "ac", function()
         require("nvim-treesitter-textobjects.select").select_textobject("@class.outer", "textobjects")
-    end)
+    end, { desc = 'around class' })
     vim.keymap.set({ "x", "o" }, "ic", function()
         require("nvim-treesitter-textobjects.select").select_textobject("@class.inner", "textobjects")
-    end)
+    end, { desc = 'in class' })
 
     -- comment (ao/io) - may not work well with multiple single-line comments
     vim.keymap.set({ "x", "o" }, "ao", function()
         require("nvim-treesitter-textobjects.select").select_textobject("@comment.outer", "textobjects")
-    end)
+    end, { desc = 'around comment' })
     vim.keymap.set({ "x", "o" }, "io", function()
         require("nvim-treesitter-textobjects.select").select_textobject("@comment.inner", "textobjects")
-    end)
+    end, { desc = 'in comment' })
 
     -- local scope (il)
     vim.keymap.set({ "x", "o" }, "il", function()
         require "nvim-treesitter-textobjects.select".select_textobject("@local.scope", "locals")
-    end)
+    end, { desc = 'local scope' })
 
     -- move - [m / ]m moves between methods
     vim.keymap.set({ "n", "x", "o" }, "]m", function()
         require("nvim-treesitter-textobjects.move").goto_next_start("@function.outer", "textobjects")
-    end)
+    end, { desc = 'next method/function' })
     vim.keymap.set({ "n", "x", "o" }, "[m", function()
         require("nvim-treesitter-textobjects.move").goto_previous_start("@function.outer", "textobjects")
-    end)
+    end, { desc = 'previous method/function' })
     vim.keymap.set({ "n", "x", "o" }, "]s", function()
         require("nvim-treesitter-textobjects.move").goto_next_start("@local.scope", "locals")
-    end)
+    end, { desc = 'next scope' })
     vim.keymap.set({ "n", "x", "o" }, "[s", function()
         require("nvim-treesitter-textobjects.move").goto_previous_start("@local.scope", "locals")
-    end)
+    end, { desc = 'previous scope' })
 
     -- swap \w forwards / \W backwards, p parameter, m function
     vim.keymap.set("n", "<leader>wf", function()
         require("nvim-treesitter-textobjects.swap").swap_next "@function.outer"
-    end)
+    end, { desc = 'swap with next function' })
     vim.keymap.set("n", "<leader>Wf", function()
         require("nvim-treesitter-textobjects.swap").swap_previous "@function.outer"
-    end)
+    end, { desc = 'swap with previous function' })
     vim.keymap.set("n", "<leader>wm", function()
         require("nvim-treesitter-textobjects.swap").swap_next "@function.outer"
-    end)
+    end, { desc = 'swap with next method' })
     vim.keymap.set("n", "<leader>Wm", function()
         require("nvim-treesitter-textobjects.swap").swap_previous "@function.outer"
-    end)
+    end, { desc = 'swap with previous method' })
     vim.keymap.set("n", "<leader>wF", function()
         require("nvim-treesitter-textobjects.swap").swap_next "@function.inner"
-    end)
+    end, { desc = 'swap body with next function' })
     vim.keymap.set("n", "<leader>WF", function()
         require("nvim-treesitter-textobjects.swap").swap_previous "@function.inner"
-    end)
+    end, { desc = 'swap body with previous function' })
     vim.keymap.set("n", "<leader>wM", function()
         require("nvim-treesitter-textobjects.swap").swap_next "@function.inner"
-    end)
+    end, { desc = 'swap body with next method' })
     vim.keymap.set("n", "<leader>WM", function()
         require("nvim-treesitter-textobjects.swap").swap_previous "@function.inner"
-    end)
+    end, { desc = 'swap body with previous method' })
     vim.keymap.set("n", "<leader>wp", function()
         require("nvim-treesitter-textobjects.swap").swap_next "@parameter.outer"
-    end)
+    end, { desc = 'swap with next parameter' })
     vim.keymap.set("n", "<leader>Wp", function()
         require("nvim-treesitter-textobjects.swap").swap_previous "@parameter.outer"
-    end)
+    end, { desc = 'swap with previous parameter' })
     vim.keymap.set("n", "<leader>wP", function()
         require("nvim-treesitter-textobjects.swap").swap_next "@parameter.inner"
-    end)
+    end, { desc = 'swap value with next parameter' })
     vim.keymap.set("n", "<leader>WP", function()
         require("nvim-treesitter-textobjects.swap").swap_previous "@parameter.inner"
-    end)
+    end, { desc = 'swap value with previous parameter' })
 end
 
 -- aerial \a
 local ok, aerial = pcall(require, 'aerial')
 if ok then
-    require("aerial").setup({
+    aerial.setup({
         on_attach = function(bufnr)
             -- Jump forwards/backwards with '[[' and ']]'
-            vim.keymap.set("n", "[[", "<cmd>AerialPrev<CR>", { buffer = bufnr })
-            vim.keymap.set("n", "]]", "<cmd>AerialNext<CR>", { buffer = bufnr })
+            vim.keymap.set("n", "[[", "<cmd>AerialPrev<CR>", { buffer = bufnr, desc = 'next in Aerial outline' })
+            vim.keymap.set("n", "]]", "<cmd>AerialNext<CR>", { buffer = bufnr, desc = 'previous in Aerial outline' })
         end,
 
         highlight_mode = "split_width",
@@ -390,7 +393,96 @@ if ok then
         show_guides = true,
     })
 
-    vim.keymap.set("n", "<leader>a", "<cmd>AerialToggle!<CR>")
+    vim.keymap.set("n", "<leader>a", "<cmd>AerialToggle!<CR>", { desc = 'toggle Aerial outline' })
+end
+
+-- auto-session
+
+local ok, autosession = pcall(require, 'auto-session')
+if ok then
+    local function should_create_session()
+        local argc = vim.fn.argc()
+
+        if argc == 0 then
+            return true
+        end
+
+        if argc == 1 then
+            local arg = vim.fn.argv(0)
+            if type(arg) ~= "string" then
+                return false
+            end
+
+            if vim.startswith(arg, "-") then
+                return false
+            end
+
+            local stat = vim.loop.fs_stat(arg)
+            return stat and stat.type == "directory"
+        end
+
+        return false
+    end
+
+    autosession.setup {
+        auto_save = true,
+        auto_restore = true,
+        auto_create = should_create_session,
+
+        -- On startup, loads the last saved session if session for cwd does not exist
+        auto_restore_last_session = false,
+
+        -- Automatically save/restore sessions when changing directories
+        cwd_change_handling = false,
+
+        -- Enable single session mode to keep all work in one session
+        -- regardless of cwd changes. When enabled, prevents creation of
+        -- separate sessions for different directories and maintains one
+        -- unified session. Does not work with cwd_change_handling.
+        single_session_mode = true,
+
+        -- Suppress session restore/create in certain directories
+        suppressed_dirs = nil,
+
+        -- Allow session restore/create in certain directories
+        allowed_dirs = nil,
+
+        -- List of filetypes to bypass auto save when the only buffer open is
+        -- one of the file types listed, useful to ignore dashboards
+        bypass_save_filetypes = { 'gitcommit', 'gitsendemail', 'email', '' },
+
+        -- Include git branch name in session name, can also be a function
+        -- that takes an optional path and returns the name of the branch
+        git_use_branch_name = false,
+
+        -- Should we auto-restore the session when the git branch changes.
+        -- Requires git_use_branch_name
+        git_auto_restore_on_branch_change = false,
+
+        -- Function that can return a string to be used as part of the session name
+        custom_session_tag = nil,
+
+        -- Enables/disables deleting the session if there are only
+        -- unnamed/empty buffers when auto-saving
+        auto_delete_empty_sessions = true,
+
+        -- Sessions older than purge_after_minutes will be deleted
+        -- asynchronously on startup
+        purge_after_minutes = 129600,
+
+        -- Follow normal session save/load logic if launched with a single
+        -- directory as the only argument
+        args_allow_single_directory = true,
+
+        -- Allow saving a session even when launched with a file argument
+        args_allow_files_auto_save = false,
+
+        -- Whether to show a notification when auto-restoring
+        show_auto_restore_notif = true,
+
+        -- Define legacy commands: Session*, Autosession (lowercase s)
+        legacy_cmds = false,
+    }
 end
 
 -- LSPs

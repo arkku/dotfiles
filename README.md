@@ -177,10 +177,11 @@ These bindings are for the normal mode, preceded by the local leader (<kbd>Space
 * `t` – open tag search (if fzf plugin is installed)
 * `T` – open tag search (if CtrlP plugin is installed)
 
-#### CoC Bindings
+#### CoC / LSP Bindings
 
-These bindings are active when [coc.nvim](https://github.com/neoclide/coc.nvim)
-is installed:
+These bindings are active when
+[coc.nvim](https://github.com/neoclide/coc.nvim) is installed or
+nvim built-in LSP support enabled:
 
 * `gd` – jump to definition of thing under cursor
 * `gh` – show documentation/hover (for `vim` files, opens `:help` instead)
@@ -205,6 +206,10 @@ Leader bindings (preceded by <kbd>\\</kbd>):
 * `o` – show code outline
 * `c` – code action
 * `R` – rename symbol
+
+* Additional bindings for nvim LSP only:
+
+* `E` - show floating diagnostic info for the thing under cursor
 
 Local leader bindings (preceded by <kbd>Space</kbd>):
 
@@ -770,7 +775,6 @@ Edit `/etc/pam.d/sudo_local` (there is a template `/etc/pam.d/sudo_local.templat
 ``` sudo
 auth       optional       /opt/homebrew/lib/pam/pam_reattach.so
 auth       sufficient     pam_tid.so
-
 ```
 
 ### Additional Development Tools
