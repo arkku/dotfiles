@@ -44,6 +44,37 @@ dir_matches_cwd() {
     grep -m1 -qF "\"cwd\":\"$cwd\"" "${files[0]}"
 }
 
+# Format a file's mtime as UTC ISO 8601, so it can be sorted alongside
+# the content timestamps. Handles BSD (macOS) and GNU coreutils.
+file_mtime_iso() {
+    local f=$1 epoch
+    epoch=$(stat -f '%m' "$f" 2>/dev/null || stat -c '%Y' "$f" 2>/dev/null) || return 1
+    date -u -r "$epoch" '+%Y-%m-%dT%H:%M:%SZ' 2>/dev/null \
+        || date -u -d "@$epoch" '+%Y-%m-%dT%H:%M:%SZ' 2>/dev/null
+}
+
+# Print the UUID of the most recently active session in $1 (a project
+# dir). Picks by the timestamp of the last event in each .jsonl, which is
+# more authoritative than file mtime (syncs, backups, and stray touches
+# can update mtime without an actual write). Falls back to mtime for any
+# file whose last line is unreadable or mid-write.
+latest_session_uuid() {
+    local proj_dir=$1
+    local f ts entries=()
+    shopt -s nullglob
+    for f in "$proj_dir"*.jsonl; do
+        ts=$(tail -n 1 "$f" 2>/dev/null \
+             | grep -oE '"timestamp":"[^"]+"' | head -1 | cut -d'"' -f4)
+        [ -n "$ts" ] || ts=$(file_mtime_iso "$f")
+        [ -n "$ts" ] && entries+=("$ts	$f")
+    done
+    shopt -u nullglob
+    [ ${#entries[@]} -gt 0 ] || return
+    local best
+    best=$(printf '%s\n' "${entries[@]}" | sort -r | head -1 | cut -f2-)
+    basename "$best" .jsonl
+}
+
 # Locate the claude project directory for the given cwd. Fast path: try
 # the encoded form. Fallback: scan all project dirs by content, in case
 # claude's encoding has changed.
@@ -103,15 +134,14 @@ fi
 uuid=
 proj_dir=$(find_project_dir "$PWD")
 if [ -n "$proj_dir" ]; then
-    match=$(grep -lF "\"customTitle\":\"$sanitized\"" "$proj_dir"*.jsonl 2>/dev/null | head -1)
-    [ -n "$match" ] && uuid=$(basename "$match" .jsonl)
-    # No explicit name and no title match: if there's exactly one session
-    # in this directory, resume it regardless of its title.
-    if [ -z "$uuid" ] && [ "$got_name" -eq 0 ]; then
-        shopt -s nullglob
-        files=( "$proj_dir"*.jsonl )
-        shopt -u nullglob
-        [ ${#files[@]} -eq 1 ] && uuid=$(basename "${files[0]}" .jsonl)
+    if [ "$got_name" -eq 1 ]; then
+        # Named session: look up by customTitle
+        match=$(grep -lF "\"customTitle\":\"$sanitized\"" "$proj_dir"*.jsonl 2>/dev/null | head -1)
+        [ -n "$match" ] && uuid=$(basename "$match" .jsonl)
+    else
+        # No explicit name: resume the most recently active session in
+        # this directory, if there is one
+        uuid=$(latest_session_uuid "$proj_dir")
     fi
 fi
 

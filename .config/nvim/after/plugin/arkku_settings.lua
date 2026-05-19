@@ -142,6 +142,7 @@ if ok and not vim.g.did_coc_loaded then
         gitcommit = true,
         gitrebase = true,
         gitsendemail = true,
+        latex = true,
         mail = true,
         markdown = true,
         text = true,
@@ -183,7 +184,10 @@ if ok and not vim.g.did_coc_loaded then
             },
 
             ghost_text = {
-                enabled = true,
+                enabled = function()
+                    local ft = vim.bo.filetype
+                    return not disable_auto_show_in[ft]
+                end,
                 show_with_menu = false,
             },
 
