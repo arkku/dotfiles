@@ -101,15 +101,11 @@ else
     end
 end
 
-local function executable_exists(cmd)
-    return type(cmd) == 'table' and type(cmd[1]) == 'string' and vim.fn.executable(cmd[1]) == 1
-end
-
 local lsp_capabilities = vim.lsp.protocol.make_client_capabilities()
 
 -- blink completion (if coc.nvim not loaded)
 local ok, blink = pcall(require, 'blink.cmp')
-if ok and not vim.g.did_coc_loaded then
+if ok and not vim.g.did_coc_loaded and vim.fn.executable('cargo') then
     if vim.g.loaded_supertab then
         -- Remove supertab mappings (they don't work with blink)
         vim.keymap.set('i', '<Tab>', '<Tab>',  { noremap = true, silent = true })
@@ -526,6 +522,10 @@ local servers = {
     vimls           = {},
     zls             = {},
 }
+
+local function executable_exists(cmd)
+    return type(cmd) == 'table' and type(cmd[1]) == 'string' and vim.fn.executable(cmd[1]) == 1
+end
 
 for name, cfg in pairs(servers) do
     if not cfg.cmd or executable_exists(cfg.cmd) then
