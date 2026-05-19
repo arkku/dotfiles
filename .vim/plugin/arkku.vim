@@ -48,10 +48,10 @@ set shiftround          " Round indent to shift widths
 set wrap                " Wrap long lines on screen
 set linebreak           " Wrap at word boundaries
 set nofoldenable
-set foldclose=all       " Close folds automatically
+"set foldclose=all       " Close folds automatically
+"set foldlevelstart=0
+"set foldmethod=indent
 set foldopen+=insert
-set foldmethod=indent
-set foldlevelstart=0
 set foldnestmax=4
 set textwidth=79        " Wordwrap at this column
 set formatoptions=cl1
@@ -319,6 +319,9 @@ let g:vim_markdown_no_extensions_in_markdown=1
 
 let g:vim_markdown_new_list_item_indent=0
 let g:vim_markdown_auto_insert_bullets=0
+
+" Don't fold sections by default (causes issues with diffview)
+let g:vim_markdown_folding_disabled=1
 
 let g:syntastic_mode_map = {
     \ "mode": "active",

@@ -733,6 +733,18 @@ To use the Swift development toolchain:
 export PATH="/Library/Developer/Toolchains/swift-latest.xctoolchain/usr/bin:$PATH"
 ```
 
+### Touch ID for sudo on macOS
+
+* `brew install pam-reattach` (for it to work inside tmux)
+
+Edit `/etc/pam.d/sudo_local` (there is a template `/etc/pam.d/sudo_local.template`):
+
+``` sudo
+auth       optional       /opt/homebrew/lib/pam/pam_reattach.so
+auth       sufficient     pam_tid.so
+
+```
+
 ### Additional Development Tools
 
 * [universal-ctags](https://github.com/universal-ctags/ctags)
