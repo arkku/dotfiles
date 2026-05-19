@@ -232,8 +232,12 @@ Leader bindings (preceded by <kbd>\\</kbd>):
 
 If nvim-dap is installed, the following leader bindings are set:
 
-* `bb` – toggle breakpoint at current line
-* `bc` – start/continue debugger execution
+* `B` or `bb` – toggle breakpoint on the current line
+* `C` or `bc` – continue (or start!) the debugger execution
+* `bs` – set a breakpoint with a condition
+* `bS` - set a breakpoint that logs a message (but does not stop)
+* `bh` – set a breakpoint with a hit count (stop on the given hit count)
+* `bx` – set exception breakpoints
 * `bn` – step over
 * `bi` – step into
 * `bo` – step out
@@ -244,8 +248,13 @@ If nvim-dap is installed, the following leader bindings are set:
 If nvim-dap-ui is additionally installed, these leader bindings are added:
 
 * `bu` – toggle debugger UI visibility
+* `bU` - float a UI element
 * `be` – evaluate expression under cursor
 * `bf` – open current debugger UI element in floating window
+
+With nvim-dap-ui enabled the repl window also gains mouse-clickable controls
+for continue, step, etc. so usually it suffices to remember the `B` and `C`
+leader bindings.
 
 #### Commands
 

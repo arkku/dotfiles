@@ -408,7 +408,7 @@ endif
 nnoremap <silent> <C-S-O> <C-I>
 
 if !exists('g:vscode')
-    set timeoutlen=400
+    "set timeoutlen=800
     set guioptions-=e
 
     set switchbuf=useopen,split
