@@ -105,7 +105,7 @@ local lsp_capabilities = vim.lsp.protocol.make_client_capabilities()
 
 -- blink completion (if coc.nvim not loaded)
 local ok, blink = pcall(require, 'blink.cmp')
-if ok and not vim.g.did_coc_loaded and vim.fn.executable('cargo') then
+if ok and (not vim.g.did_coc_loaded) and vim.fn.executable('cargo') == 1 then
     if vim.g.loaded_supertab then
         -- Remove supertab mappings (they don't work with blink)
         vim.keymap.set('i', '<Tab>', '<Tab>',  { noremap = true, silent = true })
