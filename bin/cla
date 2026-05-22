@@ -53,11 +53,21 @@ file_mtime_iso() {
         || date -u -d "@$epoch" '+%Y-%m-%dT%H:%M:%SZ' 2>/dev/null
 }
 
+# True if some running claude process is attached to session UUID $1.
+# Looks for the UUID as a word in any process's argv -- claude carries it
+# as `--resume <uuid>` or `--session-id <uuid>` (or `=<uuid>`).
+session_in_use() {
+    local uuid=$1
+    [ -n "$uuid" ] || return 1
+    pgrep -f "[ =]${uuid}([ ]|\$)" >/dev/null 2>&1
+}
+
 # Print the UUID of the most recently active session in $1 (a project
-# dir). Picks by the timestamp of the last event in each .jsonl, which is
-# more authoritative than file mtime (syncs, backups, and stray touches
-# can update mtime without an actual write). Falls back to mtime for any
-# file whose last line is unreadable or mid-write.
+# dir) that is not already open in another claude process. Picks by the
+# timestamp of the last event in each .jsonl, which is more authoritative
+# than file mtime (syncs, backups, and stray touches can update mtime
+# without an actual write). Falls back to mtime for any file whose last
+# line is unreadable or mid-write.
 latest_session_uuid() {
     local proj_dir=$1
     local f ts entries=()
@@ -70,9 +80,11 @@ latest_session_uuid() {
     done
     shopt -u nullglob
     [ ${#entries[@]} -gt 0 ] || return
-    local best
+    local best candidate
     best=$(printf '%s\n' "${entries[@]}" | sort -r | head -1 | cut -f2-)
-    basename "$best" .jsonl
+    candidate=$(basename "$best" .jsonl)
+    session_in_use "$candidate" && return
+    printf '%s\n' "$candidate"
 }
 
 # Locate the claude project directory for the given cwd. Fast path: try
