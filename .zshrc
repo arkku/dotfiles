@@ -1154,7 +1154,7 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
                 prompt_vi_mode="%F{yellow}(vi)%F{reset} "
                 ;;
             *)
-                print -n '\033[ 0q\033[5 q'
+                print -n '\033[0 q\033[5 q'
                 prompt_vi_mode=''
                 ;;
         esac
