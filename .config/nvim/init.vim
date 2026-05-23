@@ -94,20 +94,24 @@ let maplocalleader=" "
 
 colorscheme arkku
 
-" Fix clipboard over ssh/mosh
-if !empty($SSH_CONNECTION) || !empty($TMUX) || !empty($VIMCLIPCOPY)
-  let g:clipboard = {
-    \ 'name': 'clipcopy',
-    \ 'copy': {
-    \   '+': [expand('~/bin/clipcopy')],
-    \   '*': [expand('~/bin/clipcopy')],
-    \ },
-    \ 'paste': {
-    \   '+': [expand('~/bin/clippaste')],
-    \   '*': [expand('~/bin/clippaste')],
-    \ },
-    \ 'cache_enabled': 0,
-    \ }
+if !empty($VIMOSC52)
+    if luaeval("pcall(require, 'vim.ui.clipboard.osc52')")
+        let g:clipboard = 'osc52'
+    endif
+elseif !empty($SSH_CONNECTION) || !empty($TMUX) || !empty($VIMCLIPCOPY)
+    " Fix clipboard over ssh/mosh or inside TMUX
+    let g:clipboard = {
+        \ 'name': 'clipcopy',
+        \ 'copy': {
+        \   '+': [expand('~/bin/clipcopy')],
+        \   '*': [expand('~/bin/clipcopy')],
+        \ },
+        \ 'paste': {
+        \   '+': [expand('~/bin/clippaste')],
+        \   '*': [expand('~/bin/clippaste')],
+        \ },
+        \ 'cache_enabled': 0,
+        \ }
 endif
 
 " Easy toggle to yank to the system clipboard by default
