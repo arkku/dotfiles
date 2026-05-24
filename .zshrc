@@ -391,7 +391,7 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
     gfeature() {
         local branch="$1"
         if [ -z "$branch" ] ; then
-            echo "Usage: $0 new_feature_branch [remote]"
+            echo "Usage: gfeature new_feature_branch [remote]"
             return 1
         fi
         [[ "$branch" != "feature/"* && "$branch" != "fix/"* ]] && branch="feature/$branch"
@@ -418,7 +418,7 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
     # Git new tag, pushed to remote
     gtag() {
         if [ -z "$1" ]; then
-            echo "Usage: $0 new_tag"
+            echo "Usage: gtag new_tag"
             return 1
         fi
         git tag -s "$@" && git push --tags
@@ -917,7 +917,7 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
                 zstyle ':vcs_info:git*' check-for-staged-changes false
             ;;
             *)
-                print 'Usage: $0 <true|false|staged|none>'
+                print 'Usage: zsh-check-changes <true|false|staged|none>'
             ;;
         esac
     }
@@ -1332,7 +1332,7 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
 
             # replace the fasd interactive selection with fzf
             unalias zz 2>/dev/null
-            zz() {
+            function zz {
                 local dir="$(sd "$@")"
                 [ -n "$dir" ] && cd "$dir"
             }
