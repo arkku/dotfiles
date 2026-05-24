@@ -79,7 +79,7 @@ _apply_background() {
     (( ${+ZSH_HIGHLIGHT_STYLES} )) && ZSH_HIGHLIGHT_STYLES[comment]="fg=$FADED_COLOR"
     [ -n "$ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE" ] && ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=$FADED_COLOR"
     zmodload -e zsh/zle && zle_highlight=( 'isearch:underline' 'special:fg=cyan' 'paste:bold,fg=red' "suffix:fg=$FADED_COLOR" 'region:standout' )
-    zstyle ':completion:*:warnings' format "%F{$FADED_COLOR}# No matches for: %d"$DEFAULT
+    zstyle ':completion:*:warnings' format "%F{$FADED_COLOR}# No matches for: %d%f"
 }
 _apply_background
 
@@ -222,14 +222,13 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
     fi
 
     if [ -n "$CLIPCOPY" ]; then
-        CLIPCOPY="$CLIPCOPY"
+        # keep CLIPCOPY
     elif [ -z "$SSH_CONNECTION" ] && command -v pbcopy >/dev/null 2>&1; then
         CLIPCOPY='pbcopy'
     elif [ -z "$SSH_CONNECTION" ] && command -v clip.exe >/dev/null 2>&1; then
         CLIPCOPY='clip.exe'
     elif [ -n "$DISPLAY" ]; then
         if command -v xclip >/dev/null 2>&1; then
-            echo xclip
             CLIPCOPY='xclip -selection c'
         elif command -v xsel >/dev/null 2>&1; then
             CLIPCOPY='xsel -i -b'
@@ -263,7 +262,7 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
     fi
 
     if [ -n "$CLIPPASTE" ]; then
-        CLIPPASTE="$CLIPPASTE"
+        # keep CLIPPASTE
     elif [ -z "$SSH_CONNECTION" ] && command -v pbpaste >/dev/null 2>&1; then
         CLIPPASTE='pbpaste'
     elif [ -n "$DISPLAY" ]; then
@@ -275,7 +274,7 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
     elif [ -z "$SSH_CONNECTION" -a -r '/dev/clipboard' ]; then
         CLIPPASTE='cat /dev/clipboard'
     elif [ -x "$HOME/bin/clippaste" ]; then
-        CLIPCOPY="$HOME/bin/clippaste"
+        CLIPPASTE="$HOME/bin/clippaste"
     fi
     if [ -z "$CLIPPASTE" -a -n "$TMUXPASTE" ]; then
         CLIPPASTE="$TMUXPASTE"
@@ -350,7 +349,7 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
     alias gpull='git pull'
 
     # Print the git main branch name (master, main)
-    alias gitmainbranch='git branch -l master main | awk '\''{print $1}'\' 
+    alias gitmainbranch='git branch -l master main | awk '\''{print $NF}'\'
 
     # Get pull master
     alias gpullm='git fetch origin `gitmainbranch`:`gitmainbranch`'
@@ -404,8 +403,11 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
     # Git push and then close/delete the current feature branch
     gfeaturedone() {
         local branch="$(git rev-parse --abbrev-ref HEAD)"
-        local trunk='master'
-        [ -z "$1" ] && master="$1"
+        local trunk="$1"
+        if [ -z "$trunk" ]; then
+            trunk="$(git branch -l master main | awk '{print $NF; exit 0}')"
+            trunk="${trunk:-main}"
+        fi
         if [ -z "$branch" -o "$branch" = "$trunk" ] || ! [[ "$branch" == "feature/"* ]]; then
             echo 'Must be run on a feature branch!'
             return 1
@@ -425,7 +427,10 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
     # Git reset to merge base
     gresetmb() {
         local trunk="$1"
-        [ -z "$1" ] && trunk='master'
+        if [ -z "$trunk" ]; then
+            trunk="$(git branch -l master main | awk '{print $NF; exit 0}')"
+            trunk="${trunk:-main}"
+        fi
         local base="$(git merge-base "$trunk" HEAD)"
         if [ -n "$base" ]; then
             git reset "$base"
@@ -632,10 +637,6 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
             ffd() { ffz -type d "$@" }
             ff.() { ffz -depth 1 "$@" }
         fi
-
-        _last_argument() {
-            echo 
-        }
 
         # Ctrl-F to find from insert mode
         _fuzzy-find() {
@@ -873,9 +874,9 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
     zstyle ':completion:*:options' description 'yes'
 
     # Theme
-    #zstyle ':completion:*:messages' format "%F{$FADED_COLOR}# %d"$DEFAULT
-    zstyle ':completion:*:warnings' format "%F{$FADED_COLOR}# No matches for: %d"$DEFAULT
-    #zstyle ':completion:*:descriptions' format "%F{$FADED_COLOR}# %B%d%b%f"$DEFAULT
+    #zstyle ':completion:*:messages' format "%F{$FADED_COLOR}# %d%f"
+    zstyle ':completion:*:warnings' format "%F{$FADED_COLOR}# No matches for: %d%f"
+    #zstyle ':completion:*:descriptions' format "%F{$FADED_COLOR}# %B%d%b%f"
 
     # History (not used at the moment)
     #zstyle ':completion:*:historyevent' command 'fc -lr'
@@ -1203,7 +1204,6 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
             pwd_prompt="${pwd_prompt/#*\/(#b)([^\/]##.app)\/Contents\//…/$match[1]/…/}"
 
             unset REPO
-            export REPO
         fi
 
         # Keep the first and last two directories only
@@ -1232,15 +1232,14 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
                 [[ $columns -gt $(( COLUMNS  - 5 )) ]] && columns=$(( COLUMNS - 5 ))
             fi
 
-            if [ "$trimmed" = 'master' -a $(( space - ${#vcs_info_msg_0_} )) -lt 40 ]; then
-                trimmed='m'
-            fi
-
             local used=${#trimmed}
             [[ $used -gt 20 ]] && used=20
             used=$(( used + 5 ))
 
             local space=$(( columns - used ))
+            if [ "$trimmed" = 'master' -a $(( space - ${#vcs_info_msg_0_} )) -lt 40 ]; then
+                trimmed='m'
+            fi
 
             if [ -n "$pwd_truncated" -a $space -gt 20 ]; then
                 # Only show repo on right if it may be truncated on left
@@ -1452,6 +1451,7 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
             ZSH_AUTOSUGGEST_HISTORY_IGNORE="?(#c50,)"
             ZSH_AUTOSUGGEST_STRATEGY=( completion )
             source "$aspath/zsh-autosuggestions/zsh-autosuggestions.zsh"
+            break
         done
         unset aspath
     fi

@@ -595,7 +595,6 @@ so that it may be edited or followed by more pipes.
 * `:VL` – `| viless` (an included script for use of `vim` or `nvim` as `less`)
 * `:VI` – `| vim -R -`
 * `:VIM` – `|& vim -R -`
-* `:AG` – `| ag`
 
 #### Additional Plugins
 
