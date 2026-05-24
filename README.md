@@ -425,7 +425,6 @@ installed, in that order. Both provide at least the `z` command.
 * `cpath` – copy the current path, with symlinks expanded, to system clipboard
 * `gr` – `grep`, excluding `.git`
 * `vi` – `nvim` (if installed)
-* `nvis` – `nvim -S Session.vim` (if installed and the file exists)
 * `svi` – `sudo -e`
 * `psg` – `grep` the output of `ps`
 * `hgrep` – `grep` history
