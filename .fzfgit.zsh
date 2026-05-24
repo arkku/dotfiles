@@ -58,6 +58,14 @@ _drop_n_fields0() {
     fi
 }
 
+if ! command -v gitmainbranch >/dev/null 2>&1; then
+    gitmainbranch() {
+        local branch
+        branch="$(git branch -l master main | awk '{print $NF; exit 0}')"
+        printf '%s\n' "${branch:-main}"
+    }
+fi
+
 # A wrapper for fzf commands, usage:
 # _fzfcmd <n> <generator> [args...] -- <handler> [args...] -- [user args]
 #
@@ -557,8 +565,9 @@ gcherry() {
         ;;
     esac
     if [ -z "$branch" ]; then
-        branch="$(fzbrr '' -0 --header='Enter: Choose Branch of Commits | Esc: master')"
-        [ -z "$branch" ] && branch='master'
+        local main_branch="$(gitmainbranch)"
+        branch="$(fzbrr '' -0 --header="Enter: Choose Branch of Commits | Esc: $main_branch")"
+        [ -z "$branch" ] && branch="$main_branch"
     fi
     _fzfgitcommitcmd 'multi' 'git cherry-pick' 'Pick | Tab: Toggle' "$branch" "$@"
 }

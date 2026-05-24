@@ -348,11 +348,19 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
     # Git pull
     alias gpull='git pull'
 
-    # Print the git main branch name (master, main)
-    alias gitmainbranch='git branch -l master main | awk '\''{print $NF}'\'
+    # Print the repository default branch name.
+    gitmainbranch() {
+        local branch
+        branch="$(git branch -l master main | awk '{print $NF; exit 0}')"
+        printf '%s\n' "${branch:-main}"
+    }
 
-    # Get pull master
-    alias gpullm='git fetch origin `gitmainbranch`:`gitmainbranch`'
+    # Get pull on the default branch
+    gpullm() {
+        local trunk
+        trunk="$(gitmainbranch)"
+        git fetch origin "$trunk:$trunk"
+    }
 
     # Git update from remote
     alias gupdate='git pull --rebase --autostash -v'
@@ -405,8 +413,7 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
         local branch="$(git rev-parse --abbrev-ref HEAD)"
         local trunk="$1"
         if [ -z "$trunk" ]; then
-            trunk="$(git branch -l master main | awk '{print $NF; exit 0}')"
-            trunk="${trunk:-main}"
+            trunk="$(gitmainbranch)"
         fi
         if [ -z "$branch" -o "$branch" = "$trunk" ] || ! [[ "$branch" == "feature/"* ]]; then
             echo 'Must be run on a feature branch!'
@@ -428,8 +435,7 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
     gresetmb() {
         local trunk="$1"
         if [ -z "$trunk" ]; then
-            trunk="$(git branch -l master main | awk '{print $NF; exit 0}')"
-            trunk="${trunk:-main}"
+            trunk="$(gitmainbranch)"
         fi
         local base="$(git merge-base "$trunk" HEAD)"
         if [ -n "$base" ]; then
@@ -1237,7 +1243,7 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
             used=$(( used + 5 ))
 
             local space=$(( columns - used ))
-            if [ "$trimmed" = 'master' -a $(( space - ${#vcs_info_msg_0_} )) -lt 40 ]; then
+            if [[ "$trimmed" == main || "$trimmed" == master ]] && [ $(( space - ${#vcs_info_msg_0_} )) -lt 40 ]; then
                 trimmed='m'
             fi
 
@@ -1245,7 +1251,7 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
                 # Only show repo on right if it may be truncated on left
                 vcs_prompt+="%$(( -(columns - 10) ))<${ELLIPSIS:-...}<${vcs_info_msg_0_//\%/%%}%<<"
             fi
-            if [ "$vcs_info_msg_1_" = 'master' ]; then
+            if [[ "$vcs_info_msg_1_" == main || "$vcs_info_msg_1_" == master ]]; then
                 vcs_prompt+="/%F{blue}${trimmed}"
             else
                 vcs_prompt+="/%F{cyan}%20<${ELLIPSIS:-...}<${trimmed//\%/%%}%<<"
