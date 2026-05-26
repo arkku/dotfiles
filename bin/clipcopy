@@ -1,8 +1,13 @@
 #!/bin/sh
 
-# Local clipboard tools — skipped if $OSC52 is set (terminal advertises OSC 52
-# support) or in an SSH session, in which case OSC 52 is preferred.
-if [ -z "$SSH_CONNECTION" ] && [ -z "$OSC52" ]; then
+# Control from environment (non-zero to enable):
+# SSH_CONNECTION    -> skip local clipboard
+# CLIPTMUX          -> prefer TMUX buffer
+# CLIPOSC52         -> prefer OSC 52
+
+[ -n "$CLIPTMUX" -a -n "$TMUX" ] && exec tmux load-buffer -
+
+if [ -z "$SSH_CONNECTION" ] && [ -z "$CLIPOSC52" ]; then
     command -v pbcopy   >/dev/null 2>&1 && exec pbcopy
     command -v clip.exe >/dev/null 2>&1 && exec clip.exe
     if [ -n "$DISPLAY" ]; then

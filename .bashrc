@@ -2,7 +2,6 @@
 # Kimmo Kulovesi <https://arkku.dev>
 
 unset HISTFILE
-export HISTFILE
 
 path_force_head() {
     [ ! -d "$1" ] && return
@@ -180,10 +179,6 @@ if [ -n "$PS1" -a -z "$ENVONLY" ]; then
     shopt -s cmdhist
 
     set -o vi
-    set visible-stats on
-    set mark-directories off
-    set completion-ignore-case on
-
     # Bindings
     bind '"\C-P": history-search-backward'
     bind '"\C-N": history-search-forward'
@@ -221,6 +216,20 @@ if [ -n "$PS1" -a -z "$ENVONLY" ]; then
     # Git push all
     alias gpusha='git push --all && git push --tags'
 
+    # Print the repository default branch name.
+    gitmainbranch() {
+        local branch
+        branch="$(git branch -l master main | awk '{print $NF; exit 0}')"
+        printf '%s\n' "${branch:-main}"
+    }
+
+    # Pull on the default branch
+    gpullm() {
+        local trunk
+        trunk="$(gitmainbranch)"
+        git fetch origin "$trunk:$trunk"
+    }
+
     # Git ubdate submodules, recursively
     alias gsubu='git submodule update --init --recursive'
 
@@ -246,7 +255,7 @@ if [ -n "$PS1" -a -z "$ENVONLY" ]; then
             echo "Usage: $0 new_feature_branch [remote]"
             return 1
         fi
-        [[ "$branch" != "feature/"* ]] && branch="feature/$branch"
+        [[ "$branch" != "feature/"* && "$branch" != "fix/"* ]] && branch="feature/$branch"
         local remote="$2"
         [ -z "$remote" ] && remote='origin'
         git checkout -b "$branch" && git push -u "$remote" HEAD
@@ -255,8 +264,10 @@ if [ -n "$PS1" -a -z "$ENVONLY" ]; then
     # Git push and then close/delete the current feature branch
     gfeaturedone() {
         local branch="$(git rev-parse --abbrev-ref HEAD)"
-        local trunk='master'
-        [ -z "$1" ] && master="$1"
+        local trunk="$1"
+        if [ -z "$trunk" ]; then
+            trunk="$(gitmainbranch)"
+        fi
         if [ -z "$branch" -o "$branch" = "$trunk" ] || ! [[ "$branch" == "feature/"* ]]; then
             echo 'Must be run on a feature branch!'
             return 1
@@ -276,7 +287,7 @@ if [ -n "$PS1" -a -z "$ENVONLY" ]; then
     # Git reset to merge base
     gresetmb() {
         local trunk="$1"
-        [ -z "$1" ] && trunk='master'
+        [ -z "$trunk" ] && trunk="$(gitmainbranch)"
         local base="$(git merge-base "$trunk" HEAD)"
         if [ -n "$base" ]; then
             git reset "$base"
@@ -295,11 +306,11 @@ if [ -n "$PS1" -a -z "$ENVONLY" ]; then
 
     # cd to the outermost git repository (from nested submodules)
     cdrr() {
-        REPO="$(git rev-parse --show-toplevel)"
-        [ -z "$REPO" ] && return 1
-        while [ -n "$REPO" ]; do
-            cd "$REPO" || return 1
-            REPO="$(git rev-parse --show-superproject-working-tree 2>/dev/null)"
+        local gitroot="$(git rev-parse --show-toplevel)"
+        [ -z "$gitroot" ] && return 1
+        while [ -n "$gitroot" ]; do
+            cd "$gitroot" || return 1
+            gitroot="$(git rev-parse --show-superproject-working-tree 2>/dev/null)"
         done
         return 0
     }
@@ -341,13 +352,6 @@ if [ -n "$PS1" -a -z "$ENVONLY" ]; then
     if command -v nvim >/dev/null 2>&1; then
         alias vi='nvim'
         alias nvimdiff='nvim -d'
-        nvis() {
-            if [ -e "Session.vim" ]; then
-                nvim -S Session.vim "$@"
-            else
-                nvim "$@"
-            fi
-        }
     fi
 
     if [ "`uname`" = "IRIX" ]; then
@@ -563,7 +567,7 @@ if [ -n "$PS1" -a -z "$ENVONLY" ]; then
     else
         if ls --version 2>/dev/null | grep -q GNU; then
             ls_cmd="ls -F --color=auto --group-directories-first${CLIHYPERLINK:+ --hyperlink=auto}"
-        elif gls_path=$(command -p which -s gls 2>/dev/null) && [ -n "$gls_path" ] && "$gls_path" --version 2>/dev/null | grep -q GNU; then
+        elif gls_path=$(type -P gls 2>/dev/null) && [ -n "$gls_path" ] && "$gls_path" --version 2>/dev/null | grep -q GNU; then
             ls_cmd="$gls_path -F --color=auto --group-directories-first${CLIHYPERLINK:+ --hyperlink=auto}"
         elif [ "$CLICOLOR" = 1 ] && ls -G "$HOME" >/dev/null 2>&1; then
             ls_cmd='ls -F -G'

@@ -1,6 +1,16 @@
 #!/bin/sh
-if [ -z "$SSH_CONNECTION" ] && [ -z "$OSC52" ]; then
+
+# Control from environment (non-zero to enable):
+# SSH_CONNECTION    -> skip local clipboard
+# CLIPTMUX          -> prefer TMUX buffer
+
+[ -n "$CLIPTMUX" -a -n "$TMUX" ] && exec tmux save-buffer -
+
+if [ -z "$SSH_CONNECTION" ]; then
     command -v pbpaste  >/dev/null 2>&1 && exec pbpaste
+    if command -v clip.exe >/dev/null 2>&1 && command -v powershell.exe >/dev/null 2>&1; then
+        exec powershell.exe -NoLogo -NoProfile -c '[Console]::Out.Write($(Get-Clipboard -Raw).tostring().replace("`r", ""))'
+    fi
     if [ -n "$DISPLAY" ]; then
         command -v xclip >/dev/null 2>&1 && exec xclip -o -selection c
         command -v xsel  >/dev/null 2>&1 && exec xsel -o -b
