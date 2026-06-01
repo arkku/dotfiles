@@ -27,8 +27,6 @@ export MOSH_TITLE_NOPREFIX=1
 
 export CONCURRENCY_LEVEL=4
 
-export CLICOLOR=1
-
 unset MAILCHECK
 export MAILCHECK
 

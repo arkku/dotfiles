@@ -23,11 +23,8 @@ if [ ! "$LC_ALL" = 'C' ]; then
     export LC_MEASUREMENT=en_IE.UTF-8
 fi
 export LESSCHARSET=utf-8
-export COLORTERM=1
 
 export MOSH_TITLE_NOPREFIX=1
-
-export CLICOLOR=1
 
 unset MAILCHECK
 export MAILCHECK

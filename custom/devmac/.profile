@@ -21,8 +21,6 @@ export LESSCHARSET=utf-8
 
 export MOSH_TITLE_NOPREFIX=1
 
-export CLICOLOR=1
-
 unset MAILCHECK
 export MAILCHECK
 
