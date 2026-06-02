@@ -60,12 +60,10 @@
                     "to_if_alone": [{ "key_code": "escape" }],
                     "conditions": [{
                         "type": "device_if",
-                        "identifiers": [
-                            {
-                                "vendor_id": 1452,
-                                "is_keyboard": true
-                            }
-                        ]
+                        "identifiers": [{
+                            "is_keyboard": true,
+                            "vendor_id": 1452
+                        }]
                     }]
                 }
             ]

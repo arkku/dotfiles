@@ -13,12 +13,10 @@
                     "to": [{ "apple_vendor_top_case_key_code": "keyboard_fn" }],
                     "conditions": [{
                         "type": "device_if",
-                        "identifiers": [
-                            {
-                                "vendor_id": 1452,
-                                "is_keyboard": true
-                            }
-                        ]
+                        "identifiers": [{
+                            "is_keyboard": true,
+                            "vendor_id": 1452
+                        }]
                     }]
                 },
                 {
@@ -30,12 +28,10 @@
                     "to": [ { "key_code": "left_control" }],
                     "conditions": [{
                         "type": "device_if",
-                        "identifiers": [
-                            {
-                                "vendor_id": 1452,
-                                "is_keyboard": true
-                            }
-                        ]
+                        "identifiers": [{
+                            "is_keyboard": true,
+                            "vendor_id": 1452
+                        }]
                     }]
                 }
             ]
