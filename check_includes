@@ -41,13 +41,13 @@ printf '\ninclude %s\n' '$kittyshared' >>"$kittypath/kitty.conf"
 EOFKITTY
     fi
     if [ ! -e "$kittypath/light-theme.auto.conf" ]; then
-        echo "n -s themes/Arkku.conf $kittypath/light-theme.auto.conf"
+        echo "ln -s themes/Arkku.conf $kittypath/light-theme.auto.conf"
     fi
     if [ ! -e "$kittypath/no-preference-theme.auto.conf" ]; then
         echo "ln -s themes/Arkku.conf $kittypath/no-preference-theme.auto.conf"
     fi
     if [ ! -e "$kittypath/dark-theme.auto.conf" ]; then
-        echo "ln -s "themes/Arkku Dark.conf" $kittypath/dark-theme.auto.conf"
+        echo "ln -s \"themes/Arkku Dark.conf\" $kittypath/dark-theme.auto.conf"
     fi
 fi
 
