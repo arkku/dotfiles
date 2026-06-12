@@ -15,6 +15,11 @@
 # By Kimmo Kulovesi <https://arkku.dev/> 2017-02-03.
 # Distribute freely, use at your own risk only.
 
+if [ -z "$LANG" -a -r '/etc/locale.conf' ]; then
+    . /etc/locale.conf
+    export LANG LANGUAGE LC_ALL LC_CTYPE LC_MESSAGES LC_TIME LC_COLLATE LC_NUMERIC LC_MONETARY 2>/dev/null || true
+fi
+
 tmux=tmux
 if [ -x '/usr/bin/systemd-run' ]; then
     systemd_run='/usr/bin/systemd-run --scope --user'
@@ -49,7 +54,7 @@ fi
 
 if ! $tmux ls 2>/dev/null | grep -q "^$main_session:"; then
     echo "New session: $main_session" >&2
-    $systemd_run $tmux new-session -s "$main_session" -d 2>/dev/null
+    $systemd_run $tmux -u new-session -s "$main_session" -d 2>/dev/null
 fi
 
 if [ -z "$2" ]; then
@@ -67,7 +72,6 @@ if [ "$TERM_PROGRAM" = "Apple_Terminal" ]; then
 fi
 
 echo "Attaching to $main_session as $child_session" >&2
-exec $systemd_run $tmux  new-session -A -D -d -t "$main_session" -s "$child_session" \; \
+exec $systemd_run $tmux -u new-session -A -D -d -t "$main_session" -s "$child_session" \; \
                     set-option destroy-unattached \; \
                     attach-session -t "$child_session" $more_args
-
