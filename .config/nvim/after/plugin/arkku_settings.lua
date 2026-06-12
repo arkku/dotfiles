@@ -494,6 +494,20 @@ if ok then
                 },
             },
         },
+        ensure_installed = {
+            'awk', 'bash', 'c', 'lua', 'perl', 'python', 'ruby', 'vim', 'vimdoc', 'zsh',
+            'dtd', 'json', 'xml', 'toml', 'yaml', 'ini',
+            'markdown_inline', 'markdown', 'liquid',
+            'cmake', 'diff', 'make', 'printf', 'regex',
+            'git_config', 'gitcommit', 'gitignore', 'git_rebase', 'gitattributes',
+            'css', 'html_tags', 'html', 'http',
+            'passwd', 'ssh_config', 'tmux',
+            -- 'sql',
+            -- 'ecma', 'jsx', 'javascript', 'typescript',
+            -- 'nginx', 'robots_txt',
+            -- 'rust', 'go',
+            -- 'crystal', 'swift',
+        }
     })
 end
 
