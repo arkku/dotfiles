@@ -503,10 +503,8 @@ if ok then
             'css', 'html_tags', 'html',
             'ecma', 'jsx', 'javascript',
             'passwd', 'ssh_config', 'tmux',
-            'sql',
-            -- 'typescript', 'nginx', 'robots_txt',
-            -- 'rust', 'go',
-            -- 'crystal', 'swift',
+            -- 'sql',
+            -- 'asm', 'cpp', 'go', 'objc', 'rust', 'swift', 'typescript', 'zig',
         }
     })
 end
