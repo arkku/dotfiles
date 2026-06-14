@@ -17,8 +17,10 @@ case "$1" in
         shift
         ;;
     [a-zA-Z]*)
-        cmd="$cmd $1"
-        shift
+        if [ ! -e "$1" ]; then
+            cmd="$cmd $1"
+            shift
+        fi
         ;;
 esac
 exec nvim -c "$cmd" "$@"
