@@ -21,11 +21,6 @@ if [ -z "$LANG" -a -r '/etc/locale.conf' ]; then
 fi
 
 tmux=tmux
-if [ -x '/usr/bin/systemd-run' ]; then
-    systemd_run='/usr/bin/systemd-run --scope --user'
-else
-    systemd_run=''
-fi
 
 [ "$1" = "ls" ] && exec $tmux ls
 
@@ -54,7 +49,7 @@ fi
 
 if ! $tmux ls 2>/dev/null | grep -q "^$main_session:"; then
     echo "New session: $main_session" >&2
-    $systemd_run $tmux -u new-session -s "$main_session" -d 2>/dev/null
+    $tmux -u new-session -s "$main_session" -d 2>/dev/null
 fi
 
 if [ -z "$2" ]; then
@@ -72,6 +67,6 @@ if [ "$TERM_PROGRAM" = "Apple_Terminal" ]; then
 fi
 
 echo "Attaching to $main_session as $child_session" >&2
-exec $systemd_run $tmux -u new-session -A -D -d -t "$main_session" -s "$child_session" \; \
+exec $tmux -u new-session -A -D -d -t "$main_session" -s "$child_session" \; \
                     set-option destroy-unattached \; \
                     attach-session -t "$child_session" $more_args
