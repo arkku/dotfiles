@@ -1,0 +1,40 @@
+{
+    "title": "Map F19-F24 to media keys (volume, playback)",
+    "rules": [
+        {
+            "description": "Map F19-F24 to media keys",
+            "manipulators": [
+                {
+                    "type": "basic",
+                    "from": { "key_code": "f19" },
+                    "to": [{ "key_code": "mute" }]
+                },
+                {
+                    "type": "basic",
+                    "from": { "key_code": "f20" },
+                    "to": [{ "key_code": "volume_decrement" }]
+                },
+                {
+                    "type": "basic",
+                    "from": { "key_code": "f21" },
+                    "to": [{ "key_code": "volume_increment" }]
+                },
+                {
+                    "type": "basic",
+                    "from": { "key_code": "f22" },
+                    "to": [{ "key_code": "rewind" }]
+                },
+                {
+                    "type": "basic",
+                    "from": { "key_code": "f23" },
+                    "to": [{ "key_code": "play_or_pause" }]
+                },
+                {
+                    "type": "basic",
+                    "from": { "key_code": "f24" },
+                    "to": [{ "key_code": "fast_forward" }]
+                }
+            ]
+        }
+    ]
+}
