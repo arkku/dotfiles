@@ -193,7 +193,7 @@ fzgf() {
     ls --version 2>/dev/null | grep -q GNU && lsoptions="$lsoptions --color=always"
     git ls-files --exclude-standard -z \
         | fzf --read0 --reverse -m --query="$@" \
-        --preview="test -d {} && ls $lsoptions {} || ( command -v bat >/dev/null 2>&1 && bat --color=always --style=plain --paging=never {} || cat {}) | head -n 1000" \
+        --preview="test -d {} && ls $lsoptions {} || ( command -v bat >/dev/null 2>&1 && bat --color=always --style=plain --paging=never${BACKGROUND:+ --theme=$BACKGROUND} {} || cat {}) | head -n 1000" \
         --preview-window='top:50%:wrap' \
         --bind "ctrl-a:select-all" \
         --bind "ctrl-d:deselect-all" \
@@ -217,16 +217,16 @@ fzgfr() {
     ls --version 2>/dev/null | grep -q GNU && lsoptions="$lsoptions --color=always"
     git ls-files --exclude-standard --recurse-submodules -z \
         | fzf --read0 --reverse -m --query="$@" \
-        --preview="test -d {} && ls $lsoptions {} || ( command -v bat >/dev/null 2>&1 && bat --color=always --style=plain --paging=never {} || cat {}) | head -n 1000" \
+        --preview="test -d {} && ls $lsoptions {} || ( command -v bat >/dev/null 2>&1 && bat --color=always --style=plain --paging=never${BACKGROUND:+ --theme=$BACKGROUND} {} || cat {}) | head -n 1000" \
         --preview-window='top:50%:wrap' \
         --bind "ctrl-a:select-all" \
         --bind "ctrl-d:deselect-all" \
         --header "Esc: Close | Enter: Accept | Tab: Toggle Selection | ^A: Select All | ^D: Deselect"
 }
 
-# Git edit in "$EDITOR"
+# Git edit in "\$EDITOR"
 ge() {
-    _fzfcmd 0 git ls-files -z --recurse-submodules --fzfm --fzf0 --exclude-standard --fzfpreview "test -d {} && ls -lhG {} || command -v bat >/dev/null 2>&1 && bat --color=always --style=plain --paging=never {} || cat {}" -- "$EDITOR" -- "$@"
+    _fzfcmd 0 git ls-files -z --recurse-submodules --fzfm --fzf0 --exclude-standard --fzfpreview "test -d {} && ls -lhG {} || command -v bat >/dev/null 2>&1 && bat --color=always --style=plain --paging=never${BACKGROUND:+ --theme=$BACKGROUND} {} || cat {}" -- "$EDITOR" -- "$@"
 }
 
 gdf() {
@@ -293,7 +293,7 @@ alias gstaged='gdf --staged'
 gcommit() {
     local viewer='cat'
     if command -v bat >/dev/null 2>&1; then
-        viewer='bat --style=plain --color=always --paging=never --'
+        viewer="bat --style=plain --color=always --paging=never${BACKGROUND:+ --theme=$BACKGROUND} --"
     fi
     local color='always'
     local pager='less -R'
