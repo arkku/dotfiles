@@ -424,6 +424,7 @@ installed, in that order. Both provide at least the `z` command.
 * `cpwd` – copy the current working directory to system clipboard
 * `cpath` – copy the current path, with symlinks expanded, to system clipboard
 * `gr` – `grep`, excluding `.git`
+* `rgi` – `rg` but not excluding ignored files (which is the default)
 * `vi` – `nvim` (if installed)
 * `svi` – `sudo -e`
 * `psg` – `grep` the output of `ps`

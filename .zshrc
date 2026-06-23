@@ -837,7 +837,10 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
 
     if [ -n "$CLIHYPERLINK" ]; then
         command -v rg >/dev/null 2>&1 && alias rg='rg --hyperlink-format=default'
+        command -v rg >/dev/null 2>&1 && alias rgi='rg --no-ignore --hyperlink-format=default'
         command -v fd >/dev/null 2>&1 && alias fd='fd --hyperlink=auto'
+    else
+        command -v rg >/dev/null 2>&1 && alias rgi='rg --no-ignore'
     fi
 
     # Completion
