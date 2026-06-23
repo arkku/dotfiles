@@ -35,7 +35,7 @@ silent! set inccommand=nosplit  " Incremental substitute
 
 set confirm             " Ask to save changes rather than fail
 set autowrite           " Automatically save before commands like :next and :make
-silent! set autowriteall
+"silent! set autowriteall
 silent! set autoread
 
 set mouse=a             " Use mouse in all modes
