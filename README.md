@@ -355,7 +355,7 @@ If `zoxide` is installed it is loaded and its aliases set up. The aliases are:
   directory
 * `zi` – interactively pick a directory (uses `fzf` when available) and `cd`
 * `zz` – alias for `zi`
-* `sd` – interactively pick a directory and print its path
+* `zd` – interactively pick a directory and print its path
 
 For backwards compatibility, `fasd` (with `~/.fasd-init-zsh` present) and
 `z.sh` (with `~/.z` present) are still loaded as fallbacks if `zoxide` is not

@@ -1276,8 +1276,8 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
         # zoxide provides `z` (jump) and `zi` (interactive, uses fzf when present)
         unalias zz 2>/dev/null
         alias zz='zi'
-        unalias sd 2>/dev/null
-        sd() { zoxide query -i -- "$@" }
+        unalias zd 2>/dev/null
+        zd() { zoxide query -i -- "$@" }
     elif [ -w "$HOME/.fasd-init-zsh" ] && command -v fasd >/dev/null 2>&1; then
         # Load fasd (~/.fasd-init-zsh must exist — touch it!)
         local fasd_cache="$HOME/.fasd-init-zsh"
@@ -1315,8 +1315,8 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
             }
 
             # fzf select a directory from fasd list
-            unalias sd 2>/dev/null
-            sd() {
+            unalias zd 2>/dev/null
+            zd() {
                 fasd_fzf -ld "$@"
             }
 
@@ -1335,7 +1335,7 @@ if [[ -o interactive ]] && [ -n "$PS1" -a -z "$ENVONLY" ]; then
             # replace the fasd interactive selection with fzf
             unalias zz 2>/dev/null
             function zz {
-                local dir="$(sd "$@")"
+                local dir="$(zd "$@")"
                 [ -n "$dir" ] && cd "$dir"
             }
 

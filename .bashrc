@@ -623,8 +623,8 @@ if [ -n "$PS1" -a -z "$ENVONLY" ]; then
             }
 
             # fzf select a directory from fasd list
-            unalias sd 2>/dev/null
-            sd() {
+            unalias zd 2>/dev/null
+            zd() {
                 fasd_fzf -ld "$@"
             }
 
@@ -643,7 +643,7 @@ if [ -n "$PS1" -a -z "$ENVONLY" ]; then
             # replace the fasd interactive selection with fzf
             unalias zz 2>/dev/null
             zz() {
-                local dir="$(sd "$@")"
+                local dir="$(zd "$@")"
                 [ -n "$dir" ] && cd "$dir"
             }
 
